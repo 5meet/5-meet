@@ -2,6 +2,7 @@
 
 /* 메인 컬러(초록색 계열) */
 @theme {
+  /*ex: bg-primary-500, text-primary-600, border-gray-200  */
   --color-primary-100: #EDFFF5;
   --color-primary-200: #DFFAEB;
   --color-primary-300: #C5F1D9;
@@ -23,4 +24,18 @@
   --color-gray-700: #4A4A4A;
   --color-gray-800: #333333;
   --color-gray-900: #191919 ;
+}
+
+@theme {
+  --color-blue-100: #D6F9FF;
+  --color-blue-500: #2099FD;
+  --color-blue-600: #337AFF;
+}
+
+@theme {
+  /* ex: bg-mint-gradient-100, bg-mint-gradient-500 */
+  --background-image-mint-gradient-100: linear-gradient(90deg, #E9FBF1 0%, #E9FCFC 100%);
+  --background-image-mint-gradient-200: linear-gradient(90deg, #DEF8EA 0%, #D9F6F4 100%);
+  --background-image-mint-gradient-500: linear-gradient(90deg, #17DA71 0%, #08DDF0 100%);
+  --background-image-mint-gradient-600: linear-gradient(90deg, #00D361 0%, #00B9DE 100%);
 }
