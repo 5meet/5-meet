@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 메인 컬러(초록색 계열) */
+@theme {
+  --color-primary-100: #EDFFF5;
+  --color-primary-200: #DFFAEB;
+  --color-primary-300: #C5F1D9;
+  --color-primary-400: #AFEFD1; 
+  --color-primary-500: #00BB86; 
+  --color-primary-600: #009973; 
+  --color-primary-700: #0C7665;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 흰색~검정색 */
+@theme{
+  --color-gray-50: #F6F7F9;
+  --color-gray-100: #EDEFF1;
+  --color-gray-200: #DDDDDD;
+  --color-gray-300: #CCCCCC;
+  --color-gray-400: #BBBBBB; 
+  --color-gray-500: #A4A4A4;
+  --color-gray-600: #737373;
+  --color-gray-700: #4A4A4A;
+  --color-gray-800: #333333;
+  --color-gray-900: #191919 ;
 }
