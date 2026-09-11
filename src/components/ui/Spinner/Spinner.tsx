@@ -1,9 +1,9 @@
 /**로딩 시 회전하는 스피너 컴포넌트입니다. */
-import { HTMLAttributes } from "react";
+import { SVGProps } from "react";
 
 export type SpinnerSize = "sm" | "md" | "lg";
 
-export interface SpinnerProps extends HTMLAttributes<SVGSVGElement> {
+export interface SpinnerProps extends SVGProps<SVGSVGElement> {
   size?: SpinnerSize;
 }
 
