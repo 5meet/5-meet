@@ -70,7 +70,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
+        type={type}
         disabled={isDisabled}
+        aria-busy={isLoading}
         className={`
           ${baseStyle}
           ${variantStyles[variant]}
@@ -83,6 +85,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading && (
           <span className="absolute inset-0 flex items-center justify-center">
             <Spinner size={size} />
+            <span className='sr-only'>로딩 중</span>
           </span>
         )}
 
