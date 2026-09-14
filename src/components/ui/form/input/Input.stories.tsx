@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Input } from "./Input";
 import { Label } from "@/components/ui/form/label/Label";
-import { title } from "process";
 
 const meta = {
   title: "components/Form/Input",

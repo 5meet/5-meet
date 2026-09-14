@@ -23,8 +23,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           border border-gray-300 transition-colors duration-200 outline-none
           ${
             isError
-              ? "border-red-500 focus:border-error-100"
-              : "border-gray-200 focus:border-primary-500"
+              ? "border-error-100"
+              : "focus:border-primary-500"
           }
           disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
           ${className}
