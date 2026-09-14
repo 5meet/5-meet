@@ -21,11 +21,11 @@ const PageArrowButton = ({ type, disabled, onClick }: Props) => {
 
   const icon = isLeft
     ? disabled
-      ? "/public/arrow_left_disabled.svg"
-      : "/public/arrow_left.svg"
+      ? "/arrow_left_disabled.svg"
+      : "/arrow_left.svg"
     : disabled
-      ? "/public/arrow_right_disabled.svg"
-      : "/public/arrow_right.svg";
+      ? "/arrow_right_disabled.svg"
+      : "/arrow_right.svg";
 
   return (
     <button
