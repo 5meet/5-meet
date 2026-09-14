@@ -1,10 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-
-import DetailsProgressBar from "./DetailsProgressBar";
+import ProgressBar from "./ProgressBar";
 
 const meta = {
-  title: "Components/ProgressBar/DetailsProgressBar",
-  component: DetailsProgressBar,
+  title: "Components/ProgressBar/ProgressBar",
+  component: ProgressBar,
   parameters: {
     layout: "centered",
   },
@@ -17,10 +16,9 @@ const meta = {
         max: 100,
         step: 1,
       },
-      description: "참가자 비율",
     },
   },
-} satisfies Meta<typeof DetailsProgressBar>;
+} satisfies Meta<typeof ProgressBar>;
 
 export default meta;
 
@@ -32,13 +30,19 @@ export const Default: Story = {
   },
 };
 
-export const Minimum: Story = {
+export const Empty: Story = {
   args: {
-    percentage: 25,
+    percentage: 0,
   },
 };
 
-export const Maximum: Story = {
+export const Half: Story = {
+  args: {
+    percentage: 50,
+  },
+};
+
+export const Complete: Story = {
   args: {
     percentage: 100,
   },
