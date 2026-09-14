@@ -39,3 +39,8 @@
   --background-image-mint-gradient-500: linear-gradient(90deg, #17DA71 0%, #08DDF0 100%);
   --background-image-mint-gradient-600: linear-gradient(90deg, #00D361 0%, #00B9DE 100%);
 }
+
+/* 에러 컬러(붉은색) */
+@theme {
+  --color-error-100: #E91616
+}
