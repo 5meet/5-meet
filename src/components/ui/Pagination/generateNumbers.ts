@@ -3,6 +3,10 @@ export const getPageNumbers = (
   totalPages: number,
   maxVisiblePages: number,
 ): number[] => {
+  if (maxVisiblePages < 1 || maxVisiblePages % 2 === 0) {
+    throw new Error("maxVisiblePages는 1 이상의 홀수여야 합니다.");
+  }
+
   const half = Math.floor(maxVisiblePages / 2);
 
   let start = currentPage - half;
