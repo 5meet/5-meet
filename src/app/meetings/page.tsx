@@ -1,3 +1,5 @@
+import { MeetingsFindPage } from "@/features/meetings/components/MeetingsFindPage";
+
 export default function MeetingsPage() {
-  return <main>모임 찾기 페이지</main>;
+  return <MeetingsFindPage />;
 }
