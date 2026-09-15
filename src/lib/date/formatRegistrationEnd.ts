@@ -1,10 +1,15 @@
 const KST_TIME_ZONE = "Asia/Seoul";
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
+interface RegistrationEnd {
+  text: string;
+  isClosed: boolean;
+}
+
 const formatRegistrationEnd = (
   registrationEnd: string,
   now: Date = new Date(),
-): string => {
+): RegistrationEnd => {
   const endDate = new Date(registrationEnd);
 
   if (Number.isNaN(endDate.getTime())) {
@@ -12,7 +17,10 @@ const formatRegistrationEnd = (
   }
 
   if (endDate.getTime() <= now.getTime()) {
-    return "이미 마감된 모임입니다.";
+    return {
+      text: "이미 마감된 모임입니다.",
+      isClosed: true,
+    };
   }
 
   const endDateString = new Intl.DateTimeFormat("en-CA", {
@@ -37,15 +45,20 @@ const formatRegistrationEnd = (
     hour12: true,
   }).format(endDate);
 
+  let text: string;
+
   if (dayDifference === 0) {
-    return `오늘 ${time} 마감`;
+    text = `오늘 ${time} 마감`;
+  } else if (dayDifference === 1) {
+    text = `내일 ${time} 마감`;
+  } else {
+    text = `${dayDifference}일 후 마감`;
   }
 
-  if (dayDifference === 1) {
-    return `내일 ${time} 마감`;
-  }
-
-  return `${dayDifference}일 후 마감`;
+  return {
+    text,
+    isClosed: false,
+  };
 };
 
 export default formatRegistrationEnd;
