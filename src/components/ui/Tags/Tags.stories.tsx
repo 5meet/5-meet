@@ -34,8 +34,8 @@ export const Default: Story = {
 
 export const TodayMeeting: Story = {
   args: {
-    dateTime: "2026-09-15T21:30:00.000Z",
-    registrationEnd: "2026-09-15T12:00:00.000Z",
+    dateTime: "2026-09-16T21:30:00.000Z",
+    registrationEnd: "2026-09-15T20:00:00.000Z",
   },
 };
 
