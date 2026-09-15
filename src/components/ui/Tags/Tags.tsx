@@ -9,10 +9,14 @@ const Tags = ({ dateTime, registrationEnd }: TagsProps) => {
   const { date, time } = formatMeetingDate(dateTime);
   const registrationEndText = formatRegistrationEnd(registrationEnd);
 
+  const isClosed = registrationEndText === "이미 마감된 모임입니다.";
+
   return (
     <div className="flex w-full items-center gap-2">
       {/* 모임 마감 날짜 Tag */}
-      <div className="flex items-center gap-1 rounded-lg bg-[#18DCFF]/20 pr-2 pl-1 py-0.5 text-sm font-semibold text-blue-600">
+      <div
+        className={`flex items-center gap-1 rounded-lg pr-2 pl-1 py-0.5 text-sm font-semibold ${isClosed ? "text-error-100 bg-[#FF4D4D]/20" : "text-blue-600 bg-[#18DCFF]/20"}`}
+      >
         <Image
           src="/ic_alarm.svg"
           alt="모임 마감 날짜 아이콘"

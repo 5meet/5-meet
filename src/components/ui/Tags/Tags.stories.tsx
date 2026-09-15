@@ -27,21 +27,28 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    dateTime: "2026-03-07T00:30:00.000Z",
-    registrationEnd: "2026-01-09T14:00:00.000Z",
+    dateTime: "2026-10-07T00:30:00.000Z",
+    registrationEnd: "2026-09-16T14:00:00.000Z",
   },
 };
 
 export const TodayMeeting: Story = {
   args: {
-    dateTime: "2026-01-06T21:30:00.000Z",
-    registrationEnd: "2026-01-05T12:00:00.000Z",
+    dateTime: "2026-09-15T21:30:00.000Z",
+    registrationEnd: "2026-09-15T12:00:00.000Z",
   },
 };
 
 export const FutureMeeting: Story = {
   args: {
-    dateTime: "2026-02-10T14:00:00.000Z",
-    registrationEnd: "2026-02-09T14:59:59.000Z",
+    dateTime: "2026-11-10T14:00:00.000Z",
+    registrationEnd: "2026-11-09T14:59:59.000Z",
+  },
+};
+
+export const ClosedMeeting: Story = {
+  args: {
+    dateTime: "2026-08-14T00:30:00.000Z",
+    registrationEnd: "2026-08-10T14:00:00.000Z",
   },
 };

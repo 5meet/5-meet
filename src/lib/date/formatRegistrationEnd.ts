@@ -12,7 +12,7 @@ const formatRegistrationEnd = (
   }
 
   if (endDate.getTime() <= now.getTime()) {
-    return "마감";
+    return "이미 마감된 모임입니다.";
   }
 
   const endDateString = new Intl.DateTimeFormat("en-CA", {
