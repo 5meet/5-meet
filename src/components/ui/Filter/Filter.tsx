@@ -14,7 +14,7 @@ const categories = [
   "가족/육아",
 ];
 
-export function ReviewFilter() {
+export function Filter() {
   return (
     <div
       className="
@@ -27,7 +27,6 @@ export function ReviewFilter() {
         md:gap-6
       "
     >
-
       <div
         className="
           flex
@@ -41,6 +40,7 @@ export function ReviewFilter() {
         {categories.map((category, index) => (
           <button
             key={category}
+            type="button"
             className={`
               shrink-0
               rounded-full
@@ -73,17 +73,26 @@ export function ReviewFilter() {
           md:gap-4
         "
       >
-        <button className="flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          className="flex shrink-0 items-center gap-1"
+        >
           날짜 전체
           <ChevronDown size={13} />
         </button>
 
-        <button className="flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          className="flex shrink-0 items-center gap-1"
+        >
           지역 전체
           <ChevronDown size={13} />
         </button>
 
-        <button className="flex shrink-0 items-center gap-1">
+        <button
+          type="button"
+          className="flex shrink-0 items-center gap-1"
+        >
           <SlidersHorizontal size={13} />
           마감 임박
         </button>

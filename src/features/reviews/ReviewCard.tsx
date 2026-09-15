@@ -25,7 +25,7 @@ export function ReviewCard({
 
         last:mb-0
 
-        md:grid-cols-[220px_1fr]
+        md:grid-cols-[190px_1fr]
         md:gap-5
         md:px-[30px]
         md:py-[30px]

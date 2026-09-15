@@ -4,9 +4,9 @@ import Image from "next/image";
 
 import { mockReviews } from "@/data/reviews";
 
-import { ReviewFilter } from "./review-filter";
-import { ReviewSummary } from "./review-summary";
-import { ReviewList } from "./review-list";
+import { Filter } from "@/components/ui/Filter/Filter";
+import { ReviewSummary } from "./ReviewSummary";
+import { ReviewList } from "./ReviewList";
 
 export function ReviewsPage() {
     return (
@@ -43,7 +43,7 @@ export function ReviewsPage() {
                 </div>
                 </div>
 
-                <ReviewFilter></ReviewFilter>
+                <Filter />
                 <ReviewSummary reviews={mockReviews} />
                 <ReviewList reviews={mockReviews} />
             </section>

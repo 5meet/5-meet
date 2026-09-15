@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import type { Review } from "@/data/reviews";
-import { ReviewCard } from "./review-card";
+import { ReviewCard } from "./ReviewCard";
 
 interface ReviewListProps {
   reviews: Review[];
