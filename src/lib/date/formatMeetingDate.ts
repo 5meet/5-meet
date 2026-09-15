@@ -12,23 +12,23 @@ const formatMeetingDate = (dateTime: string): MeetingDate => {
     throw new Error("유효하지 않은 날짜 형식입니다.");
   }
 
-  const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  const dateParts = new Intl.DateTimeFormat("ko-KR", {
     timeZone: KST_TIME_ZONE,
     month: "numeric",
     day: "numeric",
-  });
+  }).formatToParts(date);
 
-  const timeFormatter = new Intl.DateTimeFormat("ko-KR", {
+  const month = dateParts.find((part) => part.type === "month")?.value;
+  const day = dateParts.find((part) => part.type === "day")?.value;
+
+  const time = new Intl.DateTimeFormat("ko-KR", {
     timeZone: KST_TIME_ZONE,
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  });
+  }).format(date);
 
-  return {
-    date: dateFormatter.format(date),
-    time: timeFormatter.format(date),
-  };
+  return { date: `${month}월 ${day}일`, time };
 };
 
 export default formatMeetingDate;
