@@ -1,6 +1,6 @@
 import ProgressBar from "./ProgressBar";
 
-interface DetailsProgressBarProps {
+export interface DetailsProgressBarProps {
   participantCount: number;
   capacity: number;
 }
