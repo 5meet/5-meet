@@ -10,22 +10,19 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
-    percentage: {
-      control: {
-        type: "range",
-        min: 0,
-        max: 100,
-        step: 1,
-      },
-      description: "참가자 비율",
-    },
-    count: {
+    participantCount: {
       control: {
         type: "number",
         min: 0,
-        max: 20,
       },
       description: "현재 참가자 수",
+    },
+    capacity: {
+      control: {
+        type: "number",
+        min: 1,
+      },
+      description: "최대 참가 인원",
     },
   },
 } satisfies Meta<typeof MeetingProgressBar>;
@@ -36,21 +33,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    percentage: 50,
-    count: 10,
+    participantCount: 5,
+    capacity: 10,
   },
 };
 
 export const FewParticipants: Story = {
   args: {
-    percentage: 25,
-    count: 5,
+    participantCount: 2,
+    capacity: 10,
   },
 };
 
 export const Full: Story = {
   args: {
-    percentage: 100,
-    count: 20,
+    participantCount: 10,
+    capacity: 10,
   },
 };
