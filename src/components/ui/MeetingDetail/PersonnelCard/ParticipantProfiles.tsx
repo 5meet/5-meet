@@ -32,7 +32,7 @@ const ParticipantProfiles = ({
   const remainingCount = Math.max(participantCount - MAX_VISIBLE_PROFILES, 0);
 
   return (
-    <div className="group flex items-center">
+    <div className="group relative flex items-center">
       {visibleParticipants.map((participant, index) => (
         <div
           key={participant.id}
@@ -67,25 +67,36 @@ const ParticipantProfiles = ({
         </div>
       )}
 
-      {hiddenParticipants.map((participant) => (
+      {hiddenParticipants.length > 0 && (
         <div
-          key={participant.id}
           className="
-            relative h-7 w-7 shrink-0 overflow-hidden rounded-full
-            -ml-7 opacity-0
+            absolute left-full top-0 flex items-center gap-1.5
+            max-w-[160px] lg:max-w-[280px] overflow-x-auto
+            -translate-x-7 opacity-0 pointer-events-none
             transition-all duration-300 ease-out
-            group-hover:ml-1
-            group-hover:opacity-100
+            group-hover:translate-x-1 group-hover:opacity-100
+            group-hover:pointer-events-auto
+            [&::-webkit-scrollbar]:h-1
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            [&::-webkit-scrollbar-track]:bg-transparent
           "
         >
-          <Image
-            src={participant.image ?? "/profile/profile_female1.svg"}
-            alt={`${participant.name} 프로필`}
-            fill
-            className="object-cover"
-          />
+          {hiddenParticipants.map((participant) => (
+            <div
+              key={participant.id}
+              className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full"
+            >
+              <Image
+                src={participant.image ?? "/profile/profile_female1.svg"}
+                alt={`${participant.name} 프로필`}
+                fill
+                className="object-cover"
+              />
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };
