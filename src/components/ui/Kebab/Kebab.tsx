@@ -40,7 +40,7 @@ const Kebab = ({ onEdit, onDelete }: KebabProps) => {
     <div ref={menuRef} className="relative">
       <button
         type="button"
-        aria-label="모임 관리 메뉴 열기"
+        aria-label="관리 메뉴 열기"
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={() => setIsOpen((prev) => !prev)}

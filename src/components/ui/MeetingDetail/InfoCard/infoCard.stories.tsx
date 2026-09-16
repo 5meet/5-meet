@@ -55,6 +55,10 @@ const meta = {
       control: "boolean",
       description: "현재 사용자의 좋아요 여부",
     },
+    isLoggedIn: {
+      control: "boolean",
+      description: "현재 사용자의 로그인 여부",
+    },
   },
 } satisfies Meta<typeof MeetingDetailInfoCard>;
 
@@ -73,6 +77,7 @@ const defaultArgs = {
   participantCount: 3,
   capacity: 10,
   initialIsLiked: false,
+  isLoggedIn: true,
 };
 
 export const Default: Story = {
@@ -114,6 +119,13 @@ export const Closed: Story = {
   args: {
     ...defaultArgs,
     registrationEnd: "2026-09-15T14:59:59.000Z",
+  },
+};
+
+export const LoggedOut: Story = {
+  args: {
+    ...defaultArgs,
+    isLoggedIn: false,
   },
 };
 
