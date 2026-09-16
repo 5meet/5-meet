@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
-import Meetballs from "./Meetballs";
+import Meetballs from "./Kebab";
 
 const meta = {
   title: "Components/Meetballs",

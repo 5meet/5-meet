@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
-import Meetballs from "@/components/ui/Meetballs/Meetballs";
+import Kebab from "@/components/ui/Kebab/Kebab";
 
 interface MeetingDetailInfoCardProps {
   title: string;
@@ -56,7 +56,7 @@ const MeetingDetailInfoCard = ({
             <Tags dateTime={dateTime} registrationEnd={registrationEnd} />
 
             {isOwner && (
-              <Meetballs
+              <Kebab
                 onEdit={() => {
                   // TODO: 모임 수정
                 }}

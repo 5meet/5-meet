@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-interface MeetballsProps {
+interface KebabProps {
   onEdit: () => void;
   onDelete: () => void;
 }
 
-const Meetballs = ({ onEdit, onDelete }: MeetballsProps) => {
+const Kebab = ({ onEdit, onDelete }: KebabProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +60,7 @@ const Meetballs = ({ onEdit, onDelete }: MeetballsProps) => {
             onClick={handleEdit}
             className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-800 hover:bg-gray-50"
           >
-            모임 수정하기
+            수정하기
           </button>
 
           <button
@@ -69,7 +69,7 @@ const Meetballs = ({ onEdit, onDelete }: MeetballsProps) => {
             onClick={handleDelete}
             className="w-full px-4 py-2.5 text-left text-sm font-medium text-error-100 hover:bg-gray-50"
           >
-            모임 삭제하기
+            삭제하기
           </button>
         </div>
       )}
@@ -77,4 +77,4 @@ const Meetballs = ({ onEdit, onDelete }: MeetballsProps) => {
   );
 };
 
-export default Meetballs;
+export default Kebab;
