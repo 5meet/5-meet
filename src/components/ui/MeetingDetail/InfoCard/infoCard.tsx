@@ -71,13 +71,19 @@ const MeetingDetailInfoCard = ({
     try {
       if (isParticipating) {
         // TODO: await cancelParticipation(meetingId);
+
         setIsParticipating(false);
+        // TODO: 성공 토스트 추가
       } else {
         // TODO: await participateMeeting(meetingId);
+
         setIsParticipating(true);
+        // TODO: 실패 토스트 추가
       }
     } catch (error) {
       console.error("참여 상태 변경에 실패했습니다.", error);
+
+      // TODO: 실패 토스트 추가
     } finally {
       setIsParticipationLoading(false);
     }
