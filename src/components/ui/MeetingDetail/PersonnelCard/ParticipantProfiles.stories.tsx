@@ -138,3 +138,10 @@ export const EightParticipants: Story = {
     participants,
   },
 };
+
+export const FiftenParticipants: Story = {
+  args: {
+    participantCount: 15,
+    participants,
+  },
+};
