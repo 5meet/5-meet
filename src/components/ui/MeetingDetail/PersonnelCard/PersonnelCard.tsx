@@ -3,6 +3,7 @@ import DetailsProgressBar, {
 } from "@/components/ui/ProgressBar/DetailsProgressBar";
 import ParticipantProfiles from "./ParticipantProfiles";
 import OpenConfirmedTag from "@/components/ui/Tags/OpenConfirmedTag";
+import useCountUp from "@/lib/hooks/useCountUp";
 
 interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
@@ -18,6 +19,8 @@ const PersonnelCard = ({
   capacity,
   participants,
 }: PersonnelCardProps) => {
+  const animatedParticipantCount = useCountUp(participantCount);
+
   const isConfirmed = participantCount >= capacity;
 
   return (
@@ -26,7 +29,7 @@ const PersonnelCard = ({
         <div className="flex justify-between">
           <div className="flex gap-3">
             <span className="text-primary-600 font-bold text-lg">
-              {participantCount}
+              {animatedParticipantCount}
               <span className="text-[#111827] font-medium">명 참여</span>
             </span>
 
