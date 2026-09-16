@@ -33,7 +33,7 @@ const meta = {
       control: "boolean",
       description: "현재 사용자가 모임 주최자인지 여부",
     },
-    isParticipating: {
+    initialIsParticipating: {
       control: "boolean",
       description: "현재 사용자가 모임에 참여 중인지 여부",
     },
@@ -73,7 +73,7 @@ const defaultArgs = {
   dateTime: "2026-11-10T14:00:00.000Z",
   registrationEnd: "2026-11-09T14:59:59.000Z",
   isOwner: false,
-  isParticipating: false,
+  initialIsParticipating: false,
   participantCount: 3,
   capacity: 10,
   initialIsLiked: false,
@@ -96,7 +96,7 @@ export const Owner: Story = {
 export const Participating: Story = {
   args: {
     ...defaultArgs,
-    isParticipating: true,
+    initialIsParticipating: true,
   },
 };
 

@@ -15,7 +15,7 @@ interface MeetingDetailInfoCardProps {
   dateTime: string;
   registrationEnd: string;
   isOwner: boolean;
-  isParticipating: boolean;
+  initialIsParticipating: boolean;
   participantCount: number;
   capacity: number;
   initialIsLiked: boolean;
@@ -30,7 +30,7 @@ const MeetingDetailInfoCard = ({
   dateTime,
   registrationEnd,
   isOwner,
-  isParticipating,
+  initialIsParticipating,
   participantCount,
   capacity,
   initialIsLiked,
@@ -40,6 +40,10 @@ const MeetingDetailInfoCard = ({
   // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
 
   const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [isParticipating, setIsParticipating] = useState(
+    initialIsParticipating,
+  );
+  const [isParticipationLoading, setIsParticipationLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleLikeToggle = async () => {
@@ -50,18 +54,31 @@ const MeetingDetailInfoCard = ({
 
   const isFull = participantCount >= capacity;
 
-  const handleParticipation = () => {
+  const handleParticipation = async () => {
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
       return;
     }
 
-    if (isParticipating) {
-      // TODO: 참여 취소 API
+    if (isParticipationLoading) {
       return;
     }
 
-    // TODO: 참여 API
+    setIsParticipationLoading(true);
+
+    try {
+      if (isParticipating) {
+        // await cancelParticipation(meetingId);
+        setIsParticipating(false);
+      } else {
+        // await participateMeeting(meetingId);
+        setIsParticipating(true);
+      }
+    } catch (error) {
+      console.error("참여 상태 변경에 실패했습니다.", error);
+    } finally {
+      setIsParticipationLoading(false);
+    }
   };
 
   return (
