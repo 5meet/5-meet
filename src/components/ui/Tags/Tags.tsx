@@ -7,9 +7,8 @@ interface TagsProps {
 }
 const Tags = ({ dateTime, registrationEnd }: TagsProps) => {
   const { date, time } = formatMeetingDate(dateTime);
-  const registrationEndText = formatRegistrationEnd(registrationEnd);
-
-  const isClosed = registrationEndText === "이미 마감된 모임입니다.";
+  const { text: registrationEndText, isClosed } =
+    formatRegistrationEnd(registrationEnd);
 
   return (
     <div className="flex w-full items-center gap-2">
