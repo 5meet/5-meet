@@ -46,14 +46,16 @@ const MeetingDetailInfoCard = ({
   const [isParticipationLoading, setIsParticipationLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
+  // 찜하기
   const handleLikeToggle = async () => {
-    // TODO: 좋아요/좋아요 취소 API 호출
+    // TODO: 찜하기/찜 취소 API 호출
 
     setIsLiked((prev) => !prev);
   };
 
   const isFull = participantCount >= capacity;
 
+  // 참여하기 <-> 참여 취소하기
   const handleParticipation = async () => {
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
@@ -68,16 +70,27 @@ const MeetingDetailInfoCard = ({
 
     try {
       if (isParticipating) {
-        // await cancelParticipation(meetingId);
+        // TODO: await cancelParticipation(meetingId);
         setIsParticipating(false);
       } else {
-        // await participateMeeting(meetingId);
+        // TODO: await participateMeeting(meetingId);
         setIsParticipating(true);
       }
     } catch (error) {
       console.error("참여 상태 변경에 실패했습니다.", error);
     } finally {
       setIsParticipationLoading(false);
+    }
+  };
+
+  // 공유하기
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      // TODO: 성공 토스트 추가
+    } catch (error) {
+      console.error("URL 복사에 실패했습니다.", error);
+      // TODO: 실패 토스트 추가
     }
   };
 
@@ -133,7 +146,12 @@ const MeetingDetailInfoCard = ({
 
             {/* TODO: isLoading - 추후 API 연결 및 공유 기능 구현 후 수정 */}
             {isOwner ? (
-              <Button size="lg" variant="primary" fullWidth>
+              <Button
+                size="lg"
+                variant="primary"
+                fullWidth
+                onClick={handleShare}
+              >
                 공유하기
               </Button>
             ) : (
