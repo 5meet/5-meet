@@ -1,4 +1,3 @@
-import Image from "next/image";
 import DetailsProgressBar, {
   DetailsProgressBarProps,
 } from "@/components/ui/ProgressBar/DetailsProgressBar";

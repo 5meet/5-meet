@@ -12,6 +12,10 @@ interface MeetingDetailInfoCardProps {
   dateTime: string;
   registrationEnd: string;
   isOwner: boolean;
+  isParticipating: boolean;
+  participantCount: number;
+  capacity: number;
+  initialIsLiked: boolean;
 }
 
 const MeetingDetailInfoCard = ({
@@ -21,8 +25,28 @@ const MeetingDetailInfoCard = ({
   dateTime,
   registrationEnd,
   isOwner,
+  isParticipating,
+  participantCount,
+  capacity,
+  initialIsLiked,
 }: MeetingDetailInfoCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const handleLikeToggle = async () => {
+    // TODO: 좋아요/좋아요 취소 API 호출
+
+    setIsLiked((prev) => !prev);
+  };
+
+  const isFull = participantCount >= capacity;
+
+  const handleParticipation = () => {
+    if (isParticipating) {
+      // TODO: 참여 취소 API 연결
+      return;
+    }
+
+    // TODO: 참여 API 연결
+  };
 
   return (
     <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:min-h-70.5 lg:px-10 lg:py-8">
@@ -67,17 +91,24 @@ const MeetingDetailInfoCard = ({
         </section>
 
         <section className="flex w-full shrink-0 gap-4">
-          {/* TODO: isLiked, onToggle - 추후 API 연결 후 수정 */}
-          <LikeButton
-            isLiked={isLiked}
-            onToggle={() => setIsLiked((prev) => !prev)}
-            size="lg"
-          />
+          <LikeButton isLiked={isLiked} onToggle={handleLikeToggle} size="lg" />
 
           {/* TODO: isLoading - 추후 API 연결 및 공유 기능 구현 후 수정 */}
-          <Button size="lg" variant="primary" fullWidth>
-            공유하기
-          </Button>
+          {isOwner ? (
+            <Button size="lg" variant="primary" fullWidth>
+              공유하기
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              variant={isParticipating ? "secondary" : "primary"}
+              fullWidth
+              disabled={!isParticipating && isFull}
+              onClick={handleParticipation}
+            >
+              {isParticipating ? "참여 취소하기" : "참여하기"}
+            </Button>
+          )}
         </section>
       </div>
     </section>
