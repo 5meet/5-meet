@@ -37,7 +37,7 @@ const participants = [
   {
     id: 2,
     name: "김철수",
-    image: "/profile/profile_female1.svg",
+    image: "/profile/profile_female2.svg",
   },
   {
     id: 3,
@@ -47,7 +47,7 @@ const participants = [
   {
     id: 4,
     name: "최지은",
-    image: "/profile/profile_female2.svg",
+    image: "/profile/profile_female1.svg",
   },
 ];
 

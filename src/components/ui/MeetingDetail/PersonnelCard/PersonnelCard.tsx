@@ -28,7 +28,6 @@ const PersonnelCard = ({
               <span className="text-[#111827] font-medium">명 참여</span>
             </span>
 
-            {/* 참가자 프로필 이미지들 - 5개 부터는 참가자 인원만큼 +nn으로 표시, 참여자가 없으면 렌더링 X */}
             {participantCount > 0 && (
               <ParticipantProfiles
                 participants={participants}
