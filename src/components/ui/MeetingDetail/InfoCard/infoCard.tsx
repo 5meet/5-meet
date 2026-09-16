@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
+import Meetballs from "@/components/ui/Meetballs/Meetballs";
 
 interface MeetingDetailInfoCardProps {
   title: string;
@@ -24,14 +25,22 @@ const MeetingDetailInfoCard = ({
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white shadow-md rounded-3xl lg:w-157.5 lg:h-70.5 lg:px-10 lg:py-8">
+    <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:h-70.5 lg:px-10 lg:py-8">
       <div className="flex flex-col w-full gap-5 lg:gap-8">
         <section className="flex flex-col w-full gap-4 lg:gap-5">
           <div className="flex justify-between">
             <Tags dateTime={dateTime} registrationEnd={registrationEnd} />
 
-            {/* TODO: meetballs 컴포넌트 - 페이지 접속자가 주최자일 경우 모임 수정, 삭제 가능한 드롭다운 */}
-            {isOwner && <div></div>}
+            {isOwner && (
+              <Meetballs
+                onEdit={() => {
+                  // TODO: 모임 수정
+                }}
+                onDelete={() => {
+                  // TODO: 모임 삭제
+                }}
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-3">
