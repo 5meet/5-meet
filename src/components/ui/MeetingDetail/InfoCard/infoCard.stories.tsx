@@ -84,3 +84,15 @@ export const LongTitle: Story = {
     isOwner: false,
   },
 };
+
+export const LongTitleOwner: Story = {
+  args: {
+    title:
+      "주말에 함께 서울 근교로 떠나는 초보자를 위한 가벼운 등산 모임입니다",
+    location: "서울특별시 중구",
+    category: "취미/여가",
+    dateTime: "2026-11-10T14:00:00.000Z",
+    registrationEnd: "2026-11-09T14:59:59.000Z",
+    isOwner: true,
+  },
+};

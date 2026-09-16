@@ -25,7 +25,7 @@ const MeetingDetailInfoCard = ({
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:h-70.5 lg:px-10 lg:py-8">
+    <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:min-h-70.5 lg:px-10 lg:py-8">
       <div className="flex flex-col w-full gap-5 lg:gap-8">
         <section className="flex flex-col w-full gap-4 lg:gap-5">
           <div className="flex justify-between">
@@ -45,7 +45,7 @@ const MeetingDetailInfoCard = ({
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-1.5 text-lg font-semibold text-[#1F2937] lg:text-[28px]">
-              <span>{title}</span>
+              <span className="min-w-0 break-words">{title}</span>
 
               {isOwner && (
                 <Image
@@ -75,7 +75,7 @@ const MeetingDetailInfoCard = ({
           />
 
           {/* TODO: isLoading - 추후 API 연결 및 공유 기능 구현 후 수정 */}
-          <Button size="lg" variant="primary" fullWidth isLoading>
+          <Button size="lg" variant="primary" fullWidth>
             공유하기
           </Button>
         </section>
