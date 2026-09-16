@@ -3,6 +3,7 @@ import DetailsProgressBar, {
   DetailsProgressBarProps,
 } from "@/components/ui/ProgressBar/DetailsProgressBar";
 import ParticipantProfiles from "./ParticipantProfiles";
+import OpenConfirmedTag from "@/components/ui/Tags/OpenConfirmedTag";
 
 interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
@@ -18,8 +19,10 @@ const PersonnelCard = ({
   capacity,
   participants,
 }: PersonnelCardProps) => {
+  const isConfirmed = participantCount >= capacity;
+
   return (
-    <div className="flex w-full max-w-[630px] min-w-[343px] max-h-[141px] min-h-[113px] px-10 pt-7 pb-8.5 bg-mint-gradient-200 border border-solid border-[#BEEDE7] rounded-3xl">
+    <div className="flex w-[343px] min-h-[113px] px-6 pt-5 pb-[22px] lg:px-10 lg:pt-7 lg:pb-8.5 bg-mint-gradient-200 border border-solid border-[#BEEDE7] rounded-3xl lg:w-[630px] lg:h-[141px]">
       <div className="flex flex-col w-full gap-4">
         <div className="flex justify-between">
           <div className="flex gap-3">
@@ -36,7 +39,7 @@ const PersonnelCard = ({
             )}
           </div>
 
-          {/* 개설 확정 라벨 컴포넌트 - 참여 인원이 최소 인원을 넘으면 나타나도록 설정*/}
+          <OpenConfirmedTag isConfirmed={isConfirmed} />
         </div>
 
         <DetailsProgressBar
