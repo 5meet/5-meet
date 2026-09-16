@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import PersonnelCard from "./PersonnelCard";
+import ParticipantProfiles from "./ParticipantProfiles";
 
 const meta = {
-  title: "Components/MettingDetail/PersonnelCard",
-  component: PersonnelCard,
+  title: "Components/MettingDetail/ParticipantProfiles",
+  component: ParticipantProfiles,
   parameters: {
     layout: "centered",
   },
@@ -13,16 +13,14 @@ const meta = {
       control: {
         type: "number",
       },
-      description: "현재 참여 중인 인원 수",
+      description: "전체 모임 참가자 수",
     },
-    capacity: {
-      control: {
-        type: "number",
-      },
-      description: "모임의 최대 수용 인원",
+    participants: {
+      control: false,
+      description: "프로필을 표시할 참가자 목록",
     },
   },
-} satisfies Meta<typeof PersonnelCard>;
+} satisfies Meta<typeof ParticipantProfiles>;
 
 export default meta;
 
@@ -51,34 +49,37 @@ const participants = [
   },
 ];
 
-export const Default: Story = {
+export const NoParticipants: Story = {
   args: {
-    participantCount: 3,
-    capacity: 20,
+    participantCount: 0,
     participants: [],
   },
 };
 
-export const FewParticipants: Story = {
+export const OneParticipant: Story = {
   args: {
     participantCount: 1,
-    capacity: 20,
     participants: participants.slice(0, 1),
   },
 };
 
-export const HalfParticipants: Story = {
+export const FourParticipants: Story = {
   args: {
-    participantCount: 15,
-    capacity: 30,
+    participantCount: 4,
     participants,
   },
 };
 
-export const FullParticipants: Story = {
+export const FiveParticipants: Story = {
   args: {
-    participantCount: 10,
-    capacity: 10,
+    participantCount: 5,
+    participants,
+  },
+};
+
+export const EightParticipants: Story = {
+  args: {
+    participantCount: 8,
     participants,
   },
 };
