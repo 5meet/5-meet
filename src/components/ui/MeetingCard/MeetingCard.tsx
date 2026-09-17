@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Heart, Hand, MapPin, CircleCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/Button/Button";
+import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import MeetingProgressBar from "@/components/ui/ProgressBar/MeetingProgressBar";
 import formatRegistrationEnd from "@/lib/date/formatRegistrationEnd";
@@ -62,7 +63,7 @@ export function MeetingCard({
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="min-w-0 text-m font-bold leading-5 text-gray-900">
+                <h3 className="min-w-0 text-[16px] font-bold leading-5 text-gray-900">
                   {title}
                 </h3>
 
@@ -100,23 +101,26 @@ export function MeetingCard({
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200 disabled:cursor-default"
             >
               {isClosed ? (
-                <Hand
-                  size={20}
-                  strokeWidth={1.8}
-                  className="text-primary-500"
-                  aria-hidden="true"
-                />
+                <button
+                  type="button"
+                 disabled
+                 aria-label="모집 마감"
+                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200"
+                >            
+                  <Hand
+                    size={20}
+                    strokeWidth={1.8}
+                    className="text-primary-500"
+                    aria-hidden="true"
+                  />
+                </button>
               ) : (
-                <Heart
-                  size={20}
-                  strokeWidth={1.8}
-                  className={
-                    isFavorite
-                      ? "fill-primary-500 text-primary-500"
-                      : "text-gray-300"
-                  }
-                />
-              )}
+              <LikeButton
+                size="md"
+                isLiked={isFavorite}
+                onToggle={onFavoriteClick ?? (() => {})}
+              />
+            )}
             </button>
           </div>
 
@@ -126,6 +130,7 @@ export function MeetingCard({
                 <Tags
                   dateTime={dateTime}
                   registrationEnd={registrationEnd}
+                  order="date-first"
                 />
               </div>
             </div>
