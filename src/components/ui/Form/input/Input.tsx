@@ -20,11 +20,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           bg-white text-gray-800 text-base
           placeholder:text-gray-500
           rounded-2xl
-          border border-gray-300 transition-colors duration-200 outline-none
+          border transition-colors duration-200 outline-none
           ${
             isError
               ? "border-error-100"
-              : "focus:border-primary-500"
+              : "border-gray-300 focus:border-primary-500"
           }
           disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
           ${className}
