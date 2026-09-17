@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 
 import Input from "@/components/ui/Form/input/Input";
 import Label from "@/components/ui/Form/label/Label";
-import { Button } from "@/components/ui/Button/Button";
+import Button from "@/components/ui/Button/Button";
 import AlertModal from "@/components/ui/Modal/AlertModal";
 
 import { useSignupMutation } from "../hook/useSignupMutation";
+import { checkEmail } from '../api/emailCheck';
 import { SignupRequest } from "../types";
 
 interface SignupFormValues extends SignupRequest {
@@ -17,49 +19,52 @@ interface SignupFormValues extends SignupRequest {
 }
 
 export default function SignupForm() {
-  // 회원가입 API 통신 뮤테이션 훅 (요청 함수, 로딩 상태 추출)
+  const router = useRouter();
   const { mutate: signup, isPending } = useSignupMutation();
 
-  // 폼 관리 설정: 입력값 변경 시 실시간 유효성 검사를 위해 mode를 'onChange'로 설정
   const {
     register,
     handleSubmit,
     watch,
-    trigger,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isSubmitting, isValidating },
   } = useForm<SignupFormValues>({
-    mode: "onChange",
+    mode: "onBlur",
   });
-  // 비밀번호 일치 여부 비교 및 재검증 트리거를 위해 실시간 값 구독
-  const password = watch("password");
-  const passwordConfirm = watch("passwordConfirm");
 
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirm: false,
   });
-
-  console.log(showPassword["password"])
-  // 비밀번호를 수정했을 때, 이미 입력된 '비밀번호 확인' 필드의 일치 여부를 즉각 재검증
-  useEffect(() => {
-    if (passwordConfirm) {
-      trigger("passwordConfirm");
-    }
-  }, [password, passwordConfirm, trigger]);
+  const [isSignupSuccess, setIsSignupSuccess] = useState(false);
 
   const toggleVisibility = (field: "password" | "confirm") => {
     setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  // 폼 제출 핸들러: API 스펙에 맞게 passwordConfirm을 제외하고 서버로 전송
   const onSubmit = ({ passwordConfirm, ...payload }: SignupFormValues) => {
-    signup(payload, {
-      onError: (error) => {
-        console.log("회원가입 실패:", error);
-        setModalMessage(error.message);
+    signup(
+      { ...payload, name: payload.name.trim() },
+      {
+        onSuccess: () => {
+          setIsSignupSuccess(true);
+          setModalMessage("가입이 완료되었습니다.");
+        },
+
+        onError: (error) => {
+          setIsSignupSuccess(false);
+          setModalMessage(error.message);
+        },
       },
-    });
+    );
+  };
+
+  const handleModalClose = () => {
+    setModalMessage("");
+    if (isSignupSuccess) {
+      router.replace("/login");
+    }
   };
 
   return (
@@ -75,10 +80,10 @@ export default function SignupForm() {
           회원가입
         </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
           {/* 이름 */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="name" required>
+          <div className="flex flex-col">
+            <Label htmlFor="name" required className="mb-2">
               이름
             </Label>
             <Input
@@ -89,17 +94,22 @@ export default function SignupForm() {
               isError={!!errors.name}
               {...register("name", {
                 required: "이름을 입력해주세요.",
-                setValueAs: (v: string) => v?.trim(),
+                maxLength: {
+                  value: 20,
+                  message: "이름은 20자 이하로 입력해주세요",
+                },
               })}
             />
-            {errors.name && (
-              <p className="text-sm text-error-100">{errors.name.message}</p>
-            )}
+            <div className="mt-1.5 min-h-5 text-sm">
+              {errors.name && (
+                <p className="text-error-100">{errors.name.message}</p>
+              )}
+            </div>
           </div>
 
           {/* 이메일 */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email" required>
+          <div className="flex flex-col">
+            <Label htmlFor="email" required className="mb-2">
               이메일
             </Label>
             <Input
@@ -114,19 +124,39 @@ export default function SignupForm() {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                   message: "올바른 이메일 형식을 입력해주세요.",
                 },
+                onChange: () => setIsEmailAvailable(false),
+                validate: async (value) => {
+                  try {
+                    const email = value.trim();
+                    const { available } = await checkEmail({ email });
+
+                    if (!available) {
+                      setIsEmailAvailable(false);
+                      return "이미 사용 중인 이메일입니다.";
+                    }
+                    setIsEmailAvailable(true);
+                    return true;
+                  } catch {
+                    setIsEmailAvailable(false);
+                    return "이메일 중복 확인 중 오류가 발생했습니다.";
+                  }
+                },
               })}
             />
-            {errors.email && (
-              <p className="text-sm text-error-100">{errors.email.message}</p>
-            )}
+            <div className="mt-1.5 min-h-5 text-sm">
+              {errors.email ? (
+                <p className="text-error-100">{errors.email.message}</p>
+              ) : isEmailAvailable ? (
+                <p className="text-green-600">사용 가능한 이메일입니다.</p>
+              ) : null}
+            </div>
           </div>
 
           {/* 비밀번호 */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="password" required>
+          <div className="flex flex-col">
+            <Label htmlFor="password" required className="mb-2">
               비밀번호
             </Label>
-
             <div className="relative">
               <Input
                 id="password"
@@ -137,18 +167,16 @@ export default function SignupForm() {
                 isError={!!errors.password}
                 {...register("password", {
                   required: "비밀번호를 입력해주세요.",
+                  deps: ["passwordConfirm"],
                   validate: (value) => {
-                    if (/\s/.test(value)) {
+                    if (/\s/.test(value))
                       return "비밀번호에는 공백을 사용할 수 없습니다.";
-                    }
-                    if (value.length < 8) {
+                    if (value.length < 8)
                       return "비밀번호는 8자 이상 입력해주세요.";
-                    }
                     return true;
                   },
                 })}
               />
-
               <button
                 type="button"
                 onClick={() => toggleVisibility("password")}
@@ -164,19 +192,18 @@ export default function SignupForm() {
                 )}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-sm text-error-100">
-                {errors.password.message}
-              </p>
-            )}
+            <div className="mt-1.5 min-h-5 text-sm">
+              {errors.password && (
+                <p className="text-error-100">{errors.password.message}</p>
+              )}
+            </div>
           </div>
 
           {/* 비밀번호 확인 */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="passwordConfirm" required>
+          <div className="flex flex-col">
+            <Label htmlFor="passwordConfirm" required className="mb-2">
               비밀번호 확인
             </Label>
-
             <div className="relative">
               <Input
                 id="passwordConfirm"
@@ -188,7 +215,8 @@ export default function SignupForm() {
                 {...register("passwordConfirm", {
                   required: "비밀번호 확인을 입력해주세요.",
                   validate: (value) =>
-                    value === password || "비밀번호가 일치하지 않습니다.",
+                    value === watch("password") ||
+                    "비밀번호가 일치하지 않습니다.",
                 })}
               />
               <button
@@ -208,19 +236,21 @@ export default function SignupForm() {
                 )}
               </button>
             </div>
-            {errors.passwordConfirm && (
-              <p className="text-sm text-error-100">
-                {errors.passwordConfirm.message}
-              </p>
-            )}
+            <div className="mt-1.5 min-h-5 text-sm">
+              {errors.passwordConfirm && (
+                <p className="text-error-100">
+                  {errors.passwordConfirm.message}
+                </p>
+              )}
+            </div>
           </div>
 
           <Button
             type="submit"
             fullWidth
-            className="mt-6"
-            isLoading={isPending}
-            disabled={!isValid || isPending}
+            className="mt-4"
+            isLoading={isPending || isValidating || isSubmitting}
+            disabled={!isValid || isPending || isValidating || isSubmitting}
           >
             회원가입
           </Button>
@@ -233,11 +263,10 @@ export default function SignupForm() {
         </div>
       </section>
 
-      {/* 에러달발생시 모달 */}
       <AlertModal
         isOpen={!!modalMessage}
         message={modalMessage}
-        onClose={() => setModalMessage("")}
+        onClose={handleModalClose}
       />
     </>
   );
