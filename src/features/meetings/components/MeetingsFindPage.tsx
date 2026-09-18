@@ -1,18 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { Spinner } from "@/components/ui/Spinner/Spinner";
 import { EmptyState } from "./EmptyState";
+import { LoadMoreButton } from "./LoadMoreButton";
+import { MeetingList } from "./MeetingList";
+import { MeetingListStatus } from "./MeetingListStatus";
 import { MeetingsFindShell } from "./MeetingsFindShell";
+import { useFindFilters } from "../lib/useFindFilters";
+import { useMeetingsList } from "../lib/useMeetingsList";
 
-/** 모임 찾기 UI만. 목록 API·pagination은 다음 커밋. */
-export function MeetingsFindPage() {
-  const [keyword, setKeyword] = useState("");
-  const [categoryId, setCategoryId] = useState("all");
-  const [sortId, setSortId] = useState("date");
+function MeetingsFindPageInner() {
+  const { filters, queryFilters, patchFilters } = useFindFilters();
   const [filterOpen, setFilterOpen] = useState(false);
-  const [region, setRegion] = useState("");
-  const [dateStart, setDateStart] = useState("");
-  const [dateEnd, setDateEnd] = useState("");
+  const {
+    meetings,
+    popular,
+    hasMore,
+    loading,
+    loadingMore,
+    errorMessage,
+    loadMore,
+  } = useMeetingsList(queryFilters);
 
   const empty = (
     <EmptyState
@@ -21,25 +30,59 @@ export function MeetingsFindPage() {
     />
   );
 
+  const statusSlot =
+    loading || errorMessage ? (
+      <MeetingListStatus loading={loading} errorMessage={errorMessage} />
+    ) : null;
+
   return (
     <MeetingsFindShell
-      keyword={keyword}
-      onKeywordChange={setKeyword}
-      categoryId={categoryId}
-      onCategoryChange={setCategoryId}
-      sortId={sortId}
-      onSortChange={setSortId}
+      keyword={filters.keyword}
+      onKeywordChange={(keyword) => patchFilters({ keyword })}
+      categoryId={filters.categoryId}
+      onCategoryChange={(categoryId) => patchFilters({ categoryId })}
+      sortId={filters.sortId}
+      onSortChange={(sortId) => patchFilters({ sortId })}
       filterOpen={filterOpen}
       onFilterOpen={() => setFilterOpen(true)}
       onFilterClose={() => setFilterOpen(false)}
-      region={region}
-      onRegionChange={setRegion}
-      dateStart={dateStart}
-      dateEnd={dateEnd}
-      onDateStartChange={setDateStart}
-      onDateEndChange={setDateEnd}
-      popularSlot={empty}
-      recommendedSlot={empty}
+      region={filters.region}
+      onRegionChange={(region) => patchFilters({ region })}
+      dateStart={filters.dateStart}
+      dateEnd={filters.dateEnd}
+      onDateStartChange={(dateStart) => patchFilters({ dateStart })}
+      onDateEndChange={(dateEnd) => patchFilters({ dateEnd })}
+      popularSlot={
+        statusSlot ??
+        (popular.length > 0 ? <MeetingList meetings={popular} /> : empty)
+      }
+      recommendedSlot={
+        statusSlot ??
+        (meetings.length > 0 ? <MeetingList meetings={meetings} /> : empty)
+      }
+      listSlot={
+        !loading && !errorMessage ? (
+          <LoadMoreButton
+            hasMore={hasMore}
+            loadingMore={loadingMore}
+            onLoadMore={loadMore}
+          />
+        ) : null
+      }
     />
+  );
+}
+
+export function MeetingsFindPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Spinner size="lg" className="text-primary-500" />
+        </div>
+      }
+    >
+      <MeetingsFindPageInner />
+    </Suspense>
   );
 }
