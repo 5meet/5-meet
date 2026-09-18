@@ -1,32 +1,37 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { MeetingCard } from "@/components/ui/MeetingCard/MeetingCard";
 import type { Meeting } from "../api/types";
-
-const FALLBACK_IMAGE = "/meetings-hero.jpg";
+import {
+  mapMeetingToCard,
+  meetingDetailPath,
+} from "../lib/mapMeetingToCard";
 
 type MeetingListProps = {
   meetings: Meeting[];
 };
 
 export function MeetingList({ meetings }: MeetingListProps) {
+  const router = useRouter();
+
   return (
     <ul className="flex flex-col gap-4">
-      {meetings.map((meeting) => (
-        <li key={meeting.id}>
-          <MeetingCard
-            imageUrl={meeting.image || FALLBACK_IMAGE}
-            title={meeting.name}
-            location={meeting.region || meeting.address || "장소 미정"}
-            category={meeting.type}
-            dateTime={meeting.dateTime}
-            registrationEnd={meeting.registrationEnd}
-            participantCount={meeting.participantCount}
-            capacity={meeting.capacity}
-            isConfirmed={Boolean(meeting.confirmedAt)}
-          />
-        </li>
-      ))}
+      {meetings.map((meeting) => {
+        const card = mapMeetingToCard(meeting);
+        const href = meetingDetailPath(meeting.id);
+        return (
+          <li key={meeting.id}>
+            <MeetingCard
+              {...card}
+              onParticipateClick={() => router.push(href)}
+              onFavoriteClick={() => {
+                // TODO: E 파트 찜 훅 연결
+              }}
+            />
+          </li>
+        );
+      })}
     </ul>
   );
 }

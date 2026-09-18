@@ -1,84 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import { Spinner } from "@/components/ui/Spinner/Spinner";
-import { getApiError } from "@/lib/api/handleApiError";
-import { getMeetings } from "../api/meetings";
-import type { Meeting } from "../api/types";
-import { CATEGORY_CHIPS } from "../constants/filters";
 import { EmptyState } from "./EmptyState";
+import { LoadMoreButton } from "./LoadMoreButton";
 import { MeetingList } from "./MeetingList";
+import { MeetingListStatus } from "./MeetingListStatus";
 import { MeetingsFindShell } from "./MeetingsFindShell";
+import { useFindFilters } from "../lib/useFindFilters";
+import { useMeetingsList } from "../lib/useMeetingsList";
 
-function categoryType(categoryId: string): string | undefined {
-  if (categoryId === "all") return undefined;
-  return CATEGORY_CHIPS.find((chip) => chip.id === categoryId)?.label;
-}
-
-function sortQuery(sortId: string): {
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-} {
-  if (sortId === "date") {
-    return { sortBy: "dateTime", sortOrder: "asc" };
-  }
-  return {};
-}
-
-export function MeetingsFindPage() {
-  const [keyword, setKeyword] = useState("");
-  const [categoryId, setCategoryId] = useState("all");
-  const [sortId, setSortId] = useState("date");
+function MeetingsFindPageInner() {
+  const { filters, queryFilters, patchFilters } = useFindFilters();
   const [filterOpen, setFilterOpen] = useState(false);
-  const [region, setRegion] = useState("");
-  const [dateStart, setDateStart] = useState("");
-  const [dateEnd, setDateEnd] = useState("");
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    const sort = sortQuery(sortId);
-    let cancelled = false;
-
-    setLoading(true);
-    setErrorMessage(null);
-
-    getMeetings({
-      type: categoryType(categoryId),
-      region: region || undefined,
-      keyword: keyword.trim() || undefined,
-      dateStart: dateStart || undefined,
-      dateEnd: dateEnd || undefined,
-      sortBy: sort.sortBy,
-      sortOrder: sort.sortOrder,
-      size: 10,
-    })
-      .then((page) => {
-        if (!cancelled) setMeetings(page.data);
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setMeetings([]);
-          setErrorMessage(getApiError(error).message);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [keyword, categoryId, sortId, region, dateStart, dateEnd]);
-
-  const popular = useMemo(
-    () =>
-      [...meetings]
-        .sort((a, b) => b.participantCount - a.participantCount)
-        .slice(0, 4),
-    [meetings],
-  );
+  const {
+    meetings,
+    popular,
+    hasMore,
+    loading,
+    loadingMore,
+    errorMessage,
+    loadMore,
+  } = useMeetingsList(queryFilters);
 
   const empty = (
     <EmptyState
@@ -87,31 +30,28 @@ export function MeetingsFindPage() {
     />
   );
 
-  const statusSlot = loading ? (
-    <div className="flex min-h-[220px] items-center justify-center rounded-3xl bg-white ring-1 ring-gray-100">
-      <Spinner size="lg" className="text-primary-500" />
-    </div>
-  ) : errorMessage ? (
-    <EmptyState title="모임을 불러오지 못했습니다" description={errorMessage} />
-  ) : null;
+  const statusSlot =
+    loading || errorMessage ? (
+      <MeetingListStatus loading={loading} errorMessage={errorMessage} />
+    ) : null;
 
   return (
     <MeetingsFindShell
-      keyword={keyword}
-      onKeywordChange={setKeyword}
-      categoryId={categoryId}
-      onCategoryChange={setCategoryId}
-      sortId={sortId}
-      onSortChange={setSortId}
+      keyword={filters.keyword}
+      onKeywordChange={(keyword) => patchFilters({ keyword })}
+      categoryId={filters.categoryId}
+      onCategoryChange={(categoryId) => patchFilters({ categoryId })}
+      sortId={filters.sortId}
+      onSortChange={(sortId) => patchFilters({ sortId })}
       filterOpen={filterOpen}
       onFilterOpen={() => setFilterOpen(true)}
       onFilterClose={() => setFilterOpen(false)}
-      region={region}
-      onRegionChange={setRegion}
-      dateStart={dateStart}
-      dateEnd={dateEnd}
-      onDateStartChange={setDateStart}
-      onDateEndChange={setDateEnd}
+      region={filters.region}
+      onRegionChange={(region) => patchFilters({ region })}
+      dateStart={filters.dateStart}
+      dateEnd={filters.dateEnd}
+      onDateStartChange={(dateStart) => patchFilters({ dateStart })}
+      onDateEndChange={(dateEnd) => patchFilters({ dateEnd })}
       popularSlot={
         statusSlot ??
         (popular.length > 0 ? <MeetingList meetings={popular} /> : empty)
@@ -120,6 +60,29 @@ export function MeetingsFindPage() {
         statusSlot ??
         (meetings.length > 0 ? <MeetingList meetings={meetings} /> : empty)
       }
+      listSlot={
+        !loading && !errorMessage ? (
+          <LoadMoreButton
+            hasMore={hasMore}
+            loadingMore={loadingMore}
+            onLoadMore={loadMore}
+          />
+        ) : null
+      }
     />
+  );
+}
+
+export function MeetingsFindPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[40vh] items-center justify-center">
+          <Spinner size="lg" className="text-primary-500" />
+        </div>
+      }
+    >
+      <MeetingsFindPageInner />
+    </Suspense>
   );
 }

@@ -36,4 +36,14 @@ export type GetMeetingsParams = {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   size?: number;
+  cursor?: string;
+};
+
+export type MeetingsFindFilters = {
+  keyword: string;
+  categoryId: string;
+  sortId: string;
+  region: string;
+  dateStart: string;
+  dateEnd: string;
 };

@@ -18,6 +18,7 @@ export async function getMeetings(
   if (params.sortBy) searchParams.set("sortBy", params.sortBy);
   if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder);
   searchParams.set("size", String(params.size ?? 10));
+  if (params.cursor) searchParams.set("cursor", params.cursor);
 
   return api
     .get(`${TEAM_ID}/meetings`, { searchParams })
