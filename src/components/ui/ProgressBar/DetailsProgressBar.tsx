@@ -18,7 +18,7 @@ const DetailsProgressBar = ({
         최대 {capacity}명
       </span>
 
-      <ProgressBar percentage={percentage} />
+      <ProgressBar percentage={percentage} animated={true} />
     </div>
   );
 };
