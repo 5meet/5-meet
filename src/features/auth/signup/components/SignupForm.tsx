@@ -27,11 +27,17 @@ export default function SignupForm() {
     handleSubmit,
     watch,
     trigger,
-    formState: { errors, isValid, isSubmitting, isValidating, touchedFields },
+    formState: {
+      errors,
+      isValid,
+      isSubmitting,
+      isValidating,
+      touchedFields,
+      dirtyFields,
+    },
   } = useForm<SignupFormValues>({
     mode: "onBlur",
   });
-
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [showPassword, setShowPassword] = useState({
@@ -50,15 +56,22 @@ export default function SignupForm() {
   const useDebouncedTrigger = (
     value: string | undefined,
     field: keyof SignupFormValues,
-    additionalField?: keyof SignupFormValues,
+    additionalField?: {
+      name: keyof SignupFormValues;
+      shouldTrigger: boolean; // 연관 필드를 검증할 조건 (입력값이 존재하는지 여부)
+    },
   ) => {
     useEffect(() => {
       // 초기 미입력 상태에서는 불필요한 에러 노출 방지
-      if (value === undefined || (!touchedFields[field] && value === "")) return;
+      if (value === undefined || (!touchedFields[field] && value === ""))
+        return;
 
       const timer = setTimeout(() => {
         trigger(field);
-        if (additionalField) trigger(additionalField);
+        // 연관 필드는 조건(값이 입력되어 있는 경우)을 만족할 때만 검증 실행
+        if (additionalField && additionalField.shouldTrigger) {
+          trigger(additionalField.name);
+        }
       }, 1000);
 
       return () => clearTimeout(timer);
@@ -68,7 +81,10 @@ export default function SignupForm() {
   // 각 필드별 1초 디바운스 트리거 등록
   useDebouncedTrigger(nameValue, "name");
   useDebouncedTrigger(emailValue, "email");
-  useDebouncedTrigger(passwordValue, "password", "passwordConfirm");
+  useDebouncedTrigger(passwordValue, "password", {
+    name: "passwordConfirm",
+    shouldTrigger: !!passwordConfirmValue,
+  });
   useDebouncedTrigger(passwordConfirmValue, "passwordConfirm");
 
   const toggleVisibility = (field: "password" | "confirm") => {
@@ -128,7 +144,8 @@ export default function SignupForm() {
                 validate: (value) => {
                   const trimmedValue = value.trim();
                   if (!trimmedValue) return "이름을 입력해주세요.";
-                  if (trimmedValue.length > 20) return "이름은 20자 이하로 입력해주세요.";
+                  if (trimmedValue.length > 20)
+                    return "이름은 20자 이하로 입력해주세요.";
                   return true;
                 },
               })}
@@ -202,8 +219,10 @@ export default function SignupForm() {
                 {...register("password", {
                   required: "비밀번호를 입력해주세요.",
                   validate: (value) => {
-                    if (/\s/.test(value)) return "비밀번호에는 공백을 사용할 수 없습니다.";
-                    if (value.length < 8) return "비밀번호는 8자 이상 입력해주세요.";
+                    if (/\s/.test(value))
+                      return "비밀번호에는 공백을 사용할 수 없습니다.";
+                    if (value.length < 8)
+                      return "비밀번호는 8자 이상 입력해주세요.";
                     return true;
                   },
                 })}
@@ -216,7 +235,11 @@ export default function SignupForm() {
                   showPassword.password ? "비밀번호 숨기기" : "비밀번호 보기"
                 }
               >
-                {showPassword.password ? <Eye size={20} /> : <EyeOff size={20} />}
+                {showPassword.password ? (
+                  <Eye size={20} />
+                ) : (
+                  <EyeOff size={20} />
+                )}
               </button>
             </div>
             <div className="mt-1.5 min-h-5 text-sm">
@@ -242,7 +265,8 @@ export default function SignupForm() {
                 {...register("passwordConfirm", {
                   required: "비밀번호 확인을 입력해주세요.",
                   validate: (value) =>
-                    value === watch("password") || "비밀번호가 일치하지 않습니다.",
+                    value === watch("password") ||
+                    "비밀번호가 일치하지 않습니다.",
                 })}
               />
               <button
@@ -255,7 +279,11 @@ export default function SignupForm() {
                     : "비밀번호 확인 보기"
                 }
               >
-                {showPassword.confirm ? <Eye size={20} /> : <EyeOff size={20} />}
+                {showPassword.confirm ? (
+                  <Eye size={20} />
+                ) : (
+                  <EyeOff size={20} />
+                )}
               </button>
             </div>
             <div className="mt-1.5 min-h-5 text-sm">
