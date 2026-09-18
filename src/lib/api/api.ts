@@ -1,3 +1,5 @@
+// 클라이언트 에러, api 헨들링
+
 import ky, { HTTPError, TimeoutError } from "ky";
 import { ApiErrorResponse } from "./type";
 
