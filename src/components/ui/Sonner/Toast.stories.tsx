@@ -90,14 +90,46 @@ export const Loading: Story = {
   render: () => (
     <button
       type="button"
-      onClick={() =>
-        showToast({
+      onClick={() => {
+        const toastId = showToast({
           kind: "loading",
           message: "처리 중입니다...",
-        })
-      }
+        });
+
+        setTimeout(() => {
+          showToast({
+            kind: "success",
+            message: "처리가 완료되었습니다.",
+            id: toastId,
+          });
+        }, 2000);
+      }}
     >
       Loading Toast
     </button>
   ),
 };
+
+// 현재 Loading Toast는 Storybook 테스트 용이라 setTimeout을 사용했지만,
+// 실제 코드에서는 아래와 같은 형태로 사용해야 합니다. (API 성공/실패 시 같은 toastId를 전달하는 구조)
+
+// const toastId = showToast({
+//   kind: "loading",
+//   message: "처리 중입니다...",
+// });
+
+// try {
+//   await api();
+
+//   showToast({
+//     kind: "success",
+//     message: "처리가 완료되었습니다.",
+//     id: toastId,
+//   });
+// } catch {
+//   showToast({
+//     kind: "error",
+//     message: "처리에 실패했습니다.",
+//     id: toastId,
+//   });
+// }

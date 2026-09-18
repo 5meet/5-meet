@@ -15,10 +15,13 @@ export const AppToaster = () => {
 export const showToast = ({
   kind,
   message,
+  id,
 }: {
   kind: keyof typeof METHOD_MAP;
   message: string;
+  id?: string | number;
 }) => {
   const method = METHOD_MAP[kind];
-  return method(message);
+
+  return method(message, id !== undefined ? { id } : undefined);
 };
