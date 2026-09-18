@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
@@ -11,7 +11,7 @@ import Button from "@/components/ui/Button/Button";
 import AlertModal from "@/components/ui/Modal/AlertModal";
 
 import { useSignupMutation } from "../hook/useSignupMutation";
-import { checkEmail } from '../api/emailCheck';
+import { checkEmail } from "../api/emailCheck";
 import { SignupRequest } from "../types";
 
 interface SignupFormValues extends SignupRequest {
@@ -26,7 +26,8 @@ export default function SignupForm() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid, isSubmitting, isValidating },
+    trigger,
+    formState: { errors, isValid, isSubmitting, isValidating, touchedFields },
   } = useForm<SignupFormValues>({
     mode: "onBlur",
   });
@@ -38,6 +39,37 @@ export default function SignupForm() {
     confirm: false,
   });
   const [isSignupSuccess, setIsSignupSuccess] = useState(false);
+
+  // 실시간 입력값 구독
+  const nameValue = watch("name");
+  const emailValue = watch("email");
+  const passwordValue = watch("password");
+  const passwordConfirmValue = watch("passwordConfirm");
+
+  // 1초 디바운스 유효성 검증 공통 함수
+  const useDebouncedTrigger = (
+    value: string | undefined,
+    field: keyof SignupFormValues,
+    additionalField?: keyof SignupFormValues,
+  ) => {
+    useEffect(() => {
+      // 초기 미입력 상태에서는 불필요한 에러 노출 방지
+      if (value === undefined || (!touchedFields[field] && value === "")) return;
+
+      const timer = setTimeout(() => {
+        trigger(field);
+        if (additionalField) trigger(additionalField);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }, [value, field, additionalField]);
+  };
+
+  // 각 필드별 1초 디바운스 트리거 등록
+  useDebouncedTrigger(nameValue, "name");
+  useDebouncedTrigger(emailValue, "email");
+  useDebouncedTrigger(passwordValue, "password", "passwordConfirm");
+  useDebouncedTrigger(passwordConfirmValue, "passwordConfirm");
 
   const toggleVisibility = (field: "password" | "confirm") => {
     setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -51,7 +83,6 @@ export default function SignupForm() {
           setIsSignupSuccess(true);
           setModalMessage("가입이 완료되었습니다.");
         },
-
         onError: (error) => {
           setIsSignupSuccess(false);
           setModalMessage(error.message);
@@ -94,9 +125,11 @@ export default function SignupForm() {
               isError={!!errors.name}
               {...register("name", {
                 required: "이름을 입력해주세요.",
-                maxLength: {
-                  value: 20,
-                  message: "이름은 20자 이하로 입력해주세요",
+                validate: (value) => {
+                  const trimmedValue = value.trim();
+                  if (!trimmedValue) return "이름을 입력해주세요.";
+                  if (trimmedValue.length > 20) return "이름은 20자 이하로 입력해주세요.";
+                  return true;
                 },
               })}
             />
@@ -128,8 +161,9 @@ export default function SignupForm() {
                 validate: async (value) => {
                   try {
                     const email = value.trim();
-                    const { available } = await checkEmail({ email });
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return true;
 
+                    const { available } = await checkEmail({ email });
                     if (!available) {
                       setIsEmailAvailable(false);
                       return "이미 사용 중인 이메일입니다.";
@@ -167,12 +201,9 @@ export default function SignupForm() {
                 isError={!!errors.password}
                 {...register("password", {
                   required: "비밀번호를 입력해주세요.",
-                  deps: ["passwordConfirm"],
                   validate: (value) => {
-                    if (/\s/.test(value))
-                      return "비밀번호에는 공백을 사용할 수 없습니다.";
-                    if (value.length < 8)
-                      return "비밀번호는 8자 이상 입력해주세요.";
+                    if (/\s/.test(value)) return "비밀번호에는 공백을 사용할 수 없습니다.";
+                    if (value.length < 8) return "비밀번호는 8자 이상 입력해주세요.";
                     return true;
                   },
                 })}
@@ -185,11 +216,7 @@ export default function SignupForm() {
                   showPassword.password ? "비밀번호 숨기기" : "비밀번호 보기"
                 }
               >
-                {showPassword.password ? (
-                  <Eye size={20} />
-                ) : (
-                  <EyeOff size={20} />
-                )}
+                {showPassword.password ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
             <div className="mt-1.5 min-h-5 text-sm">
@@ -215,8 +242,7 @@ export default function SignupForm() {
                 {...register("passwordConfirm", {
                   required: "비밀번호 확인을 입력해주세요.",
                   validate: (value) =>
-                    value === watch("password") ||
-                    "비밀번호가 일치하지 않습니다.",
+                    value === watch("password") || "비밀번호가 일치하지 않습니다.",
                 })}
               />
               <button
@@ -229,11 +255,7 @@ export default function SignupForm() {
                     : "비밀번호 확인 보기"
                 }
               >
-                {showPassword.confirm ? (
-                  <Eye size={20} />
-                ) : (
-                  <EyeOff size={20} />
-                )}
+                {showPassword.confirm ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
             <div className="mt-1.5 min-h-5 text-sm">
