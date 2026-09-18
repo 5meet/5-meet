@@ -3,44 +3,75 @@
 /* 메인 컬러(초록색 계열) */
 @theme {
   /*ex: bg-primary-500, text-primary-600, border-gray-200  */
-  --color-primary-100: #EDFFF5;
-  --color-primary-200: #DFFAEB;
-  --color-primary-300: #C5F1D9;
-  --color-primary-400: #AFEFD1; 
-  --color-primary-500: #00BB86; 
-  --color-primary-600: #009973; 
-  --color-primary-700: #0C7665;
+  --color-primary-100: #edfff5;
+  --color-primary-200: #dffaeb;
+  --color-primary-300: #c5f1d9;
+  --color-primary-400: #afefd1;
+  --color-primary-500: #00bb86;
+  --color-primary-600: #009973;
+  --color-primary-700: #0c7665;
 }
 
 /* 흰색~검정색 */
-@theme{
-  --color-gray-50: #F6F7F9;
-  --color-gray-100: #EDEFF1;
-  --color-gray-200: #DDDDDD;
-  --color-gray-300: #CCCCCC;
-  --color-gray-400: #BBBBBB; 
-  --color-gray-500: #A4A4A4;
+@theme {
+  --color-gray-50: #f6f7f9;
+  --color-gray-100: #edeff1;
+  --color-gray-200: #dddddd;
+  --color-gray-300: #cccccc;
+  --color-gray-400: #bbbbbb;
+  --color-gray-500: #a4a4a4;
   --color-gray-600: #737373;
-  --color-gray-700: #4A4A4A;
+  --color-gray-700: #4a4a4a;
   --color-gray-800: #333333;
-  --color-gray-900: #191919 ;
+  --color-gray-900: #191919;
 }
 
 @theme {
-  --color-blue-100: #D6F9FF;
-  --color-blue-500: #2099FD;
-  --color-blue-600: #337AFF;
+  --color-blue-100: #d6f9ff;
+  --color-blue-500: #2099fd;
+  --color-blue-600: #337aff;
 }
 
 @theme {
   /* ex: bg-mint-gradient-100, bg-mint-gradient-500 */
-  --background-image-mint-gradient-100: linear-gradient(90deg, #E9FBF1 0%, #E9FCFC 100%);
-  --background-image-mint-gradient-200: linear-gradient(90deg, #DEF8EA 0%, #D9F6F4 100%);
-  --background-image-mint-gradient-500: linear-gradient(90deg, #17DA71 0%, #08DDF0 100%);
-  --background-image-mint-gradient-600: linear-gradient(90deg, #00D361 0%, #00B9DE 100%);
+  --background-image-mint-gradient-100: linear-gradient(
+    90deg,
+    #e9fbf1 0%,
+    #e9fcfc 100%
+  );
+  --background-image-mint-gradient-200: linear-gradient(
+    90deg,
+    #def8ea 0%,
+    #d9f6f4 100%
+  );
+  --background-image-mint-gradient-500: linear-gradient(
+    90deg,
+    #17da71 0%,
+    #08ddf0 100%
+  );
+  --background-image-mint-gradient-600: linear-gradient(
+    90deg,
+    #00d361 0%,
+    #00b9de 100%
+  );
 }
 
 /* 에러 컬러(붉은색) */
 @theme {
-  --color-error-100: #E91616
+  --color-error-100: #e91616;
+}
+
+/* Progress Bar 애니메이션 */
+@theme {
+  --animate-progress: progress 1s ease-out forwards;
+
+  @keyframes progress {
+    from {
+      width: 0;
+    }
+
+    to {
+      width: var(--progress-width);
+    }
+  }
 }
