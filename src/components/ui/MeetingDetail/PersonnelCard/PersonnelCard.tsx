@@ -1,3 +1,5 @@
+"use client";
+
 import DetailsProgressBar, {
   DetailsProgressBarProps,
 } from "@/components/ui/ProgressBar/DetailsProgressBar";
