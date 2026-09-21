@@ -8,7 +8,7 @@ interface ReviewCardListProps {
 const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
   if (reviews.length === 0) {
     return (
-      <section className="flex w-full items-center justify-center px-6 py-12">
+      <section className="flex w-[343px] items-center justify-center px-5 pt-4 pb-2 rounded-4xl shadow-md lg:px-12 lg:py-6 md:w-174 lg:w-7xl">
         <EmptyReview />
       </section>
     );
@@ -17,7 +17,7 @@ const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
   const displayedReviews = reviews.slice(0, 4);
 
   return (
-    <section className="flex w-full px-6 py-12">
+    <section className="flex flex-col w-[343px] px-5 pt-4 pb-2 rounded-4xl shadow-md lg:px-12 lg:py-6 md:w-174 lg:w-7xl">
       {displayedReviews.map((review, index) => (
         <ReviewCard
           key={`${review.user.id}-${review.datetime}`}
