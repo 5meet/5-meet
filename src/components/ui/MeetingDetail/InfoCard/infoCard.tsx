@@ -9,20 +9,8 @@ import Kebab from "@/components/ui/Kebab/Kebab";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { showToast } from "@/components/ui/Sonner";
 import formatRegistrationEnd from "@/lib/date/formatRegistrationEnd";
+import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
-interface MeetingDetailInfoCardProps {
-  title: string;
-  location: string;
-  category: string;
-  dateTime: string;
-  registrationEnd: string;
-  isOwner: boolean;
-  initialIsParticipating: boolean;
-  participantCount: number;
-  capacity: number;
-  initialIsFavorited: boolean;
-  isLoggedIn: boolean;
-}
 // 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
 
 const MeetingDetailInfoCard = ({

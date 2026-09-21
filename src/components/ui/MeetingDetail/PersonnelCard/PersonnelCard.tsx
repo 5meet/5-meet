@@ -1,15 +1,10 @@
 "use client";
 
-import DetailsProgressBar, {
-  DetailsProgressBarProps,
-} from "@/components/ui/ProgressBar/DetailsProgressBar";
-import ParticipantProfiles, { ParticipantProfile } from "./ParticipantProfiles";
+import DetailsProgressBar from "@/components/ui/ProgressBar/DetailsProgressBar";
+import ParticipantProfiles from "./ParticipantProfiles";
 import OpenConfirmedTag from "@/components/ui/Tags/OpenConfirmedTag";
 import useCountUp from "@/features/meetingDetail/hooks/useCountUp";
-
-interface PersonnelCardProps extends DetailsProgressBarProps {
-  participants: ParticipantProfile[];
-}
+import { PersonnelCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const PersonnelCard = ({
   participantCount,

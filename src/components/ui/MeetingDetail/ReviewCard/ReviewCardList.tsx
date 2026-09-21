@@ -1,9 +1,6 @@
-import ReviewCard, { Review } from "./ReviewCard";
+import ReviewCard from "./ReviewCard";
 import EmptyReview from "./EmptyReview";
-
-interface ReviewCardListProps {
-  reviews: Review[];
-}
+import { ReviewCardListProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
   if (reviews.length === 0) {
@@ -18,7 +15,7 @@ const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
     <section className="flex flex-col w-[343px] px-5 pt-4 pb-2 rounded-4xl shadow-md md:px-12 md:py-6 md:w-174 lg:px-12 lg:py-6 lg:w-7xl">
       {reviews.map((review, index) => (
         <ReviewCard
-          key={`${review.user.id}-${review.datetime}`}
+          key={review.id}
           {...review}
           isLast={index === reviews.length - 1}
         />

@@ -1,15 +1,5 @@
 import Image from "next/image";
-
-export interface ParticipantProfile {
-  id: string;
-  name: string;
-  image: string | null;
-}
-
-interface ParticipantProfilesProps {
-  participants: ParticipantProfile[];
-  participantCount: number;
-}
+import { ParticipantProfilesProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const MAX_VISIBLE_PROFILES = 4;
 

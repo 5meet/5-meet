@@ -1,23 +1,8 @@
 import Image from "next/image";
-
-interface UserProfile {
-  id: string;
-  name: string;
-  image: string | null;
-}
-
-export interface Review {
-  user: UserProfile;
-  score: number;
-  comment: string;
-  datetime: string;
-}
-
-interface ReviewCardProps extends Review {
-  isLast?: boolean;
-}
+import { ReviewCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const ReviewCard = ({
+  id,
   user,
   score,
   comment,
