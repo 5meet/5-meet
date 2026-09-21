@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 interface ParticipantProfile {
-  id: number;
+  id: string;
   name: string;
   image: string | null;
 }

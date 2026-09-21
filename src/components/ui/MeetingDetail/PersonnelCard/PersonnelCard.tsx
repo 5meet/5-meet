@@ -11,7 +11,7 @@ interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
 }
 interface ParticipantProfile {
-  id: number;
+  id: string;
   name: string;
   image: string | null;
 }

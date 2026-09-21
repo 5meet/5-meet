@@ -30,77 +30,77 @@ type Story = StoryObj<typeof meta>;
 
 const participants = [
   {
-    id: 1,
+    id: "a-1",
     name: "이영희",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 2,
+    id: "a-2",
     name: "김철수",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 3,
+    id: "a-3",
     name: "박민수",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 4,
+    id: "a-4",
     name: "최지은",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 5,
+    id: "a-5",
     name: "정수현",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 6,
+    id: "a-6",
     name: "강민지",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 7,
+    id: "a-7",
     name: "윤지훈",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 8,
+    id: "a-8",
     name: "한서연",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 9,
+    id: "a-9",
     name: "조현우",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 10,
+    id: "a-10",
     name: "송예린",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 11,
+    id: "a-11",
     name: "오준혁",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 12,
+    id: "a-12",
     name: "임수진",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 13,
+    id: "a-13",
     name: "장도윤",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 14,
+    id: "a-14",
     name: "김하은",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 15,
+    id: "a-15",
     name: "서준호",
     image: "/profile/profile_male.svg",
   },
