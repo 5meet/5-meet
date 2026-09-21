@@ -72,7 +72,6 @@ export function MeetingCard({
         min-[1100px]:col-span-1
       "
     >
-      {/* 모바일 */}
       <div className="flex flex-col min-[640px]:hidden">
         <div className="relative aspect-[16/9] w-full max-h-[260px] overflow-hidden rounded-[20px]">
           <Image
@@ -164,7 +163,6 @@ export function MeetingCard({
         </div>
       </div>
 
-      {/* 640px 이상 가로형 */}
       <div className="hidden min-h-[142px] min-w-0 items-stretch gap-5 min-[640px]:flex">
         <div className="relative h-[142px] w-[142px] shrink-0 overflow-hidden rounded-[20px]">
           <Image
@@ -186,7 +184,7 @@ export function MeetingCard({
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-start gap-2">
-                <h3 className="min-w-0 break-keep text-m font-bold leading-5 text-gray-900">
+                <h3 className="min-w-0 break-keep font-bold leading-5 text-gray-900">
                   {title}
                 </h3>
 
