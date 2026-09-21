@@ -1,6 +1,6 @@
 // 클라이언트 에러, api 헨들링
 
-import ky, { HTTPError, TimeoutError } from "ky";
+import ky, { HTTPError, TimeoutError, NetworkError } from "ky";
 import { ApiErrorResponse } from "./type";
 
 export const api = ky.create({
@@ -21,12 +21,13 @@ export const api = ky.create({
           error.message = "요청 시간이 초과되었습니다. 다시 시도해주세요.";
           return error;
         }
-
-        // 3. 네트워크 단절 / 일반 에러
-        if (error instanceof Error) {
-          error.message = "네트워크 연결이 불안정합니다. 잠시 후 다시 시도해주세요.";
-          return error;
+        //3. 네트워크 요청 실패
+        if (error instanceof NetworkError) {
+          error.message = "네트워크 연결이 불안정합니다. 다시 시도해주세요.";
         }
+
+        // 4. 그 외 예상하지 못한 에러
+        error.message = "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
 
         return error;
       },
