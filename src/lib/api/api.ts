@@ -24,6 +24,7 @@ export const api = ky.create({
         //3. 네트워크 요청 실패
         if (error instanceof NetworkError) {
           error.message = "네트워크 연결이 불안정합니다. 다시 시도해주세요.";
+          return error;
         }
 
         // 4. 그 외 예상하지 못한 에러
