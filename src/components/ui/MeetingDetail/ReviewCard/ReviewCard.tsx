@@ -3,7 +3,7 @@ import { ReviewCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const ReviewCard = ({
   id,
-  user,
+  user: user,
   score,
   comment,
   datetime,

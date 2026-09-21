@@ -10,7 +10,7 @@ export function convertDateType1(dateTime: string): MeetingDate {
   const date = new Date(dateTime);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error("유효하지 않은 날짜 형식입니다.");
+    throw new Error("날짜 형식 없음");
   }
 
   const dateParts = new Intl.DateTimeFormat("ko-KR", {

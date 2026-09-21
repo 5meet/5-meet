@@ -1,5 +1,6 @@
-// 모임 상세 정보 카드 (MeetingDetail/InfoCard.tsx)
+// 모임 상세 정보 카드 UI
 export interface MeetingDetailInfoCardProps {
+  id: string;
   title: string;
   location: string;
   category: string;
@@ -13,7 +14,7 @@ export interface MeetingDetailInfoCardProps {
   isLoggedIn: boolean;
 }
 
-// PersonnelCard (+ 참여자 목록, progressbar 컴포넌트)
+// PersonnelCard (+ 참여자 목록, progressbar 컴포넌트) UI
 export interface ParticipantProfile {
   id: string;
   name: string;
@@ -34,7 +35,7 @@ export interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
 }
 
-// ReviewCard
+// ReviewCard UI
 export interface UserProfile {
   id: string;
   name: string;
@@ -55,4 +56,24 @@ export interface ReviewCardProps extends Review {
 
 export interface ReviewCardListProps {
   reviews: Review[];
+}
+
+export interface ReviewResponse {
+  id: string;
+  score: number;
+  comment: string;
+  createdAt: string;
+  user: UserProfile;
+}
+
+export interface ReviewPage {
+  data: Review[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+export interface GetReviewsParams {
+  meetingId: string | number;
+  cursor?: string | null;
+  size?: number;
 }

@@ -14,6 +14,7 @@ import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meeti
 // 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
 
 const MeetingDetailInfoCard = ({
+  id,
   title,
   location,
   category,
