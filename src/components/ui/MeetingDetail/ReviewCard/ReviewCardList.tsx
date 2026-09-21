@@ -14,15 +14,13 @@ const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
     );
   }
 
-  const displayedReviews = reviews.slice(0, 4);
-
   return (
     <section className="flex flex-col w-[343px] px-5 pt-4 pb-2 rounded-4xl shadow-md lg:px-12 lg:py-6 md:w-174 lg:w-7xl">
-      {displayedReviews.map((review, index) => (
+      {reviews.map((review, index) => (
         <ReviewCard
           key={`${review.user.id}-${review.datetime}`}
           {...review}
-          isLast={index === displayedReviews.length - 1}
+          isLast={index === reviews.length - 1}
         />
       ))}
     </section>

@@ -5,7 +5,7 @@ import DetailsProgressBar, {
 } from "@/components/ui/ProgressBar/DetailsProgressBar";
 import ParticipantProfiles, { ParticipantProfile } from "./ParticipantProfiles";
 import OpenConfirmedTag from "@/components/ui/Tags/OpenConfirmedTag";
-import useCountUp from "@/lib/hooks/useCountUp";
+import useCountUp from "@/features/meetingDetail/hooks/useCountUp";
 
 interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
