@@ -16,7 +16,7 @@ export const Label = ({
       className={`
         inline-flex items-center gap-1
         text-sm text-gray-800
-        select-none cursor-pointer
+        select-none
         ${className}
       `}
       {...props}
