@@ -7,7 +7,6 @@ import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import Kebab from "@/components/ui/Kebab/Kebab";
 import { Modal } from "@/components/ui/Modal/Modal";
-import { showToast } from "@/components/ui/Sonner";
 
 interface MeetingDetailInfoCardProps {
   title: string;
