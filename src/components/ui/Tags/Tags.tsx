@@ -1,6 +1,6 @@
 import Image from "next/image";
-import formatMeetingDate from "@/lib/date/formatMeetingDate";
-import formatRegistrationEnd from "@/lib/date/formatRegistrationEnd";
+import { convertDateType1 } from "@/lib/convertDate/formatMeetingDate";
+import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 
 interface TagsProps {
   dateTime: string;
@@ -16,7 +16,7 @@ const Tags = ({
   registrationEnd,
   order = "deadline-first",
 }: TagsProps) => {
-  const { date, time } = formatMeetingDate(dateTime);
+  const { date, time } = convertDateType1(dateTime);
   const { text: registrationEndText, isClosed } =
     formatRegistrationEnd(registrationEnd);
 

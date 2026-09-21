@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import MeetingProgressBar from "@/components/ui/ProgressBar/MeetingProgressBar";
-import formatRegistrationEnd from "@/lib/date/formatRegistrationEnd";
+import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 
 export interface MeetingCardProps {
   imageUrl: string;
@@ -92,21 +92,17 @@ export function MeetingCard({
               onClick={isClosed ? undefined : onFavoriteClick}
               disabled={isClosed}
               aria-label={
-                isClosed
-                  ? "모집 마감"
-                  : isFavorite
-                    ? "찜 취소"
-                    : "찜하기"
+                isClosed ? "모집 마감" : isFavorite ? "찜 취소" : "찜하기"
               }
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200 disabled:cursor-default"
             >
               {isClosed ? (
                 <button
                   type="button"
-                 disabled
-                 aria-label="모집 마감"
-                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200"
-                >            
+                  disabled
+                  aria-label="모집 마감"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200"
+                >
                   <Hand
                     size={20}
                     strokeWidth={1.8}
@@ -115,12 +111,12 @@ export function MeetingCard({
                   />
                 </button>
               ) : (
-              <LikeButton
-                size="md"
-                isLiked={isFavorite}
-                onToggle={onFavoriteClick ?? (() => {})}
-              />
-            )}
+                <LikeButton
+                  size="md"
+                  isLiked={isFavorite}
+                  onToggle={onFavoriteClick ?? (() => {})}
+                />
+              )}
             </button>
           </div>
 
