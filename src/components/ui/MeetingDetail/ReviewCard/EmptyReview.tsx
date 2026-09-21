@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const EmptyReview = () => {
   return (
-    <div className="flex flex-col w-full p-14 gap-6">
+    <div className="flex flex-col items-center justify-center w-full p-14 gap-6">
       <Image
         src="/review_empty.svg"
         alt="아직 리뷰가 없어요."
