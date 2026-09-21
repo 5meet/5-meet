@@ -3,17 +3,12 @@
 import DetailsProgressBar, {
   DetailsProgressBarProps,
 } from "@/components/ui/ProgressBar/DetailsProgressBar";
-import ParticipantProfiles from "./ParticipantProfiles";
+import ParticipantProfiles, { ParticipantProfile } from "./ParticipantProfiles";
 import OpenConfirmedTag from "@/components/ui/Tags/OpenConfirmedTag";
 import useCountUp from "@/lib/hooks/useCountUp";
 
 interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
-}
-interface ParticipantProfile {
-  id: string;
-  name: string;
-  image: string | null;
 }
 
 const PersonnelCard = ({

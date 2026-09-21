@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-interface ParticipantProfile {
+export interface ParticipantProfile {
   id: string;
   name: string;
   image: string | null;

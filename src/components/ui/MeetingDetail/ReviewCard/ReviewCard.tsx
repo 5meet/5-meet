@@ -6,16 +6,30 @@ interface UserProfile {
   image: string | null;
 }
 
-interface ReviewCardProps {
+export interface Review {
   user: UserProfile;
   score: number;
   comment: string;
   datetime: string;
 }
 
-const ReviewCard = ({ user, score, comment, datetime }: ReviewCardProps) => {
+interface ReviewCardProps extends Review {
+  isLast?: boolean;
+}
+
+const ReviewCard = ({
+  user,
+  score,
+  comment,
+  datetime,
+  isLast = false,
+}: ReviewCardProps) => {
   return (
-    <div className="flex flex-col w-full gap-6 pt-4 pb-6 border-b border-b-gray-400">
+    <div
+      className={`flex w-full flex-col gap-6 pt-4 pb-6 ${
+        isLast ? "" : "border-b border-b-gray-400"
+      }`}
+    >
       <div className="flex flex-col gap-1.5">
         {/* TODO: HeartRating 컴포넌트 */}
         <div>{score}</div>
