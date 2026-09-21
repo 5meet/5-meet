@@ -56,35 +56,42 @@ export default function SignupForm() {
   const useDebouncedTrigger = (
     value: string | undefined,
     field: keyof SignupFormValues,
-    additionalField?: {
-      name: keyof SignupFormValues;
-      shouldTrigger: boolean; // 연관 필드를 검증할 조건 (입력값이 존재하는지 여부)
-    },
+    additionalFieldName?: keyof SignupFormValues,
+    shouldTriggerAdditional = false,
   ) => {
+    const isTouched = !!touchedFields[field];
+
     useEffect(() => {
-      // 초기 미입력 상태에서는 불필요한 에러 노출 방지
-      if (value === undefined || (!touchedFields[field] && value === ""))
-        return;
+      if (value === undefined || (!isTouched && value === "")) return;
 
       const timer = setTimeout(() => {
-        trigger(field);
-        // 연관 필드는 조건(값이 입력되어 있는 경우)을 만족할 때만 검증 실행
-        if (additionalField && additionalField.shouldTrigger) {
-          trigger(additionalField.name);
+        void trigger(field);
+
+        if (additionalFieldName && shouldTriggerAdditional) {
+          void trigger(additionalFieldName);
         }
       }, 1000);
 
       return () => clearTimeout(timer);
-    }, [value, field, additionalField]);
+    }, [
+      value,
+      field,
+      isTouched,
+      additionalFieldName,
+      shouldTriggerAdditional,
+      trigger,
+    ]);
   };
 
   // 각 필드별 1초 디바운스 트리거 등록
   useDebouncedTrigger(nameValue, "name");
   useDebouncedTrigger(emailValue, "email");
-  useDebouncedTrigger(passwordValue, "password", {
-    name: "passwordConfirm",
-    shouldTrigger: !!passwordConfirmValue,
-  });
+  useDebouncedTrigger(
+    passwordValue,
+    "password",
+    "passwordConfirm",
+    !!passwordConfirmValue,
+  );
   useDebouncedTrigger(passwordConfirmValue, "passwordConfirm");
 
   const toggleVisibility = (field: "password" | "confirm") => {
