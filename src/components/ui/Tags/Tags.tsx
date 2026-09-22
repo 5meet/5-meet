@@ -22,7 +22,7 @@ const Tags = ({
 
   const deadlineTag = (
     <div
-      className={`flex items-center gap-1 rounded-lg py-0.5 pr-2 pl-1 text-sm font-semibold ${
+      className={`flex shrink-0 items-center gap-1 rounded-lg py-0.5 pr-2 pl-1 text-sm font-semibold ${
         isClosed
           ? "bg-[#FF4D4D]/20 text-error-100"
           : "bg-[#18DCFF]/20 text-blue-600"
@@ -38,30 +38,28 @@ const Tags = ({
     </div>
   );
 
-  const dateTag = (
-    <div className="rounded-lg border border-gray-200 px-2 py-0.5">
-      <span className="text-sm font-medium text-gray-600">{date}</span>
-    </div>
-  );
+  const datetimeTag = (
+    <div className="flex shrink-0 items-center gap-2">
+      <div className="rounded-lg border border-gray-200 px-2 py-0.5">
+        <span className="text-sm font-medium text-gray-600">{date}</span>
+      </div>
 
-  const timeTag = (
-    <div className="rounded-lg border border-gray-200 px-2 py-0.5">
-      <span className="text-sm font-medium text-gray-600">{time}</span>
+      <div className="rounded-lg border border-gray-200 px-2 py-0.5">
+        <span className="text-sm font-medium text-gray-600">{time}</span>
+      </div>
     </div>
   );
 
   return (
-    <div className="flex w-full items-center gap-2">
+    <div className="flex w-full flex-wrap items-center gap-2">
       {order === "deadline-first" ? (
         <>
           {deadlineTag}
-          {dateTag}
-          {timeTag}
+          {datetimeTag}
         </>
       ) : (
         <>
-          {dateTag}
-          {timeTag}
+          {datetimeTag}
           {deadlineTag}
         </>
       )}
