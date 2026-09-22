@@ -6,7 +6,7 @@ interface HeartRatingProps {
 const sizeStyles = {
   sm: "text-[20px]",
   md: "text-[25px]",
-  lg: "text-[27px]",
+  lg: "text-[40px]",
 };
 
 export function HeartRating({
