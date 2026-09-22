@@ -70,7 +70,13 @@ const CompactCard = ({
           />
         )}
 
-        <div className="absolute bottom-3 right-3">
+        <div
+          className="absolute bottom-3 right-3"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
           <LikeButton
             isLiked={isFavorited}
             onToggle={handleLikeToggle}
