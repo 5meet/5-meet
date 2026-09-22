@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ReviewCardProps } from "@/features/meetingDetail/types/meetingDetail";
+import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
 
 const ReviewCard = ({
   id,
@@ -12,14 +13,12 @@ const ReviewCard = ({
   return (
     <div
       className={`flex w-full flex-col gap-6 pt-4 pb-6 ${
-        isLast ? "" : "border-b border-b-gray-400"
+        isLast ? "" : "border-b border-b-gray-200"
       }`}
     >
-      <div className="flex flex-col gap-1.5">
-        {/* TODO: HeartRating 컴포넌트 */}
-        <div>{score}</div>
+      <div className="flex flex-col gap-1.5 mt-3">
+        <HeartRating rating={score} size="md" />
 
-        {/* TODO: 리뷰 남긴 유저 프로필(이미지 + 이름) + 리뷰 생성일 */}
         <div className="flex gap-1.5 font-normal text-sm text-gray-500">
           <div className="flex gap-1.5">
             <Image
