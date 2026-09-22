@@ -51,7 +51,7 @@ const meta = {
       },
       description: "모임 최대 인원",
     },
-    initialIsLiked: {
+    initialIsFavorited: {
       control: "boolean",
       description: "현재 사용자의 좋아요 여부",
     },
@@ -67,6 +67,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultArgs = {
+  id: 1,
   title: "함께하는 주말 등산 모임",
   location: "중구",
   category: "취미/여가",
@@ -76,7 +77,7 @@ const defaultArgs = {
   initialIsParticipating: false,
   participantCount: 3,
   capacity: 10,
-  initialIsLiked: false,
+  initialIsFavorited: false,
   isLoggedIn: true,
 };
 
@@ -111,7 +112,7 @@ export const Full: Story = {
 export const Liked: Story = {
   args: {
     ...defaultArgs,
-    initialIsLiked: true,
+    initialIsFavorited: true,
   },
 };
 

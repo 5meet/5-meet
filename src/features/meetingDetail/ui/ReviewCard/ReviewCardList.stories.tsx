@@ -23,9 +23,9 @@ type Story = StoryObj<typeof meta>;
 
 const defaultReviews: Review[] = [
   {
-    id: "1",
+    id: 1,
     user: {
-      id: "1",
+      id: 1,
       name: "김영희",
       image: "/profile/profile_female1.svg",
     },
@@ -34,9 +34,9 @@ const defaultReviews: Review[] = [
     datetime: "2026.09.21",
   },
   {
-    id: "2",
+    id: 2,
     user: {
-      id: "2",
+      id: 2,
       name: "이서준",
       image: "/profile/profile_male.svg",
     },
@@ -45,9 +45,9 @@ const defaultReviews: Review[] = [
     datetime: "2026.09.20",
   },
   {
-    id: "3",
+    id: 3,
     user: {
-      id: "3",
+      id: 3,
       name: "박지민",
       image: null,
     },
@@ -56,9 +56,9 @@ const defaultReviews: Review[] = [
     datetime: "2026.09.19",
   },
   {
-    id: "4",
+    id: 4,
     user: {
-      id: "4",
+      id: 4,
       name: "최유진",
       image: "/profile/profile_female2.svg",
     },
@@ -91,9 +91,9 @@ export const MoreThanFourReviews: Story = {
     reviews: [
       ...defaultReviews,
       {
-        id: "5",
+        id: 5,
         user: {
-          id: "5",
+          id: 5,
           name: "정하늘",
           image: null,
         },

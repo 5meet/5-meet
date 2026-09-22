@@ -38,8 +38,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultArgs = {
+  id: 1,
   user: {
-    id: "1",
+    id: 1,
     name: "이영희",
     image: "/profile/profile_female1.svg",
   },
