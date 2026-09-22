@@ -1,6 +1,6 @@
 "use client";
 
-import DetailsProgressBar from "@/components/ui/ProgressBar/DetailsProgressBar";
+import DetailsProgressBar from "@/features/meetingDetail/ui/DetailsProgressBar";
 import ParticipantProfiles from "./ParticipantProfiles";
 import OpenConfirmedTag from "@/components/ui/Tags/OpenConfirmedTag";
 import useCountUp from "@/features/meetingDetail/hooks/useCountUp";

@@ -30,7 +30,11 @@ const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 // }): Promise<> => {
 //   const res = await api
 //     .get(`${TEAM_ID}/meetings/${meetingId}/participants`)
-//     .json<{data: }>();
+//     .json<{
+//        data:
+//        nextCursor: string | null;
+//        hasMore: boolean;
+//      }>();
 
 //     const list = res.data ?? [];
 
@@ -40,6 +44,7 @@ const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 //       })),
 //       nextCursor:
+//       hasMore:
 //     }
 // }
 

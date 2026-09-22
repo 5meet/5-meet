@@ -1,4 +1,4 @@
-import ProgressBar from "./ProgressBar";
+import ProgressBar from "../../../components/ui/ProgressBar/ProgressBar";
 import { DetailsProgressBarProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const DetailsProgressBar = ({
