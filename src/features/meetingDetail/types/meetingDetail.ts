@@ -1,6 +1,6 @@
 // 모임 상세 정보 카드 UI
 export interface MeetingDetailInfoCardProps {
-  id: string;
+  id: number;
   title: string;
   location: string;
   category: string;
@@ -16,7 +16,7 @@ export interface MeetingDetailInfoCardProps {
 
 // PersonnelCard (+ 참여자 목록, progressbar 컴포넌트) UI
 export interface ParticipantProfile {
-  id: string;
+  id: number;
   name: string;
   image: string | null;
 }
@@ -37,13 +37,13 @@ export interface PersonnelCardProps extends DetailsProgressBarProps {
 
 // ReviewCard UI
 export interface UserProfile {
-  id: string;
+  id: number;
   name: string;
   image: string | null;
 }
 
 export interface Review {
-  id: string;
+  id: number;
   user: UserProfile;
   score: number;
   comment: string;
@@ -59,7 +59,7 @@ export interface ReviewCardListProps {
 }
 
 export interface ReviewResponse {
-  id: string;
+  id: number;
   score: number;
   comment: string;
   createdAt: string;
