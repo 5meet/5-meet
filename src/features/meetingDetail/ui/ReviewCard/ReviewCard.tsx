@@ -4,10 +4,10 @@ import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
 
 const ReviewCard = ({
   id,
-  user: user,
+  user,
   score,
   comment,
-  datetime,
+  createdAt,
   isLast = false,
 }: ReviewCardProps) => {
   return (
@@ -32,7 +32,7 @@ const ReviewCard = ({
             <span>{user.name}</span>
           </div>
 
-          <span>{datetime}</span>
+          <span>{createdAt}</span>
         </div>
       </div>
 

@@ -47,7 +47,7 @@ export interface Review {
   user: UserProfile;
   score: number;
   comment: string;
-  datetime: string;
+  createdAt: string;
 }
 
 export interface ReviewCardProps extends Review {

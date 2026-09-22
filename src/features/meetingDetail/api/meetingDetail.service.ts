@@ -80,7 +80,7 @@ export const getReviews = async ({
       id: r.id,
       score: r.score,
       comment: r.comment,
-      datetime: convertedDate,
+      createdAt: convertedDate,
       user: {
         id: r.user.id,
         name: r.user.name,
