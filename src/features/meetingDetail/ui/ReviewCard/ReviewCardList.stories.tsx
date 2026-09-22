@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import ReviewCardList from "./ReviewCardList";
-import type { Review } from "./ReviewCard";
+import type { Review } from "@/features/meetingDetail/types/meetingDetail";
 
 const meta = {
   title: "Components/MeetingDetail/ReviewCard/ReviewCardList",
@@ -23,6 +23,7 @@ type Story = StoryObj<typeof meta>;
 
 const defaultReviews: Review[] = [
   {
+    id: "1",
     user: {
       id: "1",
       name: "김영희",
@@ -33,6 +34,7 @@ const defaultReviews: Review[] = [
     datetime: "2026.09.21",
   },
   {
+    id: "2",
     user: {
       id: "2",
       name: "이서준",
@@ -43,6 +45,7 @@ const defaultReviews: Review[] = [
     datetime: "2026.09.20",
   },
   {
+    id: "3",
     user: {
       id: "3",
       name: "박지민",
@@ -53,6 +56,7 @@ const defaultReviews: Review[] = [
     datetime: "2026.09.19",
   },
   {
+    id: "4",
     user: {
       id: "4",
       name: "최유진",
@@ -87,6 +91,7 @@ export const MoreThanFourReviews: Story = {
     reviews: [
       ...defaultReviews,
       {
+        id: "5",
         user: {
           id: "5",
           name: "정하늘",
