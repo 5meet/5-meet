@@ -32,21 +32,16 @@ interface TalkCompactCardProps extends BaseCompactCardProps {
 type CompactCardProps = MeetingCompactCardProps | TalkCompactCardProps;
 
 const CompactCard = (props: CompactCardProps) => {
-  //IF : TanStack Query 사용 -> useState 삭제 후 Query와 mutation으로 관리
   const [isFavorited, setIsFavorited] = useState(
     props.variant === "meeting" ? props.initialIsFavorited : false,
   );
 
-  // 찜하기
+  const titleId = `card-title-${props.id}`;
+
   const handleLikeToggle = async () => {
     if (props.variant !== "meeting") return;
-
     try {
-      // TODO: const result = await toggleLike(meetingId);
-
       setIsFavorited((prev) => !prev);
-
-      // TODO: API 연결 후 result.isFavorited으로 변경
       showToast({
         kind: "success",
         message: isFavorited
@@ -55,11 +50,7 @@ const CompactCard = (props: CompactCardProps) => {
       });
     } catch (error) {
       console.error("찜 상태 변경에 실패했습니다.", error);
-
-      showToast({
-        kind: "error",
-        message: "찜 상태 변경에 실패했습니다.",
-      });
+      showToast({ kind: "error", message: "찜 상태 변경에 실패했습니다." });
     }
   };
 
@@ -67,28 +58,25 @@ const CompactCard = (props: CompactCardProps) => {
     props.variant === "meeting" ? `/meetings/${props.id}` : `/talk/${props.id}`;
 
   return (
-    <Link
-      href={href}
-      className="flex flex-col gap-2.5 min-w-0 w-[162px] h-[270px] md:gap-3.5 md:w-[302px] md:h-[286px]"
-    >
-      <div className="relative z-0 overflow-hidden w-full h-[162px] bg-[#E3E3E3] rounded-2xl md:rounded-3xl md:h-[180px]">
+    <div className="relative flex flex-col gap-2.5 min-w-0 w-[162px] h-[270px] md:gap-3.5 md:w-[302px] md:h-[286px]">
+      {/* 카드 전체를 덮는 투명 링크: DOM상 다른 요소들과 형제 관계, button과 중첩되지 않음 */}
+      <Link
+        href={href}
+        aria-labelledby={titleId}
+        className="absolute inset-0 z-0 rounded-2xl md:rounded-3xl
+                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+      >
+        <span className="sr-only">{props.title} 상세보기</span>
+      </Link>
+
+      <div className="relative z-1 pointer-events-none overflow-hidden w-full h-[162px] bg-[#E3E3E3] rounded-2xl md:rounded-3xl md:h-[180px]">
         {props.image && (
-          <Image
-            src={props.image}
-            alt={`${props.title} 이미지`}
-            fill
-            className="object-cover"
-          />
+          <Image src={props.image} alt="" fill className="object-cover" />
         )}
 
         {props.variant === "meeting" && (
-          <div
-            className="absolute bottom-3.5 right-3.5 z-10 md:bottom-5 md:right-5"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-            }}
-          >
+          // 링크(z-0)보다 위, 버튼만 pointer-events 활성화
+          <div className="absolute bottom-3.5 right-3.5 z-10 pointer-events-auto md:bottom-5 md:right-5">
             <LikeButton
               isLiked={isFavorited}
               onToggle={handleLikeToggle}
@@ -98,7 +86,7 @@ const CompactCard = (props: CompactCardProps) => {
         )}
       </div>
 
-      <div className="flex flex-col w-full gap-1.5 px-1 md:gap-4">
+      <div className="relative z-1 pointer-events-none flex flex-col w-full gap-1.5 px-1 md:gap-4">
         {props.variant === "meeting" && (
           <Tags
             dateTime={props.dateTime}
@@ -108,7 +96,10 @@ const CompactCard = (props: CompactCardProps) => {
         )}
 
         <div className="flex flex-col w-full gap-0.5 md:gap-1">
-          <span className="min-w-0 text-wrap font-semibold text-base text-black md:text-xl">
+          <span
+            id={titleId}
+            className="min-w-0 text-wrap font-semibold text-base text-black md:text-xl"
+          >
             {props.title}
           </span>
 
@@ -134,7 +125,7 @@ const CompactCard = (props: CompactCardProps) => {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 
