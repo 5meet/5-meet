@@ -21,9 +21,13 @@ const meta = {
       control: "text",
       description: "모임 유형",
     },
-    dateTime: {
+    date: {
       control: "text",
-      description: "모임 일정",
+      description: "모임 날짜",
+    },
+    time: {
+      control: "text",
+      description: "모임 시간",
     },
     registrationEnd: {
       control: "text",
@@ -51,7 +55,7 @@ const meta = {
       },
       description: "모임 최대 인원",
     },
-    initialIsLiked: {
+    initialIsFavorited: {
       control: "boolean",
       description: "현재 사용자의 좋아요 여부",
     },
@@ -67,16 +71,18 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultArgs = {
+  id: 1,
   title: "함께하는 주말 등산 모임",
   location: "중구",
   category: "취미/여가",
-  dateTime: "2026-11-10T14:00:00.000Z",
+  date: "11월 10일",
+  time: "12:00",
   registrationEnd: "2026-11-09T14:59:59.000Z",
   isOwner: false,
   initialIsParticipating: false,
   participantCount: 3,
   capacity: 10,
-  initialIsLiked: false,
+  initialIsFavorited: false,
   isLoggedIn: true,
 };
 
@@ -111,7 +117,7 @@ export const Full: Story = {
 export const Liked: Story = {
   args: {
     ...defaultArgs,
-    initialIsLiked: true,
+    initialIsFavorited: true,
   },
 };
 

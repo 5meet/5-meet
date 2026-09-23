@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import MeetingProgressBar from "@/components/ui/ProgressBar/MeetingProgressBar";
-import formatRegistrationEnd from "@/lib/date/formatRegistrationEnd";
+import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 
 export interface MeetingCardProps {
   imageUrl: string;
   title: string;
   location: string;
   category: string;
-  dateTime: string;
+  date: string;
+  time: string;
   registrationEnd: string;
   participantCount: number;
   capacity: number;
@@ -29,7 +30,8 @@ export function MeetingCard({
   title,
   location,
   category,
-  dateTime,
+  date,
+  time,
   registrationEnd,
   participantCount,
   capacity,
@@ -88,9 +90,7 @@ export function MeetingCard({
             </div>
           )}
 
-          <div className="absolute right-3 top-3">
-            {favoriteButton}
-          </div>
+          <div className="absolute right-3 top-3">{favoriteButton}</div>
         </div>
 
         <div className="mt-4 min-w-0">
@@ -130,7 +130,8 @@ export function MeetingCard({
           <div className="mt-3 w-full overflow-hidden">
             <div className="origin-left scale-[0.8] whitespace-nowrap">
               <Tags
-                dateTime={dateTime}
+                date={date}
+                time={time}
                 registrationEnd={registrationEnd}
                 order="date-first"
               />
@@ -219,7 +220,8 @@ export function MeetingCard({
           <div className="mt-auto min-w-0 overflow-hidden">
             <div className="origin-left scale-[0.8] whitespace-nowrap">
               <Tags
-                dateTime={dateTime}
+                date={date}
+                time={time}
                 registrationEnd={registrationEnd}
                 order="date-first"
               />

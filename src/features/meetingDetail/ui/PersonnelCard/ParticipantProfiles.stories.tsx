@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import ParticipantProfiles from "./ParticipantProfiles";
 
 const meta = {
-  title: "Components/MeetingDetail/ParticipantProfiles",
+  title: "Components/MeetingDetail/PersonnelCard/ParticipantProfiles",
   component: ParticipantProfiles,
   parameters: {
     layout: "centered",

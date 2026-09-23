@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import PersonnelCard from "./PersonnelCard";
 
 const meta = {
-  title: "Components/MeetingDetail/PersonnelCard",
+  title: "Components/MeetingDetail/PersonnelCard/PersonnelCard",
   component: PersonnelCard,
   parameters: {
     layout: "centered",
@@ -110,7 +110,7 @@ export const Default: Story = {
   args: {
     participantCount: 3,
     capacity: 20,
-    participants: [],
+    participants: participants.slice(0, 3),
   },
 };
 

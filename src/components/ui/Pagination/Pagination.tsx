@@ -6,6 +6,11 @@ import PageNumButton from "./PageNumButton";
 
 interface Props {
   currentPage: number;
+  /**
+   * 현재까지 접근 가능한 페이지 수.
+   * 커서 기반 API에서는 실제 전체 페이지 수가 아니라,
+   * 방문한 마지막 페이지 + (hasMore ? 1 : 0)
+   */
   totalPages: number;
   onPageChange: (page: number) => void;
   maxVisiblePages?: number;

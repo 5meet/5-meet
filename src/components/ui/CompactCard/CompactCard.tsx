@@ -17,7 +17,8 @@ interface MeetingCompactCardProps extends BaseCompactCardProps {
   variant: "meeting";
   location: string;
   category: string;
-  dateTime: string;
+  date: string;
+  time: string;
   registrationEnd: string;
   initialIsFavorited: boolean;
 }
@@ -89,7 +90,8 @@ const CompactCard = (props: CompactCardProps) => {
       <div className="relative z-1 pointer-events-none flex flex-col w-full gap-1.5 px-1 md:gap-4">
         {props.variant === "meeting" && (
           <Tags
-            dateTime={props.dateTime}
+            date={props.date}
+            time={props.time}
             registrationEnd={props.registrationEnd}
             order="deadline-first"
           />
