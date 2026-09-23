@@ -12,7 +12,7 @@ const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
   }
 
   return (
-    <section className="flex flex-col w-[343px] px-5 pt-4 pb-2 rounded-4xl shadow-md md:px-12 md:py-6 md:w-174 lg:px-12 lg:py-6 lg:w-7xl">
+    <section className="flex flex-col w-[343px] gap-6 px-5 pt-4 pb-2 rounded-3xl shadow-md md:rounded-4xl md:px-12 md:py-6 md:w-174 lg:px-12 lg:py-6 lg:w-7xl">
       {reviews.map((review, index) => (
         <ReviewCard
           key={review.id}
