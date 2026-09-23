@@ -31,7 +31,7 @@ const defaultReviews: Review[] = [
     },
     score: 5,
     comment: "친절하고 편안한 분위기에서 즐겁게 참여했습니다.",
-    datetime: "2026.09.21",
+    createdAt: "2026.09.21",
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const defaultReviews: Review[] = [
     },
     score: 4,
     comment: "진행도 원활했고 다른 참여자분들도 친절했습니다.",
-    datetime: "2026.09.20",
+    createdAt: "2026.09.20",
   },
   {
     id: 3,
@@ -53,7 +53,7 @@ const defaultReviews: Review[] = [
     },
     score: 5,
     comment: "다음에도 기회가 된다면 다시 참여하고 싶어요.",
-    datetime: "2026.09.19",
+    createdAt: "2026.09.19",
   },
   {
     id: 4,
@@ -64,7 +64,7 @@ const defaultReviews: Review[] = [
     },
     score: 3,
     comment: "혼자였다면 금방 포기했을 텐데, 함께하니 꾸준히 하게 돼요.",
-    datetime: "2026.09.18",
+    createdAt: "2026.09.18",
   },
 ];
 
@@ -99,7 +99,7 @@ export const MoreThanFourReviews: Story = {
         },
         score: 4,
         comment: "좋은 사람들과 함께해서 즐거웠습니다.",
-        datetime: "2026.09.17",
+        createdAt: "2026.09.17",
       },
     ],
   },

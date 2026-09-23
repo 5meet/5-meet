@@ -26,7 +26,7 @@ const meta = {
       control: "text",
       description: "리뷰 내용",
     },
-    datetime: {
+    createdAt: {
       control: "text",
       description: "리뷰 작성일",
     },
@@ -46,7 +46,7 @@ const defaultArgs = {
   },
   score: 5,
   comment: "친절하고 편안한 분위기에서 즐겁게 참여했습니다.",
-  datetime: "2026.09.21",
+  createdAt: "2026.09.21",
   isOwner: false,
 };
 
