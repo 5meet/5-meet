@@ -17,6 +17,8 @@ const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 //   const r = res.data;
 
+//  const { date, time } = convertDateType1(r.dateTime);
+
 //   return {
 //     id: r.id,
 //   }
