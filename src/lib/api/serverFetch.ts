@@ -1,8 +1,11 @@
+import { cookies } from "next/headers";
+
 import { ApiErrorResponse } from "./type";
 import { ApiError } from "./ApiError";
 
 interface FetchOptions extends RequestInit {
   timeout?: number; // 기본 타임아웃 지원 (ms)
+  auth?: boolean; // 인증이 필요한 사이트인 경우 true로 전달
 }
 
 export async function serverFetch<T>(
@@ -11,7 +14,8 @@ export async function serverFetch<T>(
 ): Promise<T> {
   const {
     timeout = 10000,
-    signal: externalSignal, //외부에서 전달해준 시그널
+    auth = false,
+    signal: externalSignal, // 외부에서 전달해준 시그널
     ...fetchOptions
   } = options;
 
@@ -23,8 +27,22 @@ export async function serverFetch<T>(
     : timeoutSignal;
 
   try {
+    const requestHeaders = new Headers(fetchOptions.headers);
+
+    // 외부에서 Authorization을 직접 전달하지 않은 경우에만
+    // Cookie의 Access Token을 사용
+    if (auth && !requestHeaders.has("Authorization")) {
+      const cookieStore = await cookies();
+      const accessToken = cookieStore.get("accessToken")?.value;
+
+      if (accessToken) {
+        requestHeaders.set("Authorization", `Bearer ${accessToken}`);
+      }
+    }
+
     const response = await fetch(url, {
       ...fetchOptions,
+      headers: requestHeaders,
       signal,
     });
 
