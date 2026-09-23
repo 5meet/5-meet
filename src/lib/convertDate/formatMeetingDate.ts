@@ -5,7 +5,7 @@ interface MeetingDate {
   time: string;
 }
 
-// type-1 : 12월 15일
+// type-1 : date: 12월 15일, tiem: 17:30
 export function convertDateType1(dateTime: string): MeetingDate {
   const date = new Date(dateTime);
 
