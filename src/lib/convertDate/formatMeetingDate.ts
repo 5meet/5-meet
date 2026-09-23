@@ -67,8 +67,22 @@ export function convertDateType3(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-// type-4 : 25.12.25
+// type-4 : 2025.12.25
 export function convertDateType4(date: Date): string {
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
+  if (isNaN(date.getTime())) return "날짜 형식 없음";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}.${month}.${day}`;
+}
+
+// type-5 : 25.12.25
+export function convertDateType5(date: Date): string {
   if (!(date instanceof Date)) {
     date = new Date(date);
   }
@@ -81,8 +95,8 @@ export function convertDateType4(date: Date): string {
   return `${year}.${month}.${day}`;
 }
 
-// type-5 : 25.12.25(목) 오전 10:00
-export function convertDateType5(date: Date): string {
+// type-6 : 25.12.25(목) 오전 10:00
+export function convertDateType6(date: Date): string {
   if (!(date instanceof Date)) {
     date = new Date(date);
   }
@@ -113,8 +127,8 @@ export function convertDateType5(date: Date): string {
   return `${year}.${month}.${day}(${weekday}) ${meridiem} ${hours}:${minutes}`;
 }
 
-// type-6 : 2025년 12월 25일 (목)
-export function convertDateType6(date: Date): string {
+// type-7 : 2025년 12월 25일 (목)
+export function convertDateType7(date: Date): string {
   if (!(date instanceof Date)) {
     date = new Date(date); //ISOstring 형식 등 변형 가능한 경우 변형
   }
