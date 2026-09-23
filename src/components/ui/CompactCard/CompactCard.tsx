@@ -60,7 +60,7 @@ const CompactCard = ({
       href={`/meetings/${id}`}
       className="flex flex-col gap-2.5 min-w-0 w-[162px] h-[270px] md:gap-3.5 md:w-[302px] md:h-[286px]"
     >
-      <div className="relative overflow-hidden w-full h-[162px] bg-[#E3E3E3] rounded-2xl md:h-[180px]">
+      <div className="relative z-0 overflow-hidden w-full h-[162px] bg-[#E3E3E3] rounded-2xl md:rounded-3xl md:h-[180px]">
         {image && (
           <Image
             src={image}
@@ -71,7 +71,7 @@ const CompactCard = ({
         )}
 
         <div
-          className="absolute bottom-3 right-3"
+          className="absolute bottom-3.5 right-3.5 z-10 md:bottom-5 md:right-5"
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -85,7 +85,7 @@ const CompactCard = ({
         </div>
       </div>
 
-      <div className="flex flex-col w-full gap-4 px-1">
+      <div className="flex flex-col w-full gap-1.5 px-1 md:gap-4">
         <Tags
           dateTime={dateTime}
           registrationEnd={registrationEnd}
