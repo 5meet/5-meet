@@ -9,37 +9,90 @@ const meta = {
   },
   tags: ["autodocs"],
   argTypes: {
+    variant: {
+      control: "select",
+      options: ["meeting", "talk"],
+      description: "카드 사용처",
+    },
     id: {
       control: "number",
-      description: "모임 ID",
+      description: "콘텐츠 ID",
     },
     title: {
       control: "text",
-      description: "모임 이름",
+      description: "카드 제목",
     },
+    image: {
+      control: "text",
+      description: "카드 이미지 URL",
+    },
+
+    // meeting
     location: {
       control: "text",
       description: "모임 지역",
+      if: {
+        arg: "variant",
+        eq: "meeting",
+      },
     },
     category: {
       control: "text",
       description: "모임 유형",
+      if: {
+        arg: "variant",
+        eq: "meeting",
+      },
     },
     dateTime: {
       control: "text",
       description: "모임 일시",
+      if: {
+        arg: "variant",
+        eq: "meeting",
+      },
     },
     registrationEnd: {
       control: "text",
       description: "모임 모집 마감일",
-    },
-    image: {
-      control: "text",
-      description: "모임 이미지 URL",
+      if: {
+        arg: "variant",
+        eq: "meeting",
+      },
     },
     initialIsFavorited: {
       control: "boolean",
       description: "초기 찜 상태",
+      if: {
+        arg: "variant",
+        eq: "meeting",
+      },
+    },
+
+    // talk
+    createdAt: {
+      control: "text",
+      description: "게시글 작성 시간",
+      if: {
+        arg: "variant",
+        eq: "talk",
+      },
+    },
+    likeCount: {
+      control: "number",
+      description: "좋아요 수",
+      if: {
+        arg: "variant",
+        eq: "talk",
+      },
+    },
+    commentCount: {
+      control: "number",
+      description: "댓글 수",
+      if: {
+        arg: "variant",
+        eq: "talk",
+      },
     },
   },
 } satisfies Meta<typeof CompactCard>;
@@ -48,7 +101,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const defaultArgs = {
+const meetingArgs = {
+  variant: "meeting" as const,
   id: 1,
   title: "달램핏 모임",
   location: "건대입구",
@@ -59,29 +113,61 @@ const defaultArgs = {
   initialIsFavorited: false,
 };
 
-export const Default: Story = {
-  args: {
-    ...defaultArgs,
-  },
+const talkArgs = {
+  variant: "talk" as const,
+  id: 1,
+  title: "새로운 모임에 참여해 보세요!",
+  image: "",
+  createdAt: "3시간 전",
+  likeCount: 12,
+  commentCount: 4,
 };
 
-export const Favorited: Story = {
+/* -------------------- Meeting -------------------- */
+
+export const Meeting: Story = {
+  args: meetingArgs,
+};
+
+export const MeetingFavorited: Story = {
   args: {
-    ...defaultArgs,
+    ...meetingArgs,
     initialIsFavorited: true,
   },
 };
 
-export const LongTitle: Story = {
+export const MeetingLongTitle: Story = {
   args: {
-    ...defaultArgs,
+    ...meetingArgs,
     title: "처음 만나는 사람들과 함께하는 즐거운 달램핏 모임",
   },
 };
 
-export const Closed: Story = {
+export const MeetingClosed: Story = {
   args: {
-    ...defaultArgs,
+    ...meetingArgs,
     registrationEnd: "2026-09-20T23:59:59.000Z",
+  },
+};
+
+/* -------------------- Talk -------------------- */
+
+export const Talk: Story = {
+  args: talkArgs,
+};
+
+export const TalkLongTitle: Story = {
+  args: {
+    ...talkArgs,
+    title:
+      "처음 만나는 사람들과 함께 새로운 이야기를 나누는 달램 토크 모임입니다",
+  },
+};
+
+export const TalkManyReactions: Story = {
+  args: {
+    ...talkArgs,
+    likeCount: 128,
+    commentCount: 56,
   },
 };
