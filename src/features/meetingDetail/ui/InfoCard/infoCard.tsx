@@ -18,7 +18,8 @@ const MeetingDetailInfoCard = ({
   title,
   location,
   category,
-  dateTime,
+  date,
+  time,
   registrationEnd,
   isOwner,
   initialIsParticipating,
@@ -135,7 +136,7 @@ const MeetingDetailInfoCard = ({
         <div className="flex flex-col w-full gap-5 lg:gap-8">
           <section className="flex flex-col w-full gap-4 lg:gap-5">
             <div className="flex justify-between">
-              <Tags dateTime={dateTime} registrationEnd={registrationEnd} />
+              <Tags date={date} time={time} registrationEnd={registrationEnd} />
 
               {isOwner && (
                 <Kebab

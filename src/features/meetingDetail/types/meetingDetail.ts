@@ -4,7 +4,8 @@ export interface MeetingDetailInfoCardProps {
   title: string;
   location: string;
   category: string;
-  dateTime: string;
+  date: string;
+  time: string;
   registrationEnd: string;
   isOwner: boolean;
   initialIsParticipating: boolean;
