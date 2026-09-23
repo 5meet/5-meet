@@ -12,7 +12,7 @@ const ReviewCard = ({
 }: ReviewCardProps) => {
   return (
     <div
-      className={`flex w-full flex-col gap-3 pt-4 pb-6 md:gap-6 ${
+      className={`flex w-full flex-col gap-3 pt-4 pb-6 mb-2 md:gap-6 ${
         isLast ? "" : "border-b border-b-gray-200"
       }`}
     >
