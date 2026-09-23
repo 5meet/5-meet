@@ -28,47 +28,47 @@ type Story = StoryObj<typeof meta>;
 
 const participants = [
   {
-    id: 11,
+    id: 1,
     name: "이영희",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 12,
+    id: 2,
     name: "김철수",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 13,
+    id: 3,
     name: "박민수",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 14,
+    id: 4,
     name: "최지은",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 15,
+    id: 5,
     name: "정수현",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 16,
+    id: 6,
     name: "강민지",
     image: "/profile/profile_female2.svg",
   },
   {
-    id: 17,
+    id: 7,
     name: "윤지훈",
     image: "/profile/profile_male.svg",
   },
   {
-    id: 18,
+    id: 8,
     name: "한서연",
     image: "/profile/profile_female1.svg",
   },
   {
-    id: 19,
+    id: 9,
     name: "조현우",
     image: "/profile/profile_female1.svg",
   },
