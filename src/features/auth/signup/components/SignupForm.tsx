@@ -9,12 +9,12 @@ import Label from "@/components/ui/Form/label/Label";
 import Button from "@/components/ui/Button/Button";
 
 import { useModal } from "@/contexts/ModalContext";
-import { useSignupMutation } from "../hook/useSignupMutation";
 import { checkEmail } from "../api/emailCheck";
 import { SignupRequest } from "../types";
 import PasswordInput from "@/components/ui/Form/input/PasswordInput";
 import FormErrorMessage from "@/components/ui/Form/formErrorMessage/FormErrorMessage";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";
+import { signupAction } from "../actions/signupAction";
 
 interface SignupFormValues extends SignupRequest {
   passwordConfirm: string;
@@ -22,7 +22,6 @@ interface SignupFormValues extends SignupRequest {
 
 export default function SignupForm() {
   const router = useRouter();
-  const { mutate: signup, isPending } = useSignupMutation();
   const { openAlert } = useModal();
   const {
     register,
@@ -69,25 +68,26 @@ export default function SignupForm() {
     value: passwordConfirmValue,
     field: "passwordConfirm",
   });
+  const onSubmit = async ({
+    passwordConfirm,
+    ...payload
+  }: SignupFormValues) => {
+    const result = await signupAction({
+      ...payload,
+      name: payload.name.trim(),
+    });
 
-  const onSubmit = ({ passwordConfirm, ...payload }: SignupFormValues) => {
-    signup(
-      { ...payload, name: payload.name.trim() },
-      {
-        onSuccess: () => {
-          openAlert({
-            message: "가입이 완료되었습니다.",
-            onClose: () => router.replace("/login"),
-          });
-        },
+    if (!result.success) {
+      openAlert({
+        message: result.message ?? "회원가입 중 오류가 발생했습니다.",
+      });
+      return;
+    }
 
-        onError: (error) => {
-          openAlert({
-            message: error.message,
-          });
-        },
-      },
-    );
+    openAlert({
+      message: "가입이 완료되었습니다.",
+      onClose: () => router.replace("/login"),
+    });
   };
 
   return (
@@ -221,8 +221,8 @@ export default function SignupForm() {
           type="submit"
           fullWidth
           className="mt-4"
-          isLoading={isPending || isValidating || isSubmitting}
-          disabled={!isValid || isPending || isValidating || isSubmitting}
+          isLoading={isValidating || isSubmitting}
+          disabled={!isValid || isValidating || isSubmitting}
         >
           회원가입
         </Button>
