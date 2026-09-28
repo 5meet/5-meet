@@ -18,6 +18,7 @@ import {
   AUTH_COOKIE,
   clearAuthCookies,
   setAuthCookies,
+  setRefreshedAuthCookies,
 } from "../auth/authCookies";
 
 export async function serverFetchWithTokenRefresh<T>(
@@ -74,21 +75,15 @@ export async function serverFetchWithTokenRefresh<T>(
     const refreshedTokens =
       (await refreshResponse.json()) as RefreshTokenResponse;
 
-    // refreshToken이 null일 경우 기존 refreshtoken 그대로 사용
-    const tokens: AuthToken = {
-      accessToken: refreshedTokens.accessToken,
-      refreshToken: refreshedTokens.refreshToken ?? currentRefreshToken,
-    };
-
     // 8. 새로운 토큰을 HttpOnly Cookie에 저장
-    setAuthCookies(cookieStore, tokens);
+    setRefreshedAuthCookies(cookieStore, refreshedTokens);
 
     // 9. 새로운 Access Token으로 원래 요청 1회 재시도
     // Cookie를 다시 읽는 것에 의존하지 않고,
     // 방금 발급받은 Access Token을 Authorization 헤더로 직접 전달
     const retryHeaders = new Headers(options.headers);
 
-    retryHeaders.set("Authorization", `Bearer ${tokens.accessToken}`);
+    retryHeaders.set("Authorization", `Bearer ${refreshedTokens.accessToken}`);
 
     return serverFetch<T>(url, {
       ...options,

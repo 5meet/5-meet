@@ -1,4 +1,4 @@
-import { AuthToken } from "./type";
+import { AuthToken, RefreshTokenResponse } from "./type";
 
 export const AUTH_COOKIE = {
   ACCESS_TOKEN: "accessToken",
@@ -41,6 +41,7 @@ interface CookieWriter {
   delete(name: string): unknown;
 }
 
+// 토큰을 모두 저장할 때
 export function setAuthCookies(store: CookieWriter, tokens: AuthToken) {
   store.set(
     AUTH_COOKIE.ACCESS_TOKEN,
@@ -53,6 +54,27 @@ export function setAuthCookies(store: CookieWriter, tokens: AuthToken) {
     tokens.refreshToken,
     REFRESH_TOKEN_COOKIE_OPTIONS,
   );
+}
+
+// 토큰 갱신 결과를 저장할 때
+export function setRefreshedAuthCookies(
+  store: CookieWriter,
+  tokens: RefreshTokenResponse,
+) {
+  store.set(
+    AUTH_COOKIE.ACCESS_TOKEN,
+    tokens.accessToken,
+    ACCESS_TOKEN_COOKIE_OPTIONS,
+  );
+
+  // null이면 기존 Refresh Token Cookie를 건드리지 않음
+  if (tokens.refreshToken !== null) {
+    store.set(
+      AUTH_COOKIE.REFRESH_TOKEN,
+      tokens.refreshToken,
+      REFRESH_TOKEN_COOKIE_OPTIONS,
+    );
+  }
 }
 
 export function clearAuthCookies(store: CookieWriter) {
