@@ -6,13 +6,13 @@ import { Eye, EyeOff } from "lucide-react";
 
 import Input from "@/components/ui/Form/input/Input";
 
-interface PasswordInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   isError?: boolean;
 }
 
 export default function PasswordInput({
   isError,
+  className,
   ...props
 }: PasswordInputProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -23,7 +23,7 @@ export default function PasswordInput({
         {...props}
         type={isVisible ? "text" : "password"}
         isError={isError}
-        className="pr-12"
+        className={`pr-12 ${className ?? ""}`}
       />
 
       <button
