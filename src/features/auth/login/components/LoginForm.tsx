@@ -8,20 +8,13 @@ import { useForm } from "react-hook-form";
 import FormErrorMessage from "@/components/ui/Form/formErrorMessage/FormErrorMessage";
 import { loginAction } from "../actions/loginActions";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";
+import { useModal } from "@/contexts/ModalContext";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface LoginFormValue {
   email: string;
   password: string;
 }
-
-const onSubmit = async (data: LoginFormValue) => {
-  const result = await loginAction(data);
-  console.log(result)
-  if (!result.success) {
-    // modal 추가
-    return;
-  }
-};
 
 export default function LoginForm() {
   const {
@@ -29,11 +22,27 @@ export default function LoginForm() {
     handleSubmit,
     watch,
     trigger,
-    formState: { errors, isValid, touchedFields },
+    formState: { errors, isValid, touchedFields, isSubmitting, isValidating },
   } = useForm<LoginFormValue>({ mode: "onBlur" });
+  const { openAlert } = useModal();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") ?? "/meetings";
 
   const emailValue = watch("email");
   const passwordValue = watch("password");
+
+  const onSubmit = async (data: LoginFormValue) => {
+    const result = await loginAction(data);
+    if (!result.success) {
+      openAlert({
+        message: result.message ?? "로그인에 실패했습니다.",
+      });
+      return;
+    }
+    // 로그인 성공
+    router.replace(redirect);
+  };
 
   useDebouncedTrigger({
     trigger,
@@ -52,7 +61,7 @@ export default function LoginForm() {
     <>
       <section
         className="w-full max-w-169 rounded-2xl bg-white px-10 py-9"
-        aria-labelledby="signup-title"
+        aria-labelledby="login-title"
       >
         <h1
           id="login-title"
@@ -68,7 +77,7 @@ export default function LoginForm() {
             </Label>
             <Input
               id="email"
-              type="text"
+              type="email"
               placeholder="이메일을 입력해주세요"
               isError={!!errors.email}
               {...register("email", {
@@ -106,14 +115,20 @@ export default function LoginForm() {
             <FormErrorMessage message={errors.password?.message} />
           </div>
 
-          <Button type="submit" fullWidth className="mt-4" disabled={!isValid}>
+          <Button
+            type="submit"
+            fullWidth
+            className="mt-4"
+            isLoading={isSubmitting}
+            disabled={!isValid || isValidating || isSubmitting}
+          >
             로그인
           </Button>
         </form>
 
         <div className="my-8 flex items-center gap-3" aria-hidden="true">
           <div className="h-px flex-1 bg-gray-300" />
-          <span className="text-sm text-gray-500">SNS 계정으로 회원가입</span>
+          <span className="text-sm text-gray-500">SNS 계정으로 로그인</span>
           <div className="h-px flex-1 bg-gray-300" />
         </div>
       </section>

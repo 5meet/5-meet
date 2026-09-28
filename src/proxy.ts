@@ -4,16 +4,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { refreshToken } from "@/lib/auth/refreshToken";
 import { isTokenExpired } from "@/lib/auth/isTokenExpired";
-
-interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+import { AuthToken, RefreshTokenResponse } from "./lib/auth/type";
+import {
+  AUTH_COOKIE,
+  clearAuthCookies,
+  setAuthCookies,
+} from "./lib/auth/authCookies";
 
 export async function proxy(request: NextRequest) {
-  const accessToken = request.cookies.get("accessToken")?.value;
+  const accessToken = request.cookies.get(AUTH_COOKIE.ACCESS_TOKEN)?.value;
 
-  const currentRefreshToken = request.cookies.get("refreshToken")?.value;
+  const currentRefreshToken = request.cookies.get(
+    AUTH_COOKIE.REFRESH_TOKEN,
+  )?.value;
 
   /**
    * 1. Access Token이 존재하고 유효하면 통과
@@ -27,7 +30,11 @@ export async function proxy(request: NextRequest) {
    * Refresh Token도 없다면 로그인 필요
    */
   if (!currentRefreshToken) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+
+    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
+
+    return NextResponse.redirect(loginUrl);
   }
 
   try {
@@ -45,8 +52,7 @@ export async function proxy(request: NextRequest) {
     if (refreshResponse.status === 401) {
       const response = NextResponse.redirect(new URL("/login", request.url));
 
-      response.cookies.delete("accessToken");
-      response.cookies.delete("refreshToken");
+      clearAuthCookies(response.cookies);
 
       return response;
     }
@@ -69,7 +75,17 @@ export async function proxy(request: NextRequest) {
     /**
      * 6. Refresh 성공
      */
-    const tokens = (await refreshResponse.json()) as RefreshTokenResponse;
+    const refreshedTokens =
+      (await refreshResponse.json()) as RefreshTokenResponse;
+
+    /**
+     * 새로운 Refresh Token이 null이면
+     * 기존 Refresh Token을 그대로 유지
+     */
+    const tokens: AuthToken = {
+      accessToken: refreshedTokens.accessToken,
+      refreshToken: refreshedTokens.refreshToken ?? currentRefreshToken,
+    };
 
     /**
      * 7. 현재 요청에 새로운 Cookie 적용
@@ -83,13 +99,14 @@ export async function proxy(request: NextRequest) {
       .getAll()
       .filter(
         (cookie) =>
-          cookie.name !== "accessToken" && cookie.name !== "refreshToken",
+          cookie.name !== AUTH_COOKIE.ACCESS_TOKEN &&
+          cookie.name !== AUTH_COOKIE.REFRESH_TOKEN,
       )
       .map((cookie) => `${cookie.name}=${cookie.value}`);
 
     cookies.push(
-      `accessToken=${tokens.accessToken}`,
-      `refreshToken=${tokens.refreshToken}`,
+      `${AUTH_COOKIE.ACCESS_TOKEN}=${tokens.accessToken}`,
+      `${AUTH_COOKIE.REFRESH_TOKEN}=${tokens.refreshToken}`,
     );
 
     requestHeaders.set("cookie", cookies.join("; "));
@@ -103,19 +120,7 @@ export async function proxy(request: NextRequest) {
     /**
      * 8. 브라우저 Cookie에도 새로운 토큰 저장
      */
-    response.cookies.set("accessToken", tokens.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
-
-    response.cookies.set("refreshToken", tokens.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
+    setAuthCookies(response.cookies, tokens);
 
     return response;
   } catch {
@@ -139,5 +144,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/mypage/created-meetings", "/mypage/meetings", "/mypage/reviews"],
+  /* mypage로 시작하는 경로 모두 포함 */
+  matcher: ["/mypage/:path*"],
 };
