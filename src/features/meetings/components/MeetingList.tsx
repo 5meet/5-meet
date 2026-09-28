@@ -25,8 +25,8 @@ export function MeetingList({
     <ul
       className={
         grid
-          ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-          : "flex flex-col gap-4"
+          ? "grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4"
+          : "flex min-w-0 flex-col gap-4"
       }
     >
       {meetings.map((meeting) => {

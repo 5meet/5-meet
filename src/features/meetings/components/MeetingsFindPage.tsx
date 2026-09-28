@@ -54,11 +54,19 @@ function MeetingsFindPageInner() {
       onDateEndChange={(dateEnd) => patchFilters({ dateEnd })}
       popularSlot={
         statusSlot ??
-        (popular.length > 0 ? <MeetingList meetings={popular} /> : empty)
+        (popular.length > 0 ? (
+          <MeetingList meetings={popular} variant="popular" />
+        ) : (
+          empty
+        ))
       }
       recommendedSlot={
         statusSlot ??
-        (meetings.length > 0 ? <MeetingList meetings={meetings} /> : empty)
+        (meetings.length > 0 ? (
+          <MeetingList meetings={meetings} variant="recommended" />
+        ) : (
+          empty
+        ))
       }
       listSlot={
         !loading && !errorMessage ? (
