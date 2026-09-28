@@ -17,14 +17,14 @@ interface ModalContextValue {
 const ModalContext = createContext<ModalContextValue | null>(null);
 
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [alert, setAlert] = useState<AlertOptions | null>(null);
+  const [alertOptions, setAlertOptions] = useState<AlertOptions | null>(null);
 
   const openAlert = (options: AlertOptions) => {
-    setAlert(options);
+    setAlertOptions(options);
   };
   const closeAlert = () => {
-    const onClose = alert?.onClose;
-    setAlert(null);
+    const onClose = alertOptions?.onClose;
+    setAlertOptions(null);
     onClose?.();
   };
 
@@ -32,8 +32,8 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     <ModalContext.Provider value={{ openAlert }}>
       {children}
       <AlertModal
-        isOpen={!!alert}
-        message={alert?.message ?? ""}
+        isOpen={!!alertOptions}
+        message={alertOptions?.message ?? ""}
         onClose={closeAlert}
       />
     </ModalContext.Provider>
