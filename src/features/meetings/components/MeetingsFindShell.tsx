@@ -2,10 +2,10 @@
 
 import type { ReactNode } from "react";
 import { Flame } from "lucide-react";
+import { Filter } from "@/components/ui/Filter/Filter";
+import { CATEGORY_CHIPS } from "../constants/filters";
 import { HeroBanner } from "./HeroBanner";
 import { SearchBar } from "./SearchBar";
-import { CategoryChips } from "./CategoryChips";
-import { SortFilterBar } from "./SortFilterBar";
 import { SectionHeader } from "./SectionHeader";
 import { FilterModal } from "./FilterModal";
 
@@ -63,14 +63,21 @@ export function MeetingsFindShell({
           }
         />
 
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <CategoryChips selectedId={categoryId} onSelect={onCategoryChange} />
-          <SortFilterBar
-            sortId={sortId}
-            onSortChange={onSortChange}
-            onOpenFilter={onFilterOpen}
-          />
-        </div>
+        <Filter
+          categories={CATEGORY_CHIPS}
+          selectedCategoryId={categoryId}
+          onCategoryChange={onCategoryChange}
+          dateLabel={
+            dateStart || dateEnd
+              ? [dateStart, dateEnd].filter(Boolean).join(" ~ ")
+              : "날짜 전체"
+          }
+          onDateClick={onFilterOpen}
+          regionLabel={region || "지역 전체"}
+          onRegionClick={onFilterOpen}
+          sortId={sortId}
+          onSortChange={onSortChange}
+        />
 
         <section>
           <SectionHeader
