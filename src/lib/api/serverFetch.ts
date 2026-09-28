@@ -3,10 +3,7 @@ import { cookies } from "next/headers";
 import { ApiErrorResponse } from "./type";
 import { ApiError } from "./ApiError";
 
-interface FetchOptions extends RequestInit {
-  timeout?: number; // 기본 타임아웃 지원 (ms)
-  auth?: boolean; // 인증이 필요한 사이트인 경우 true로 전달
-}
+const BASE_URL = process.env.NEXT_PUBLIC_CODEIT_API_URL;
 
 export async function serverFetch<T>(
   url: string,
@@ -40,7 +37,7 @@ export async function serverFetch<T>(
       }
     }
 
-    const response = await fetch(url, {
+    const response = await fetch(`${BASE_URL}${url}`, {
       ...fetchOptions,
       headers: requestHeaders,
       signal,

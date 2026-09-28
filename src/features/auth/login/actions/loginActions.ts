@@ -6,6 +6,7 @@ import { serverFetch } from "@/lib/api/serverFetch";
 import { ApiError } from "@/lib/api/ApiError";
 
 import type { LoginRequest, LoginResponse } from "../types";
+import { setAuthCookies } from '@/lib/auth/authCookies';
 
 // 백엔드에서 받은 결과를 그대로 전달하는게 아닌 성공여부, message, 유저정보만 담아서 클라이언트에 전달
 interface LoginActionResult {
@@ -19,7 +20,7 @@ export async function loginAction(
 ): Promise<LoginActionResult> {
   try {
     const result = await serverFetch<LoginResponse>(
-      `${process.env.NEXT_PUBLIC_CODEIT_API_URL}/auth/login`,
+      `/auth/login`,
       {
         method: "POST",
         headers: {
@@ -30,19 +31,7 @@ export async function loginAction(
     );
 
     const cookieStore = await cookies();
-    cookieStore.set("accessToken", result.accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
-
-    cookieStore.set("refreshToken", result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    });
+    setAuthCookies(cookieStore, result);
     return {
       success: true,
       user: result.user,
