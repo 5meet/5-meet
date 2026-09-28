@@ -10,14 +10,12 @@ import { ApiError } from "./ApiError";
 import { serverFetch } from "./serverFetch";
 import { refreshToken } from "@/lib/auth/refreshToken";
 import type {
-  AuthToken,
   BaseFetchOptions,
   RefreshTokenResponse,
 } from "../auth/type";
 import {
   AUTH_COOKIE,
   clearAuthCookies,
-  setAuthCookies,
   setRefreshedAuthCookies,
 } from "../auth/authCookies";
 
