@@ -44,9 +44,17 @@ const meta = {
         eq: "meeting",
       },
     },
-    dateTime: {
+    date: {
       control: "text",
-      description: "모임 일시",
+      description: "모임 날짜",
+      if: {
+        arg: "variant",
+        eq: "meeting",
+      },
+    },
+    time: {
+      control: "text",
+      description: "모임 시간",
       if: {
         arg: "variant",
         eq: "meeting",
@@ -107,7 +115,8 @@ const meetingArgs = {
   title: "달램핏 모임",
   location: "건대입구",
   category: "달램핏",
-  dateTime: "2026-09-30T14:00:00.000Z",
+  date: "9월 30일",
+  time: "14:00",
   registrationEnd: "2026-09-28T23:59:59.000Z",
   image: "",
   initialIsFavorited: false,

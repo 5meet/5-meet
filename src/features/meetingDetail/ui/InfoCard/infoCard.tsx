@@ -7,53 +7,64 @@ import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import Kebab from "@/components/ui/Kebab/Kebab";
 import { Modal } from "@/components/ui/Modal/Modal";
+import { showToast } from "@/components/ui/Sonner";
+import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
+import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
-interface MeetingDetailInfoCardProps {
-  title: string;
-  location: string;
-  category: string;
-  dateTime: string;
-  registrationEnd: string;
-  isOwner: boolean;
-  initialIsParticipating: boolean;
-  participantCount: number;
-  capacity: number;
-  initialIsLiked: boolean;
-  isLoggedIn: boolean;
-}
 // 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
 
 const MeetingDetailInfoCard = ({
+  id,
   title,
   location,
   category,
-  dateTime,
+  date,
+  time,
   registrationEnd,
   isOwner,
   initialIsParticipating,
   participantCount,
   capacity,
-  initialIsLiked,
+  initialIsFavorited,
   isLoggedIn,
 }: MeetingDetailInfoCardProps) => {
   // 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
   // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
 
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  //IF : TanStack Query 사용 -> useState 삭제 후 Query와 mutation으로 관리
+  const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
   const [isParticipating, setIsParticipating] = useState(
     initialIsParticipating,
   );
   const [isParticipationLoading, setIsParticipationLoading] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
+  const isFull = participantCount >= capacity;
+  const { isClosed } = formatRegistrationEnd(registrationEnd);
+
   // 찜하기
   const handleLikeToggle = async () => {
-    // TODO: 찜하기/찜 취소 API 호출
+    try {
+      // TODO: const result = await toggleLike(meetingId);
 
-    setIsLiked((prev) => !prev);
+      setIsFavorited((prev) => !prev);
+
+      // TODO: API 연결 후 result.isFavorited으로 변경
+      showToast({
+        kind: "success",
+        message: isFavorited
+          ? "찜 목록에서 삭제되었습니다."
+          : "찜 목록에 추가되었습니다.",
+      });
+    } catch (error) {
+      console.error("찜 상태 변경에 실패했습니다.", error);
+
+      showToast({
+        kind: "error",
+        message: "찜 상태 변경에 실패했습니다.",
+      });
+    }
   };
-
-  const isFull = participantCount >= capacity;
 
   // 참여하기 <-> 참여 취소하기
   const handleParticipation = async () => {
@@ -73,17 +84,28 @@ const MeetingDetailInfoCard = ({
         // TODO: await cancelParticipation(meetingId);
 
         setIsParticipating(false);
-        // TODO: 성공 토스트 추가
+
+        showToast({
+          kind: "success",
+          message: "참여가 취소되었습니다.",
+        });
       } else {
         // TODO: await participateMeeting(meetingId);
 
         setIsParticipating(true);
-        // TODO: 실패 토스트 추가
+
+        showToast({
+          kind: "success",
+          message: "모임 참여가 완료되었습니다.",
+        });
       }
     } catch (error) {
       console.error("참여 상태 변경에 실패했습니다.", error);
 
-      // TODO: 실패 토스트 추가
+      showToast({
+        kind: "error",
+        message: "참여 상태 변경에 실패했습니다.",
+      });
     } finally {
       setIsParticipationLoading(false);
     }
@@ -93,10 +115,18 @@ const MeetingDetailInfoCard = ({
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      // TODO: 성공 토스트 추가
+
+      showToast({
+        kind: "success",
+        message: "모임 링크가 복사되었습니다.",
+      });
     } catch (error) {
       console.error("URL 복사에 실패했습니다.", error);
-      // TODO: 실패 토스트 추가
+
+      showToast({
+        kind: "error",
+        message: "모임 링크 복사에 실패했습니다.",
+      });
     }
   };
 
@@ -106,7 +136,7 @@ const MeetingDetailInfoCard = ({
         <div className="flex flex-col w-full gap-5 lg:gap-8">
           <section className="flex flex-col w-full gap-4 lg:gap-5">
             <div className="flex justify-between">
-              <Tags dateTime={dateTime} registrationEnd={registrationEnd} />
+              <Tags date={date} time={time} registrationEnd={registrationEnd} />
 
               {isOwner && (
                 <Kebab
@@ -145,7 +175,7 @@ const MeetingDetailInfoCard = ({
 
           <section className="flex w-full shrink-0 gap-4">
             <LikeButton
-              isLiked={isLiked}
+              isLiked={isFavorited}
               onToggle={handleLikeToggle}
               size="lg"
             />
@@ -165,7 +195,7 @@ const MeetingDetailInfoCard = ({
                 size="lg"
                 variant={isParticipating ? "secondary" : "primary"}
                 fullWidth
-                disabled={!isParticipating && isFull}
+                disabled={!isParticipating && (isFull || isClosed)}
                 onClick={handleParticipation}
               >
                 {isParticipating ? "참여 취소하기" : "참여하기"}

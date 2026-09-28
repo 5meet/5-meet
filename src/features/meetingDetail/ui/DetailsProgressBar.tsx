@@ -1,9 +1,5 @@
-import ProgressBar from "./ProgressBar";
-
-export interface DetailsProgressBarProps {
-  participantCount: number;
-  capacity: number;
-}
+import ProgressBar from "@/components/ui/ProgressBar/ProgressBar";
+import { DetailsProgressBarProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const DetailsProgressBar = ({
   participantCount,
