@@ -140,6 +140,11 @@ export interface MeetingUpdateRequest {
   description: string;
 }
 
+// 모임 삭제 성공 응답
+export interface DeleteMeetingResponse {
+  message: string;
+}
+
 //-----------------------------------------------------------------
 
 // ReviewCard UI

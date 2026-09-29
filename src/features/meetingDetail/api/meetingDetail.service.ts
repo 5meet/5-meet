@@ -4,6 +4,7 @@ import {
   MeetingDetail,
   MeetingDetailResponse,
   MeetingUpdateRequest,
+  DeleteMeetingResponse,
   ParticipantResponse,
   ParticipantListResponse,
   GetParticipantsParams,
@@ -68,7 +69,13 @@ export const updateMeetingDetail = async (
 };
 
 // 모임 삭제 (주최자)
-// export const deleteMeetingDetail = async ({}): Primise<> => {}
+export const deleteMeetingDetail = async (
+  meetingId: string | number,
+): Promise<DeleteMeetingResponse> => {
+  return api
+    .delete(`${TEAM_ID}/meetings/${meetingId}`)
+    .json<DeleteMeetingResponse>();
+};
 
 // 모임 참여 (참여자)
 // export const joinMeeting = async ({}): Primise<> => {}
