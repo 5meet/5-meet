@@ -121,12 +121,35 @@ export interface ReviewCardListProps {
   reviews: Review[];
 }
 
+// API 응답의 user 객체 (email 포함)
+export interface ReviewUserResponse {
+  id: number;
+  email: string;
+  name: string;
+  image: string | null;
+}
+
+// API 응답의 meeting 객체
+export interface ReviewMeetingResponse {
+  id: number;
+  name: string;
+  type: string;
+  region: string;
+  image: string;
+  dateTime: string;
+}
+
 export interface ReviewResponse {
   id: number;
+  teamId: string;
+  meetingId: number;
+  userId: number;
   score: number;
   comment: string;
   createdAt: string;
-  user: UserProfile;
+  updatedAt: string;
+  user: ReviewUserResponse;
+  meeting: ReviewMeetingResponse;
 }
 
 export interface ReviewListResponse {
