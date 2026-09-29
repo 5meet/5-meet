@@ -1,35 +1,67 @@
 import { api } from "@/lib/api/api";
 
 import {
+  MeetingDetail,
+  MeetingDetailResponse,
   ReviewResponse,
-  ReviewPage,
+  ReviewListResponse,
   GetReviewsParams,
 } from "@/features/meetingDetail/types/meetingDetail";
-import { convertDateType4 } from "@/lib/convertDate/formatMeetingDate";
+import {
+  convertDateType1,
+  convertDateType4,
+} from "@/lib/convertDate/formatMeetingDate";
 
 const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 // 모임 상세 조회 (InfoCard)
-// export const getMeetings = async (meeting: string): Promise<> => {
-//   const res = await api
-//     .get(`${TEAM_ID}/meetings/${meetingId}`)
-//     .json<{data: }>();
+export const getMeetingDetail = async (
+  meetingId: number,
+): Promise<MeetingDetail> => {
+  const res = await api
+    .get(`${TEAM_ID}/meetings/${meetingId}`)
+    .json<MeetingDetailResponse>();
 
-//   const r = res.data;
+  const { date, time } = convertDateType1(res.dateTime);
 
-//  const { date, time } = convertDateType1(r.dateTime);
+  return {
+    id: res.id,
+    title: res.name,
+    category: res.type,
+    location: res.region,
+    date,
+    time,
+    registrationEnd: res.registrationEnd,
+    capacity: res.capacity,
+    participantCount: res.participantCount,
+    image: res.image,
+    description: res.description,
+    hostId: res.hostId,
+    host: res.host,
+    initialIsFavorited: res.isFavorited,
+    initialIsParticipating: res.isJoined,
+    isCompleted: res.isCompleted,
+    canceledAt: res.canceledAt,
+    confirmedAt: res.confirmedAt,
+  };
+};
 
-//   return {
-//     id: r.id,
-//   }
-// }
+// 모임 수정 (주최자)
+// export const petchMeetingDetail = async ({}): Primise<> => {}
+
+// 모임 삭제 (주최자)
+// export const deleteMeetingDetail = async ({}): Primise<> => {}
+
+// 모임 참여 (참여자)
+// export const joinMeeting = async ({}): Primise<> => {}
+
+// 모임 참여 취소 (참여자)
+// export const cancelMeeting = async ({}): Primise<> => {}
 
 // 참가자 목록 조회
 // export const getParticipants = async ({
 //   cursor,
-// }: {
-//   cursor: string | null;
-// }): Promise<> => {
+// }: PaginationParmas): Promise<> => {
 //   const res = await api
 //     .get(`${TEAM_ID}/meetings/${meetingId}/participants`)
 //     .json<{
@@ -50,12 +82,15 @@ const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 //     }
 // }
 
+// 모임 상태 변경 (주최자)
+// export const changeMeetingStatus = async ({}): Primise<> => {}
+
 // 특정 모임 리뷰 목록 조회
 export const getReviews = async ({
   meetingId,
   cursor,
   size,
-}: GetReviewsParams): Promise<ReviewPage> => {
+}: GetReviewsParams): Promise<ReviewListResponse> => {
   const searchParams = {
     ...(cursor && { cursor }),
     ...(size && { size }),
@@ -97,3 +132,6 @@ export const getReviews = async ({
     hasMore: res.hasMore,
   };
 };
+
+// 추천 모임 목록
+// export const changeMeetingStatus = async ({}): Primise<> => {}
