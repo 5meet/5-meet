@@ -140,11 +140,6 @@ export interface MeetingUpdateRequest {
   description: string;
 }
 
-// 모임 삭제 성공 응답
-export interface DeleteMeetingResponse {
-  message: string;
-}
-
 //-----------------------------------------------------------------
 
 // ReviewCard UI
@@ -217,4 +212,14 @@ export interface GetReviewsParams extends PaginationParmas {
 export interface PaginationParmas {
   cursor?: string | null;
   size?: number;
+}
+
+// API 성공 응답 메세지
+export interface ResponseMessage {
+  message: string;
+}
+
+// meetingId
+export interface MeetingId {
+  meetingId: number;
 }

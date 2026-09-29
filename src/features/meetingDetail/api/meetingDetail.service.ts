@@ -1,10 +1,11 @@
 import { api } from "@/lib/api/api";
 
 import {
+  MeetingId,
   MeetingDetail,
   MeetingDetailResponse,
   MeetingUpdateRequest,
-  DeleteMeetingResponse,
+  ResponseMessage,
   ParticipantResponse,
   ParticipantListResponse,
   GetParticipantsParams,
@@ -47,7 +48,7 @@ const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
 
 // 모임 상세 조회
 export const getMeetingDetail = async (
-  meetingId: number,
+  meetingId: MeetingId,
 ): Promise<MeetingDetail> => {
   const res = await api
     .get(`${TEAM_ID}/meetings/${meetingId}`)
@@ -58,7 +59,7 @@ export const getMeetingDetail = async (
 
 // 모임 수정 (주최자)
 export const updateMeetingDetail = async (
-  meetingId: string | number,
+  meetingId: MeetingId,
   payload: MeetingUpdateRequest,
 ): Promise<MeetingDetail> => {
   const res = await api
@@ -70,18 +71,28 @@ export const updateMeetingDetail = async (
 
 // 모임 삭제 (주최자)
 export const deleteMeetingDetail = async (
-  meetingId: string | number,
-): Promise<DeleteMeetingResponse> => {
-  return api
-    .delete(`${TEAM_ID}/meetings/${meetingId}`)
-    .json<DeleteMeetingResponse>();
+  meetingId: MeetingId,
+): Promise<ResponseMessage> => {
+  return api.delete(`${TEAM_ID}/meetings/${meetingId}`).json<ResponseMessage>();
 };
 
 // 모임 참여 (참여자)
-// export const joinMeeting = async ({}): Primise<> => {}
+export const joinMeeting = async (
+  meetingId: MeetingId,
+): Promise<ResponseMessage> => {
+  return api
+    .post(`${TEAM_ID}/meetings/${meetingId}/join`)
+    .json<ResponseMessage>();
+};
 
 // 모임 참여 취소 (참여자)
-// export const cancelMeeting = async ({}): Primise<> => {}
+export const cancelMeeting = async (
+  meetingId: MeetingId,
+): Promise<ResponseMessage> => {
+  return api
+    .delete(`${TEAM_ID}/meetings/${meetingId}/join`)
+    .json<ResponseMessage>();
+};
 
 // 참가자 목록 조회
 export const getParticipants = async ({
