@@ -96,6 +96,33 @@ export interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
 }
 
+// API 응답의 user 객체
+export interface ParticipantUserResponse {
+  id: number;
+  name: string;
+  image: string | null;
+}
+
+// API 원본 응답
+export interface ParticipantResponse {
+  id: number;
+  teamId: string;
+  meetingId: number;
+  userId: number;
+  joinedAt: string;
+  user: ParticipantUserResponse;
+}
+
+export interface ParticipantListResponse {
+  data: ParticipantProfile[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+export interface GetParticipantsParams extends PaginationParmas {
+  meetingId: number;
+}
+
 //-----------------------------------------------------------------
 
 // ReviewCard UI

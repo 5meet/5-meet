@@ -3,6 +3,9 @@ import { api } from "@/lib/api/api";
 import {
   MeetingDetail,
   MeetingDetailResponse,
+  ParticipantResponse,
+  ParticipantListResponse,
+  GetParticipantsParams,
   ReviewResponse,
   ReviewListResponse,
   GetReviewsParams,
@@ -14,7 +17,7 @@ import {
 
 const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
-// 모임 상세 조회 (InfoCard)
+// 모임 상세 조회
 export const getMeetingDetail = async (
   meetingId: number,
 ): Promise<MeetingDetail> => {
@@ -59,28 +62,38 @@ export const getMeetingDetail = async (
 // export const cancelMeeting = async ({}): Primise<> => {}
 
 // 참가자 목록 조회
-// export const getParticipants = async ({
-//   cursor,
-// }: PaginationParmas): Promise<> => {
-//   const res = await api
-//     .get(`${TEAM_ID}/meetings/${meetingId}/participants`)
-//     .json<{
-//        data:
-//        nextCursor: string | null;
-//        hasMore: boolean;
-//      }>();
+export const getParticipants = async ({
+  meetingId,
+  cursor,
+  size,
+}: GetParticipantsParams): Promise<ParticipantListResponse> => {
+  const searchParams = {
+    ...(cursor && { cursor }),
+    ...(size && { size }),
+  };
 
-//     const list = res.data ?? [];
+  const res = await api
+    .get(`${TEAM_ID}/meetings/${meetingId}/participants`, { searchParams })
+    .json<{
+      data: ParticipantResponse[];
+      nextCursor: string | null;
+      hasMore: boolean;
+    }>();
 
-//     return {
-//       data: list.map((r) => ({
-//         id: r.id,
+  const list = res.data ?? [];
 
-//       })),
-//       nextCursor:
-//       hasMore:
-//     }
-// }
+  const mappedData = list.map((r) => ({
+    id: r.user.id,
+    name: r.user.name,
+    image: r.user.image,
+  }));
+
+  return {
+    data: mappedData,
+    nextCursor: res.nextCursor,
+    hasMore: res.hasMore,
+  };
+};
 
 // 모임 상태 변경 (주최자)
 // export const changeMeetingStatus = async ({}): Primise<> => {}
