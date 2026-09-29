@@ -1,20 +1,21 @@
+import { cookies } from "next/headers";
+
 import { ApiErrorResponse } from "./type";
 import { ApiError } from "./ApiError";
+import type { ServerFetchOptions } from "../auth/type";
 
-interface FetchOptions extends RequestInit {
-  timeout?: number; // 기본 타임아웃 지원 (ms)
-}
+const BASE_URL = process.env.NEXT_PUBLIC_CODEIT_API_URL;
 
 export async function serverFetch<T>(
   url: string,
-  options: FetchOptions = {},
+  options: ServerFetchOptions = {},
 ): Promise<T> {
   const {
     timeout = 10000,
-    signal: externalSignal, //외부에서 전달해준 시그널
+    auth = false,
+    signal: externalSignal, // 외부에서 전달해준 시그널
     ...fetchOptions
   } = options;
-
   // 기본 timeout용 signal
   const timeoutSignal = AbortSignal.timeout(timeout);
 
@@ -23,8 +24,22 @@ export async function serverFetch<T>(
     : timeoutSignal;
 
   try {
-    const response = await fetch(url, {
+    const requestHeaders = new Headers(fetchOptions.headers);
+
+    // 외부에서 Authorization을 직접 전달하지 않은 경우에만
+    // Cookie의 Access Token을 사용
+    if (auth && !requestHeaders.has("Authorization")) {
+      const cookieStore = await cookies();
+      const accessToken = cookieStore.get("accessToken")?.value;
+
+      if (accessToken) {
+        requestHeaders.set("Authorization", `Bearer ${accessToken}`);
+      }
+    }
+
+    const response = await fetch(`${BASE_URL}${url}`, {
       ...fetchOptions,
+      headers: requestHeaders,
       signal,
     });
 
@@ -32,11 +47,11 @@ export async function serverFetch<T>(
     if (!response.ok) {
       const errorData = (await response.json()) as ApiErrorResponse;
 
-      throw new ApiError(
-        errorData.message,
-        errorData.code,
-        response.status,
-      );
+      throw new ApiError(errorData.message, errorData.code, response.status);
+    }
+
+    if (response.status === 204) {
+      return undefined as T;
     }
 
     return (await response.json()) as T;
@@ -56,10 +71,7 @@ export async function serverFetch<T>(
 
     // 4. 외부 AbortSignal에 의한 요청 취소
     if (error instanceof Error && error.name === "AbortError") {
-      throw new ApiError(
-        "요청이 취소되었습니다.",
-        "ABORT_ERROR",
-      );
+      throw new ApiError("요청이 취소되었습니다.", "ABORT_ERROR");
     }
 
     // 5. 네트워크 에러
@@ -71,9 +83,6 @@ export async function serverFetch<T>(
     }
 
     // 6. 예상하지 못한 에러
-    throw new ApiError(
-      "알 수 없는 오류가 발생했습니다.",
-      "UNKNOWN_ERROR",
-    );
+    throw new ApiError("알 수 없는 오류가 발생했습니다.", "UNKNOWN_ERROR");
   }
 }
