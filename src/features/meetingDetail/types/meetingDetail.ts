@@ -142,6 +142,16 @@ export interface MeetingUpdateRequest {
 
 //-----------------------------------------------------------------
 
+// 모임 상태
+export type MeetingStatus = "CONFIRMED" | "CANCELED";
+
+// 모임 상태 변경 요청 Body
+export interface MeetingStatusUpdateRequest {
+  status: MeetingStatus;
+}
+
+//-----------------------------------------------------------------
+
 // ReviewCard UI
 export interface UserProfile {
   id: number;

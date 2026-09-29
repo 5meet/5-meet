@@ -2,10 +2,11 @@ import { api } from "@/lib/api/api";
 
 import {
   MeetingId,
+  ResponseMessage,
   MeetingDetail,
   MeetingDetailResponse,
   MeetingUpdateRequest,
-  ResponseMessage,
+  MeetingStatus,
   ParticipantResponse,
   ParticipantListResponse,
   GetParticipantsParams,
@@ -94,6 +95,20 @@ export const cancelMeeting = async (
     .json<ResponseMessage>();
 };
 
+// 모임 상태 변경 (주최자)
+export const changeMeetingStatus = async (
+  meetingId: MeetingId,
+  status: MeetingStatus,
+): Promise<MeetingDetail> => {
+  const res = await api
+    .patch(`${TEAM_ID}/meetings/${meetingId}/status`, {
+      json: { status },
+    })
+    .json<MeetingDetailResponse>();
+
+  return mapToMeetingDetail(res);
+};
+
 // 참가자 목록 조회
 export const getParticipants = async ({
   meetingId,
@@ -127,9 +142,6 @@ export const getParticipants = async ({
     hasMore: res.hasMore,
   };
 };
-
-// 모임 상태 변경 (주최자)
-// export const changeMeetingStatus = async ({}): Primise<> => {}
 
 // 특정 모임 리뷰 목록 조회
 export const getReviews = async ({
@@ -180,4 +192,4 @@ export const getReviews = async ({
 };
 
 // 추천 모임 목록
-// export const changeMeetingStatus = async ({}): Primise<> => {}
+// export const getRecommendedMeetings = async ({}): Primise<> => {}
