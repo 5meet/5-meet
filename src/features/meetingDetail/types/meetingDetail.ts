@@ -125,6 +125,23 @@ export interface GetParticipantsParams extends PaginationParmas {
 
 //-----------------------------------------------------------------
 
+// 모임 수정 Request Body
+export interface MeetingUpdateRequest {
+  name: string;
+  type: string;
+  region: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  dateTime: string;
+  registrationEnd: string;
+  capacity: number;
+  image: string;
+  description: string;
+}
+
+//-----------------------------------------------------------------
+
 // ReviewCard UI
 export interface UserProfile {
   id: number;

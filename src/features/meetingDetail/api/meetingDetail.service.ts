@@ -3,6 +3,7 @@ import { api } from "@/lib/api/api";
 import {
   MeetingDetail,
   MeetingDetailResponse,
+  MeetingUpdateRequest,
   ParticipantResponse,
   ParticipantListResponse,
   GetParticipantsParams,
@@ -17,21 +18,15 @@ import {
 
 const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
-// 모임 상세 조회
-export const getMeetingDetail = async (
-  meetingId: number,
-): Promise<MeetingDetail> => {
-  const res = await api
-    .get(`${TEAM_ID}/meetings/${meetingId}`)
-    .json<MeetingDetailResponse>();
-
+// 응답 매핑 공통 함수
+const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
   const { date, time } = convertDateType1(res.dateTime);
 
   return {
     id: res.id,
     title: res.name,
-    category: res.type,
     location: res.region,
+    category: res.type,
     date,
     time,
     registrationEnd: res.registrationEnd,
@@ -49,8 +44,28 @@ export const getMeetingDetail = async (
   };
 };
 
+// 모임 상세 조회
+export const getMeetingDetail = async (
+  meetingId: number,
+): Promise<MeetingDetail> => {
+  const res = await api
+    .get(`${TEAM_ID}/meetings/${meetingId}`)
+    .json<MeetingDetailResponse>();
+
+  return mapToMeetingDetail(res);
+};
+
 // 모임 수정 (주최자)
-// export const petchMeetingDetail = async ({}): Primise<> => {}
+export const updateMeetingDetail = async (
+  meetingId: string | number,
+  payload: MeetingUpdateRequest,
+): Promise<MeetingDetail> => {
+  const res = await api
+    .patch(`${TEAM_ID}/meetings/${meetingId}`, { json: payload })
+    .json<MeetingDetailResponse>();
+
+  return mapToMeetingDetail(res);
+};
 
 // 모임 삭제 (주최자)
 // export const deleteMeetingDetail = async ({}): Primise<> => {}
