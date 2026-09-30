@@ -60,6 +60,9 @@ export interface MeetingDetail {
   participantCount: number;
   image: string;
   description: string;
+  address: string;
+  latitude: number;
+  longitude: number;
   hostId: number;
   host: {
     id: number;
@@ -274,9 +277,4 @@ export interface PaginationParmas {
 // API 성공 응답 메세지
 export interface ResponseMessage {
   message: string;
-}
-
-// meetingId
-export interface MeetingId {
-  meetingId: number;
 }

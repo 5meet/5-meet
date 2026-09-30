@@ -1,7 +1,6 @@
 import { api } from "@/lib/api/api";
 
 import {
-  MeetingId,
   ResponseMessage,
   MeetingDetail,
   MeetingDetailResponse,
@@ -41,6 +40,9 @@ const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
     participantCount: res.participantCount,
     image: res.image,
     description: res.description,
+    address: res.address,
+    latitude: res.latitude,
+    longitude: res.longitude,
     hostId: res.hostId,
     host: res.host,
     initialIsFavorited: res.isFavorited,
@@ -55,7 +57,7 @@ const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
 
 // 모임 상세 조회
 export const getMeetingDetail = async (
-  meetingId: MeetingId,
+  meetingId: number,
 ): Promise<MeetingDetail> => {
   const res = await api
     .get(`${TEAM_ID}/meetings/${meetingId}`)
@@ -68,7 +70,7 @@ export const getMeetingDetail = async (
 
 // 모임 수정 (주최자)
 export const updateMeetingDetail = async (
-  meetingId: MeetingId,
+  meetingId: number,
   payload: MeetingUpdateRequest,
 ): Promise<MeetingDetail> => {
   const res = await api
@@ -80,7 +82,7 @@ export const updateMeetingDetail = async (
 
 // 모임 삭제 (주최자)
 export const deleteMeetingDetail = async (
-  meetingId: MeetingId,
+  meetingId: number,
 ): Promise<ResponseMessage> => {
   return api.delete(`${TEAM_ID}/meetings/${meetingId}`).json<ResponseMessage>();
 };
@@ -89,7 +91,7 @@ export const deleteMeetingDetail = async (
 
 // 모임 참여 (참여자)
 export const joinMeeting = async (
-  meetingId: MeetingId,
+  meetingId: number,
 ): Promise<ResponseMessage> => {
   return api
     .post(`${TEAM_ID}/meetings/${meetingId}/join`)
@@ -98,7 +100,7 @@ export const joinMeeting = async (
 
 // 모임 참여 취소 (참여자)
 export const cancelMeeting = async (
-  meetingId: MeetingId,
+  meetingId: number,
 ): Promise<ResponseMessage> => {
   return api
     .delete(`${TEAM_ID}/meetings/${meetingId}/join`)
@@ -109,7 +111,7 @@ export const cancelMeeting = async (
 
 // 모임 상태 변경 (주최자)
 export const changeMeetingStatus = async (
-  meetingId: MeetingId,
+  meetingId: number,
   status: MeetingStatus,
 ): Promise<MeetingDetail> => {
   const res = await api
