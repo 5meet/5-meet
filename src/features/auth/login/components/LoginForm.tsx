@@ -3,6 +3,7 @@ import Label from "@/components/ui/Form/label/Label";
 import Input from "@/components/ui/Form/input/Input";
 import Button from "@/components/ui/Button/Button";
 import PasswordInput from "@/components/ui/Form/input/PasswordInput";
+import SocialLoginButton from "../../components/SocialLoginButton";
 
 import { useForm } from "react-hook-form";
 import FormErrorMessage from "@/components/ui/Form/formErrorMessage/FormErrorMessage";
@@ -131,6 +132,11 @@ export default function LoginForm({ redirect }: LoginFormProps) {
         <div className="h-px flex-1 bg-gray-300" />
         <span className="text-sm text-gray-500">SNS 계정으로 로그인</span>
         <div className="h-px flex-1 bg-gray-300" />
+      </div>
+
+      <div className="flex w-full flex-col gap-3 sm:flex-row">
+        <SocialLoginButton provider="google" className="sm:flex-1" />
+        <SocialLoginButton provider="kakao" className="sm:flex-1" />
       </div>
     </section>
   );
