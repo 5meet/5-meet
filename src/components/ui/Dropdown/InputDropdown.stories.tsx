@@ -51,6 +51,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  render: (args) => {
+    const [value, setValue] = useState<string | null>(args.value);
+
+    return <Dropdown {...args} value={value} onChange={setValue} />;
+  },
+
   args: {
     options: categoryOptions,
     value: null,
