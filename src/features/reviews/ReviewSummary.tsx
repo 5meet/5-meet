@@ -1,4 +1,3 @@
-import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
 import type { Review } from "@/data/reviews";
 
 interface ReviewSummaryProps {
@@ -9,27 +8,27 @@ export function ReviewSummary({
   reviews,
 }: ReviewSummaryProps) {
   const average =
-    reviews.length > 0
-      ? reviews.reduce(
-          (sum, review) => sum + review.rating,
-          0,
-        ) / reviews.length
-      : 0;
+  reviews.length > 0
+    ? reviews.reduce(
+        (sum, review) => sum + review.rating,
+        0
+      ) / reviews.length
+    : 0;
 
   const ratingCounts = [5, 4, 3, 2, 1].map(
     (rating) => ({
       rating,
       count: reviews.filter(
-        (review) => review.rating === rating,
+        (review) => review.rating === rating
       ).length,
-    }),
+    })
   );
 
   const maxCount = Math.max(
     ...ratingCounts.map(
-      (item) => item.count,
+      (item) => item.count
     ),
-    1,
+    1
   );
 
   return (
@@ -46,6 +45,7 @@ export function ReviewSummary({
         px-20 py-6
       "
     >
+
       <div
         className="
           flex w-1/2
@@ -60,11 +60,25 @@ export function ReviewSummary({
           {average.toFixed(1)}
         </strong>
 
-        <div className="my-3">
-          <HeartRating
-            rating={Math.round(average)}
-            size="lg"
-          />
+        <div className="my-3 flex gap-1">
+          {[1, 2, 3, 4, 5].map(
+            (heart) => (
+              <span
+                key={heart}
+                className={`
+                  text-[27px] leading-none
+
+                  ${
+                    heart <= Math.round(average)
+                      ? "text-[#08b88a]"
+                      : "text-[#d0d9da]"
+                  }
+                `}
+              >
+                ♥
+              </span>
+            )
+          )}
         </div>
 
         <p className="m-0 text-xs text-[#9fa9a7]">
@@ -73,6 +87,7 @@ export function ReviewSummary({
       </div>
 
       <div className="flex-1 pl-9">
+
         {ratingCounts.map(
           ({ rating, count }) => (
             <div
@@ -115,8 +130,9 @@ export function ReviewSummary({
                 {count}
               </span>
             </div>
-          ),
+          )
         )}
+
       </div>
     </section>
   );
