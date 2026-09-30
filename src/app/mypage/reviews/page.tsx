@@ -95,8 +95,7 @@ export default function ReviewsPage() {
 
   return (
     <div className="w-full">
-      {/* 탭 */}
-      <div className="mb-5 flex gap-2">
+      <div className="mb-5 mt-6 flex gap-2">
         <button
           type="button"
           onClick={() => setActiveTab("available")}
