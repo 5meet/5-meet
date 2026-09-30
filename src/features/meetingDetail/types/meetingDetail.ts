@@ -55,6 +55,7 @@ export interface MeetingDetail {
   category: string;
   date: string;
   time: string;
+  dateTime: string;
   registrationEnd: string;
   capacity: number;
   participantCount: number;

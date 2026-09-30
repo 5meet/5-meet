@@ -35,6 +35,7 @@ const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
     category: res.type,
     date,
     time,
+    dateTime: res.dateTime,
     registrationEnd: res.registrationEnd,
     capacity: res.capacity,
     participantCount: res.participantCount,
