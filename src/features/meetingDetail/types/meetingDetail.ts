@@ -218,6 +218,53 @@ export interface GetReviewsParams extends PaginationParmas {
 
 //-----------------------------------------------------------------
 
+// 추천 모임 목록
+export interface MeetingListResponse {
+  data: MeetingDetailResponse[];
+  nextCursor: string | null;
+  hasMore: boolean;
+  totalCount: number;
+  currentOffset: number;
+  limit: number;
+}
+
+export interface GetMeetingsParams {
+  id?: number;
+  type?: string;
+  region?: string;
+  keyword?: string;
+  dateStart?: string;
+  dateEnd?: string;
+  createdBy?: number;
+  sortBy?: "dateTime" | "participantCount" | "createdAt";
+  sortOrder?: "asc" | "desc";
+  cursor?: string | null;
+  size?: number;
+}
+
+// 추천 카드(CompactCard)에 필요한 최소 도메인 타입
+export interface RecommendedMeeting {
+  id: number;
+  title: string;
+  image: string;
+  location: string;
+  category: string;
+  dateTime: string;
+  registrationEnd: string;
+  initialIsFavorited: boolean;
+  participantCount: number;
+  capacity: number;
+}
+
+export interface GetRecommendedMeetingsParams {
+  currentMeetingId: number;
+  category: string;
+  region: string;
+  size?: number;
+}
+
+//-----------------------------------------------------------------
+
 // Pagination Params
 export interface PaginationParmas {
   cursor?: string | null;

@@ -13,6 +13,10 @@ import {
   ReviewResponse,
   ReviewListResponse,
   GetReviewsParams,
+  MeetingListResponse,
+  GetMeetingsParams,
+  RecommendedMeeting,
+  GetRecommendedMeetingsParams,
 } from "@/features/meetingDetail/types/meetingDetail";
 import {
   convertDateType1,
@@ -47,6 +51,8 @@ const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
   };
 };
 
+//-----------------------------------------------------------------
+
 // 모임 상세 조회
 export const getMeetingDetail = async (
   meetingId: MeetingId,
@@ -57,6 +63,8 @@ export const getMeetingDetail = async (
 
   return mapToMeetingDetail(res);
 };
+
+//-----------------------------------------------------------------
 
 // 모임 수정 (주최자)
 export const updateMeetingDetail = async (
@@ -77,6 +85,8 @@ export const deleteMeetingDetail = async (
   return api.delete(`${TEAM_ID}/meetings/${meetingId}`).json<ResponseMessage>();
 };
 
+//-----------------------------------------------------------------
+
 // 모임 참여 (참여자)
 export const joinMeeting = async (
   meetingId: MeetingId,
@@ -95,6 +105,8 @@ export const cancelMeeting = async (
     .json<ResponseMessage>();
 };
 
+//-----------------------------------------------------------------
+
 // 모임 상태 변경 (주최자)
 export const changeMeetingStatus = async (
   meetingId: MeetingId,
@@ -108,6 +120,8 @@ export const changeMeetingStatus = async (
 
   return mapToMeetingDetail(res);
 };
+
+//-----------------------------------------------------------------
 
 // 참가자 목록 조회
 export const getParticipants = async ({
@@ -142,6 +156,8 @@ export const getParticipants = async ({
     hasMore: res.hasMore,
   };
 };
+
+//-----------------------------------------------------------------
 
 // 특정 모임 리뷰 목록 조회
 export const getReviews = async ({
@@ -191,5 +207,102 @@ export const getReviews = async ({
   };
 };
 
-// 추천 모임 목록
-// export const getRecommendedMeetings = async ({}): Primise<> => {}
+//-----------------------------------------------------------------
+
+// 추천 모임 목록의 기반이 되는 범용 목록 조회 - 추후 삭제
+export const getMeetings = async (
+  params: GetMeetingsParams,
+): Promise<MeetingListResponse> => {
+  const searchParams = Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null),
+  );
+
+  return api
+    .get(`${TEAM_ID}/meetings`, { searchParams })
+    .json<MeetingListResponse>();
+};
+
+//-----------------------------------------------------------------
+
+// 추천 모임 목록 조회
+const mapToRecommendedMeeting = (
+  r: MeetingDetailResponse,
+): RecommendedMeeting => ({
+  id: r.id,
+  title: r.name,
+  image: r.image,
+  location: r.region,
+  category: r.type,
+  dateTime: r.dateTime,
+  registrationEnd: r.registrationEnd,
+  initialIsFavorited: r.isFavorited,
+  participantCount: r.participantCount,
+  capacity: r.capacity,
+});
+
+export const getRecommendedMeetings = async ({
+  currentMeetingId,
+  category,
+  region,
+  size = 6,
+}: GetRecommendedMeetingsParams): Promise<RecommendedMeeting[]> => {
+  const now = new Date().toISOString();
+
+  // 공통: 자기 자신 제외 + 정원 미달 + 아직 시작 전인 모임만
+  const postFilter = (list: MeetingDetailResponse[]) =>
+    list.filter(
+      (m) =>
+        m.id !== currentMeetingId &&
+        m.canceledAt === null &&
+        m.participantCount < m.capacity,
+    );
+
+  // 1단계: 같은 카테고리 + 같은 지역, 인기순
+  const tier1 = await getMeetings({
+    type: category,
+    region,
+    dateStart: now,
+    sortBy: "participantCount",
+    sortOrder: "desc",
+    size: size * 2,
+  });
+
+  let result = postFilter(tier1.data);
+  if (result.length >= size) {
+    return result.slice(0, size).map(mapToRecommendedMeeting);
+  }
+
+  // 2단계: 같은 카테고리만 (지역 조건 완화)
+  const tier2 = await getMeetings({
+    type: category,
+    dateStart: now,
+    sortBy: "participantCount",
+    sortOrder: "desc",
+    size: size * 2,
+  });
+
+  const seen = new Set(result.map((m) => m.id));
+  result = [
+    ...result,
+    ...postFilter(tier2.data).filter((m) => !seen.has(m.id)),
+  ];
+  if (result.length >= size) {
+    return result.slice(0, size).map(mapToRecommendedMeeting);
+  }
+
+  // 3단계: 조건 없이 인기순 전체 (최후의 fallback)
+  const tier3 = await getMeetings({
+    dateStart: now,
+    sortBy: "participantCount",
+    sortOrder: "desc",
+    size: size * 2,
+  });
+
+  const seen2 = new Set(result.map((m) => m.id));
+  result = [
+    ...result,
+    ...postFilter(tier3.data).filter((m) => !seen2.has(m.id)),
+  ];
+
+  return result.slice(0, size).map(mapToRecommendedMeeting);
+};
