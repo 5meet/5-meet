@@ -16,7 +16,7 @@ interface DropdownProps<T extends string> {
   className?: string;
 }
 
-export function Dropdown<T extends string>({
+export function InputDropdown<T extends string>({
   options,
   value,
   onChange,
@@ -59,7 +59,7 @@ export function Dropdown<T extends string>({
         onClick={() => setIsOpen((prev) => !prev)}
         className={`flex w-full items-center justify-between rounded-xl border px-4 py-2.5 text-sm transition-colors
           ${isOpen ? "border-primary-500" : "border-gray-200"}
-          ${disabled ? "bg-gray-50 text-gray-400" : "bg-white text-gray-800"}
+          ${disabled ? "bg-gray-50 text-gray-400" : "bg-[#F9FAFB] text-gray-800"}
         `}
       >
         <span className={selectedLabel ? "" : "text-gray-400"}>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Dropdown, DropdownOption } from "./InputDropdown";
+import { InputDropdown, DropdownOption } from "./InputDropdown";
 
 const categoryOptions: DropdownOption<string>[] = [
   { label: "전체", value: "all" },
@@ -13,7 +13,7 @@ const categoryOptions: DropdownOption<string>[] = [
 
 const meta = {
   title: "Components/Dropdown/InputDropdown",
-  component: Dropdown,
+  component: InputDropdown,
   parameters: {
     layout: "centered",
   },
@@ -44,7 +44,7 @@ const meta = {
       description: "추가 CSS 클래스",
     },
   },
-} satisfies Meta<typeof Dropdown>;
+} satisfies Meta<typeof InputDropdown>;
 
 export default meta;
 
@@ -54,7 +54,7 @@ export const Default: Story = {
   render: (args) => {
     const [value, setValue] = useState<string | null>(args.value);
 
-    return <Dropdown {...args} value={value} onChange={setValue} />;
+    return <InputDropdown {...args} value={value} onChange={setValue} />;
   },
 
   args: {
@@ -90,7 +90,7 @@ export const Interactive: Story = {
   render: (args) => {
     const [value, setValue] = useState<string | null>(args.value);
 
-    return <Dropdown {...args} value={value} onChange={setValue} />;
+    return <InputDropdown {...args} value={value} onChange={setValue} />;
   },
   args: {
     options: categoryOptions,
