@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useState } from "react";
 import { Input } from "@/components/ui/Form/input/Input";
 import { Label } from "@/components/ui/Form/label/Label";
+import Button from "@/components/ui/Button/Button";
 
 interface AddressSearchResult {
   address: string;
@@ -73,16 +74,26 @@ export const AddressSearchField = ({
         <Label htmlFor="address" required>
           장소
         </Label>
-        <Input
-          id="address"
-          type="text"
-          placeholder="건물, 지번 또는 도로명 검색"
-          required
-          value={address}
-          readOnly
-          onClick={handleSearch}
-          disabled={!isScriptReady}
-        />
+        <div className="flex gap-2">
+          <Input
+            id="address"
+            type="text"
+            placeholder="건물, 지번 또는 도로명"
+            required
+            value={address}
+            readOnly
+          />
+
+          <Button
+            variant="secondary"
+            onClick={handleSearch}
+            disabled={!isScriptReady}
+            className="flex-1"
+          >
+            주소 검색
+          </Button>
+        </div>
+
         <Input
           id="addressDetail"
           type="text"
