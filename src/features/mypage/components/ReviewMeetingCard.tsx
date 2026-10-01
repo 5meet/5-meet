@@ -9,7 +9,6 @@ import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 
 import ReviewWriteModal from "./ReviewWriteModal";
-import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 
 export interface ReviewMeetingCardProps {
   imageUrl: string;
@@ -47,10 +46,12 @@ export default function ReviewMeetingCard({
   };
 
   const handleReviewSubmit = (
+    meetingID: number,
     rating: number,
     content: string,
   ) => {
     console.log("리뷰 등록", {
+      meetingID,
       rating,
       content,
     });

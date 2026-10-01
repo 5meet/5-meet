@@ -33,10 +33,7 @@ export default function ReviewTab({
 
   return (
     <section className="w-full">
-      {/* 마이페이지 탭 */}
       <MyPageTabs />
-
-      {/* 리뷰 탭 */}
       <div className="mb-5 mt-6 flex items-center gap-2">
         <button
           type="button"

@@ -44,7 +44,6 @@ export default function ReviewWriteModal({
 
       <Modal.Body>
         <div className="flex flex-col gap-10">
-          {/* 만족도 */}
           <section>
             <p className="text-lg font-medium text-gray-800">
               만족스러운 경험이었나요?
@@ -79,8 +78,6 @@ export default function ReviewWriteModal({
               })}
             </div>
           </section>
-
-          {/* 리뷰 내용 */}
           <section>
             <label
               htmlFor="review-content"
