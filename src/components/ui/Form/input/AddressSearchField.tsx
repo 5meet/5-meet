@@ -71,10 +71,11 @@ export const AddressSearchField = ({
         </Label>
         <Input
           id="address"
-          type="address"
+          type="text"
           placeholder="건물, 지번 또는 도로명 검색"
           required
           value={address}
+          readOnly
           onClick={handleSearch}
           disabled={!isScriptReady}
         />

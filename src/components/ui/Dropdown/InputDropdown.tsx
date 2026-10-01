@@ -13,6 +13,7 @@ interface DropdownProps<T extends string> {
   onChange: (value: T) => void;
   placeholder?: string;
   disabled?: boolean;
+  isError?: boolean;
   className?: string;
 }
 
@@ -22,6 +23,7 @@ export function InputDropdown<T extends string>({
   onChange,
   placeholder = "선택해주세요",
   disabled = false,
+  isError = false,
   className = "",
 }: DropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,6 +62,7 @@ export function InputDropdown<T extends string>({
         className={`flex w-full items-center justify-between rounded-xl border px-4 py-2.5 text-sm transition-colors
           ${isOpen ? "border-primary-500" : "border-gray-200"}
           ${disabled ? "bg-gray-50 text-gray-400" : "bg-[#F9FAFB] text-gray-800"}
+          ${isError ? "border-error-100" : ""}
         `}
       >
         <span className={selectedLabel ? "" : "text-gray-400"}>
