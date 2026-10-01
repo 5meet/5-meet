@@ -1,3 +1,4 @@
+// types/kakao-maps.d.ts
 export {};
 
 declare namespace kakao.maps {
@@ -5,15 +6,38 @@ declare namespace kakao.maps {
     constructor(lat: number, lng: number);
   }
 
+  class Point {
+    constructor(x: number, y: number);
+  }
+
+  class Size {
+    constructor(width: number, height: number);
+  }
+
+  interface MapOptions {
+    center: LatLng;
+    level?: number;
+  }
+
   class Map {
-    constructor(
-      container: HTMLElement,
-      options: { center: LatLng; level: number },
-    );
+    constructor(container: HTMLElement, options: MapOptions);
+    setCenter(latlng: LatLng): void;
+    panTo(latlng: LatLng): void;
+  }
+
+  interface MarkerOptions {
+    position: LatLng;
+    map?: Map;
+    image?: MarkerImage;
   }
 
   class Marker {
-    constructor(options: { position: LatLng; map?: Map });
+    constructor(options: MarkerOptions);
+    setMap(map: Map | null): void;
+  }
+
+  class MarkerImage {
+    constructor(src: string, size: Size, options?: { offset?: Point });
   }
 
   class InfoWindow {
@@ -23,6 +47,14 @@ declare namespace kakao.maps {
 
   function load(callback: () => void): void;
 
+  namespace event {
+    function addListener(
+      target: Marker,
+      type: string,
+      handler: () => void,
+    ): void;
+  }
+
   namespace services {
     enum Status {
       OK = "OK",
@@ -31,8 +63,8 @@ declare namespace kakao.maps {
     }
 
     interface GeocoderResult {
-      x: string; // 경도
-      y: string; // 위도
+      x: string;
+      y: string;
       address_name: string;
     }
 
