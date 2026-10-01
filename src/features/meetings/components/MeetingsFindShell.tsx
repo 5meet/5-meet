@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { Flame } from "lucide-react";
 import { HeroBanner } from "./HeroBanner";
-import { SearchBar } from "./SearchBar";
+import { SearchBar } from "./search/SearchBar";
 import { CategoryChips } from "./CategoryChips";
 import { SortFilterBar } from "./SortFilterBar";
 import { SectionHeader } from "./SectionHeader";
@@ -75,7 +75,7 @@ export function MeetingsFindShell({
         <section>
           <SectionHeader
             title="지금 인기 있는 모임"
-            moreHref="/meetings?sortBy=participantCount&sortOrder=desc"
+            moreHref="/meetings/list?sortBy=participantCount&sortOrder=desc"
             icon={<Flame className="h-5 w-5 text-orange-500" />}
           />
           {popularSlot}
