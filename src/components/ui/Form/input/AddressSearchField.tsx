@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/Form/label/Label";
 
 interface AddressSearchResult {
   address: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 interface AddressSearchFieldProps {
@@ -45,13 +45,17 @@ export const AddressSearchField = ({
             } else {
               onSelectAddress({
                 address: roadAddress,
-                latitude: 0,
-                longitude: 0,
+                latitude: null,
+                longitude: null,
               });
             }
           });
         } else {
-          onSelectAddress({ address: roadAddress, latitude: 0, longitude: 0 });
+          onSelectAddress({
+            address: roadAddress,
+            latitude: null,
+            longitude: null,
+          });
         }
       },
     }).open();
