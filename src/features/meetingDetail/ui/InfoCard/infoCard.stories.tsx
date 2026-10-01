@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import MeetingDetailInfoCard from "./infoCard";
+import InfoCard from "./infoCard";
 
 const meta = {
   title: "Components/MeetingDetail/InfoCard",
-  component: MeetingDetailInfoCard,
+  component: InfoCard,
   parameters: {
     layout: "centered",
   },
@@ -64,7 +64,7 @@ const meta = {
       description: "현재 사용자의 로그인 여부",
     },
   },
-} satisfies Meta<typeof MeetingDetailInfoCard>;
+} satisfies Meta<typeof InfoCard>;
 
 export default meta;
 

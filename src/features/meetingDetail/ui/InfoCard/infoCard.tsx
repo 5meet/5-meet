@@ -6,21 +6,20 @@ import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import Kebab from "@/components/ui/Kebab/Kebab";
-import { LoginRequiredModal } from "../Modal/LoginRequiredModal";
-import { EditMeetingModal } from "@/features/meetingDetail/ui/Modal/EditMeetingModal ";
-import { DeleteMeetingModal } from "@/features/meetingDetail/ui/Modal/DeleteMeetingModal ";
+import {
+  LoginRequiredModal,
+  EditMeetingModal,
+  DeleteMeetingModal,
+} from "@/features/meetingDetail/ui/Modal";
 import { showToast } from "@/components/ui/Sonner";
 import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 import {
   useJoinMeetingMutation,
   useCancelMeetingMutation,
-  useDeleteMeetingMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
 
-// 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
-
-const MeetingDetailInfoCard = ({
+const InfoCard = ({
   id,
   title,
   location,
@@ -93,7 +92,7 @@ const MeetingDetailInfoCard = ({
     }
   };
 
-  // 공유하기
+  // 모임 공유하기
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -205,4 +204,4 @@ const MeetingDetailInfoCard = ({
   );
 };
 
-export default MeetingDetailInfoCard;
+export default InfoCard;

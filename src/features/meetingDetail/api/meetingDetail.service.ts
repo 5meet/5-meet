@@ -27,6 +27,7 @@ const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 // 응답 매핑 공통 함수
 const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
   const { date, time } = convertDateType1(res.dateTime);
+  const createdAt = convertDateType4(new Date(res.createdAt));
 
   return {
     id: res.id,
@@ -44,6 +45,7 @@ const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
     address: res.address,
     latitude: res.latitude,
     longitude: res.longitude,
+    createdAt: createdAt,
     hostId: res.hostId,
     host: res.host,
     initialIsFavorited: res.isFavorited,
@@ -229,19 +231,24 @@ export const getMeetings = async (
 
 // 추천 모임 목록 조회
 const mapToRecommendedMeeting = (
-  r: MeetingDetailResponse,
-): RecommendedMeeting => ({
-  id: r.id,
-  title: r.name,
-  image: r.image,
-  location: r.region,
-  category: r.type,
-  dateTime: r.dateTime,
-  registrationEnd: r.registrationEnd,
-  initialIsFavorited: r.isFavorited,
-  participantCount: r.participantCount,
-  capacity: r.capacity,
-});
+  res: MeetingDetailResponse,
+): RecommendedMeeting => {
+  const { date, time } = convertDateType1(res.dateTime);
+
+  return {
+    id: res.id,
+    title: res.name,
+    image: res.image,
+    location: res.region,
+    category: res.type,
+    date,
+    time,
+    registrationEnd: res.registrationEnd,
+    initialIsFavorited: res.isFavorited,
+    participantCount: res.participantCount,
+    capacity: res.capacity,
+  };
+};
 
 export const getRecommendedMeetings = async ({
   currentMeetingId,

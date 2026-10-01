@@ -6,10 +6,7 @@ interface LoginRequiredModalProps {
   onClose: () => void;
 }
 
-export const LoginRequiredModal = ({
-  isOpen,
-  onClose,
-}: LoginRequiredModalProps) => {
+const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
   return (
     <Modal isOpen={isOpen}>
       <Modal.Header onClose={onClose} />
@@ -43,3 +40,5 @@ export const LoginRequiredModal = ({
     </Modal>
   );
 };
+
+export default LoginRequiredModal;

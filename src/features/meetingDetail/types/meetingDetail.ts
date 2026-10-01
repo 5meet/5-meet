@@ -64,6 +64,7 @@ export interface MeetingDetail {
   address: string;
   latitude: number;
   longitude: number;
+  createdAt: string;
   hostId: number;
   host: {
     id: number;
@@ -253,7 +254,8 @@ export interface RecommendedMeeting {
   image: string;
   location: string;
   category: string;
-  dateTime: string;
+  date: string;
+  time: string;
   registrationEnd: string;
   initialIsFavorited: boolean;
   participantCount: number;

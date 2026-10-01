@@ -10,7 +10,7 @@ interface EditMeetingModalProps {
   onClose: () => void;
 }
 
-export const EditMeetingModal = ({
+const EditMeetingModal = ({
   meetingId,
   isOpen,
   onClose,
@@ -50,3 +50,5 @@ export const EditMeetingModal = ({
     </Modal>
   );
 };
+
+export default EditMeetingModal;

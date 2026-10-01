@@ -10,7 +10,7 @@ interface DeleteMeetingModalProps {
   onClose: () => void;
 }
 
-export const DeleteMeetingModal = ({
+const DeleteMeetingModal = ({
   meetingId,
   isOpen,
   onClose,
@@ -51,3 +51,5 @@ export const DeleteMeetingModal = ({
     </Modal>
   );
 };
+
+export default DeleteMeetingModal;
