@@ -24,39 +24,39 @@ const MeetingDetailPageClient = ({
   meetingId,
   isLoggedIn,
 }: MeetingDetailPageClientProps) => {
-  // const {
-  //   data: meeting,
-  //   isLoading,
-  //   isError,
-  //   error,
-  // } = useMeetingDetailQuery(meetingId);
-  const meeting = {
-    id: 1,
-    title: "작은 독서 습관 만들기",
-    location: "건대입구",
-    category: "달램핏",
-    date: "2월 15일",
-    time: "17:30",
-    registrationEnd: "2027-02-09T23:59:59.000Z",
-    capacity: 10,
-    participantCount: 5,
-    image: "/sample.jpg",
-    description:
-      "작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~",
-    address: "서울시 광진구 자양동 123-45",
-    latitude: 37.5407,
-    longitude: 127.0693,
-    createdAt: "2026-02-01T10:00:00.000Z",
-    hostId: 1,
-    host: { id: 1, name: "홍길동", image: null },
-    initialIsFavorited: false,
-    initialIsParticipating: false,
-    isCompleted: false,
-    canceledAt: null,
-    confirmedAt: null,
-    dateTime: "2027-02-10T14:00:00.000Z",
-  };
-  const isLoading = false;
+  const {
+    data: meeting,
+    isLoading,
+    isError,
+    error,
+  } = useMeetingDetailQuery(meetingId);
+  // const meeting = {
+  //   id: 1,
+  //   title: "작은 독서 습관 만들기",
+  //   location: "건대입구",
+  //   category: "달램핏",
+  //   date: "2월 15일",
+  //   time: "17:30",
+  //   registrationEnd: "2027-02-09T23:59:59.000Z",
+  //   capacity: 10,
+  //   participantCount: 5,
+  //   image: "/sample.jpg",
+  //   description:
+  //     "작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~",
+  //   address: "서울시 광진구 자양동 123-45",
+  //   latitude: 37.5407,
+  //   longitude: 127.0693,
+  //   createdAt: "2026-02-01T10:00:00.000Z",
+  //   hostId: 1,
+  //   host: { id: 1, name: "홍길동", image: null },
+  //   initialIsFavorited: false,
+  //   initialIsParticipating: false,
+  //   isCompleted: false,
+  //   canceledAt: null,
+  //   confirmedAt: null,
+  //   dateTime: "2027-02-10T14:00:00.000Z",
+  // };
+  // const isLoading = false;
 
   const { data: participantsData } = useParticipantsQuery(meetingId);
   const { reviews, currentPage, totalPages, onPageChange } =
@@ -89,6 +89,20 @@ const MeetingDetailPageClient = ({
       </div>
     );
   }
+
+  if (isError) {
+    console.error("모임 상세 조회 실패:", error);
+
+    return (
+      <div className="flex items-center justify-center p-20 text-gray-500">
+        <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
+      </div>
+    );
+  }
+
+  // if (!meeting) {
+  //   return <MeetingNotFound />;
+  // }
 
   // isOwner는 API 응답이 아니라, 로그인한 사용자와 hostId를 비교해 클라이언트가 계산
   const isOwner = isLoggedIn && meeting.hostId === TEMP_CURRENT_USER_ID;
