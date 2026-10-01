@@ -24,7 +24,40 @@ const MeetingDetailPageClient = ({
   meetingId,
   isLoggedIn,
 }: MeetingDetailPageClientProps) => {
-  const { data: meeting, isLoading } = useMeetingDetailQuery(meetingId);
+  // const {
+  //   data: meeting,
+  //   isLoading,
+  //   isError,
+  //   error,
+  // } = useMeetingDetailQuery(meetingId);
+  const meeting = {
+    id: 1,
+    title: "작은 독서 습관 만들기",
+    location: "건대입구",
+    category: "달램핏",
+    date: "2월 15일",
+    time: "17:30",
+    registrationEnd: "2027-02-09T23:59:59.000Z",
+    capacity: 10,
+    participantCount: 5,
+    image: "/sample.jpg",
+    description:
+      "작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~",
+    address: "서울시 광진구 자양동 123-45",
+    latitude: 37.5407,
+    longitude: 127.0693,
+    createdAt: "2026-02-01T10:00:00.000Z",
+    hostId: 1,
+    host: { id: 1, name: "홍길동", image: null },
+    initialIsFavorited: false,
+    initialIsParticipating: false,
+    isCompleted: false,
+    canceledAt: null,
+    confirmedAt: null,
+    dateTime: "2027-02-10T14:00:00.000Z",
+  };
+  const isLoading = false;
+
   const { data: participantsData } = useParticipantsQuery(meetingId);
   const { reviews, currentPage, totalPages, onPageChange } =
     useReviewsPagination(meetingId);
@@ -60,18 +93,12 @@ const MeetingDetailPageClient = ({
   // isOwner는 API 응답이 아니라, 로그인한 사용자와 hostId를 비교해 클라이언트가 계산
   const isOwner = isLoggedIn && meeting.hostId === TEMP_CURRENT_USER_ID;
 
-  // 사용자가 주최자가 아니라 참여자일 경우,
-  // -> 모임 상세 페이지에서 모임 설명, 모임 장소, 리뷰 모아보기, 이런 모임은 어때요? 섹션을 보여줍니다.
-  // 사용자가 주최자일 경우,
-  // -> 모임 상세 페이지에서 모임 장소, 리뷰 모아보기, 섹션을 보여줍니다.
-  //    + 모임 수정, 모임 삭제 버튼을 보여줍니다.
-  //    + 모임 수정 버튼 클릭 시, 모임 수정 모달이 열립니다.
-  //    + 모임 삭제 버튼 클릭 시, 모임 삭제 확인 모달이 열립니다.
   return (
-    <>
-      <div className="flex flex-col gap-8 w-[343px] font-semibold text-black text-base md:text-xl lg:text-2xl md:w-174 lg:w-7xl">
-        <section className="flex gap-2 w-full md:gap-4">
-          <div className="w-[343px] h-[241px] rounded-4xl shadow-md overflow-hidden md:w-[333px] md:h-[332px] lg:w-[630px] lg:h-[443px]">
+    <main className="flex flex-col max-w-[1920px] justify-center items-center gap-20 mx-auto mt-20 mb-10 font-semibold text-black text-base md:text-xl lg:text-2xl md:mb-20 lg:mb-40 md:mt-30">
+      {/* 모임 information */}
+      <section className="flex">
+        <div className="flex gap-4 justify-center flex-wrap md:flex-nowrap">
+          <div className="w-[343px] h-[241px] rounded-4xl shadow-sm overflow-hidden md:w-[333px] md:h-[362px] lg:w-[630px] lg:h-[443px]">
             {meeting.image}
           </div>
 
@@ -95,96 +122,102 @@ const MeetingDetailPageClient = ({
             <PersonnelCard
               participantCount={meeting.participantCount}
               capacity={meeting.capacity}
-              participants={participantsData.data}
+              participants={participantsData?.data ?? []}
             />
           </div>
-        </section>
+        </div>
+      </section>
 
-        {!isOwner && meeting.description && (
-          <section className="flex flex-col gap-5 w-full">
-            <div>모임 설명</div>
+      {!isOwner && meeting.description && (
+        <section className="flex flex-col gap-4 justify-center md:w-full">
+          <h3>모임 설명</h3>
 
-            <div className="flex gap-2.5 w-full min-h-57.5 max-h-88 rounded-4xl px-5 py-4 md:px-12 md:py-6">
-              <div className="flex gap-1.5 font-normal text-xs text-gray-500 md:text-sm">
-                <div className="flex gap-1.5">
-                  <Image
-                    src={meeting.host.image ?? "/profile/profile_female1.svg"}
-                    alt={`${meeting.host.name} 프로필`}
-                    width={24}
-                    height={24}
-                    className="object-cover"
-                  />
+          <div className="flex flex-col gap-2.5 w-85.75 rounded-3xl shadow-sm px-5 py-4 md:px-12 md:py-6 md:w-full md:max-w-[696px] lg:max-w-[1280px]">
+            <div className="flex gap-1.5 font-normal text-xs text-gray-500 md:text-sm">
+              <div className="flex gap-1.5">
+                <Image
+                  src={meeting.host.image ?? "/profile/profile_female1.svg"}
+                  alt={`${meeting.host.name} 프로필`}
+                  width={24}
+                  height={24}
+                  className="object-cover"
+                />
 
-                  <span>{meeting.host.name}</span>
-                </div>
-
-                <span>{meeting.createdAt}</span>
+                <span>{meeting.host.name}</span>
               </div>
 
-              {meeting.description}
+              <span>{meeting.createdAt}</span>
             </div>
-          </section>
-        )}
 
-        <section className="flex flex-col gap-5 w-full">
-          <div>모임 장소</div>
+            <span className="text-wrap wrap-break-word font-normal text-lg text-[#374151]">
+              {meeting.description}
+            </span>
+          </div>
+        </section>
+      )}
 
-          <div className="flex gap-2.5 w-full h-65 rounded-4xl px-5 py-4 md:h-88 md:px-12 md:py-6">
+      <section className="flex flex-col gap-4 justify-center md:w-full">
+        <h3>모임 장소</h3>
+
+        <div className="flex flex-col w-85.75 h-65 rounded-4xl md:h-88 md:w-full">
+          <div className="flex w-full h-full rounded-t-4xl overflow-hidden border border-b-0 border-gray-400">
             <KakaoMap
               latitude={meeting.latitude}
               longitude={meeting.longitude}
               address={meeting.address}
             />
+          </div>
 
-            <div className="flex gap-2.5 w-full border border-t-0 border-gray-400 px-8 py-5.5">
+          <div className="flex items-center gap-2.5 w-full rounded-b-4xl border border-t-0 border-gray-400 px-8 py-5.5 overflow-hidden">
+            <span className="font-medium text-xs md:text-lg text-black">
               {meeting.address}
-              <button
-                className="flex gap-0.5 items-center font-medium text-lg text-primary-600"
-                onClick={handleShare}
-              >
-                <Image src="/ic_copy.svg" alt="복사" width={18} height={18} />
-                복사
-              </button>
-            </div>
+            </span>
+            <button
+              className="flex gap-0.5 items-center font-medium text-xs md:text-lg text-primary-600"
+              onClick={handleShare}
+            >
+              <Image src="/ic_copy.svg" alt="복사" width={18} height={18} />
+              복사
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-4 justify-center md:w-full">
+        <h3>리뷰 모아보기</h3>
+        <ReviewCardList reviews={reviews} />
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        )}
+      </section>
+
+      {!isOwner && recommended && recommended.length > 0 && (
+        <section className="flex flex-col gap-4 justify-center md:w-full">
+          <h3>이런 모임은 어때요?</h3>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hidden">
+            {recommended.map((r) => (
+              <CompactCard
+                key={r.id}
+                variant="meeting"
+                id={r.id}
+                title={r.title}
+                image={r.image}
+                location={r.location}
+                category={r.category}
+                date={r.date}
+                time={r.time}
+                registrationEnd={r.registrationEnd}
+                initialIsFavorited={r.initialIsFavorited}
+              />
+            ))}
           </div>
         </section>
-
-        <section className="flex flex-col gap-5 w-full">
-          <div>리뷰 모아보기</div>
-          <ReviewCardList reviews={reviews} />
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={onPageChange}
-            />
-          )}
-        </section>
-
-        {!isOwner && recommended && recommended.length > 0 && (
-          <section className="flex flex-col gap-5 w-full">
-            <div>이런 모임은 어때요?</div>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hidden">
-              {recommended.map((r) => (
-                <CompactCard
-                  key={r.id}
-                  variant="meeting"
-                  id={r.id}
-                  title={r.title}
-                  image={r.image}
-                  location={r.location}
-                  category={r.category}
-                  date={r.date}
-                  time={r.time}
-                  registrationEnd={r.registrationEnd}
-                  initialIsFavorited={r.initialIsFavorited}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
-    </>
+      )}
+    </main>
   );
 };
 

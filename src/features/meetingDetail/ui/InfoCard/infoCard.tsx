@@ -129,7 +129,7 @@ const InfoCard = ({
               )}
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center gap-1.5 text-lg font-semibold text-[#1F2937] lg:text-[28px]">
                 <span className="min-w-0 text-wrap">{title}</span>
 

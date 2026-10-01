@@ -22,7 +22,7 @@ import {
   convertDateType4,
 } from "@/lib/convertDate/formatMeetingDate";
 
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
+// const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 // 응답 매핑 공통 함수
 const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
@@ -63,7 +63,7 @@ export const getMeetingDetail = async (
   meetingId: number,
 ): Promise<MeetingDetail> => {
   const res = await api
-    .get(`${TEAM_ID}/meetings/${meetingId}`)
+    .get(`meetings/${meetingId}`)
     .json<MeetingDetailResponse>();
 
   return mapToMeetingDetail(res);
@@ -77,7 +77,7 @@ export const updateMeetingDetail = async (
   payload: MeetingUpdateRequest,
 ): Promise<MeetingDetail> => {
   const res = await api
-    .patch(`${TEAM_ID}/meetings/${meetingId}`, { json: payload })
+    .patch(`meetings/${meetingId}`, { json: payload })
     .json<MeetingDetailResponse>();
 
   return mapToMeetingDetail(res);
@@ -87,7 +87,7 @@ export const updateMeetingDetail = async (
 export const deleteMeetingDetail = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.delete(`${TEAM_ID}/meetings/${meetingId}`).json<ResponseMessage>();
+  return api.delete(`meetings/${meetingId}`).json<ResponseMessage>();
 };
 
 //-----------------------------------------------------------------
@@ -96,18 +96,14 @@ export const deleteMeetingDetail = async (
 export const joinMeeting = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api
-    .post(`${TEAM_ID}/meetings/${meetingId}/join`)
-    .json<ResponseMessage>();
+  return api.post(`meetings/${meetingId}/join`).json<ResponseMessage>();
 };
 
 // 모임 참여 취소 (참여자)
 export const cancelMeeting = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api
-    .delete(`${TEAM_ID}/meetings/${meetingId}/join`)
-    .json<ResponseMessage>();
+  return api.delete(`meetings/${meetingId}/join`).json<ResponseMessage>();
 };
 
 //-----------------------------------------------------------------
@@ -118,7 +114,7 @@ export const changeMeetingStatus = async (
   status: MeetingStatus,
 ): Promise<MeetingDetail> => {
   const res = await api
-    .patch(`${TEAM_ID}/meetings/${meetingId}/status`, {
+    .patch(`meetings/${meetingId}/status`, {
       json: { status },
     })
     .json<MeetingDetailResponse>();
@@ -140,7 +136,7 @@ export const getParticipants = async ({
   };
 
   const res = await api
-    .get(`${TEAM_ID}/meetings/${meetingId}/participants`, { searchParams })
+    .get(`meetings/${meetingId}/participants`, { searchParams })
     .json<{
       data: ParticipantResponse[];
       nextCursor: string | null;
@@ -176,7 +172,7 @@ export const getReviews = async ({
   };
 
   const res = await api
-    .get(`${TEAM_ID}/meetings/${meetingId}/reviews`, { searchParams })
+    .get(`meetings/${meetingId}/reviews`, { searchParams })
     .json<{
       data: ReviewResponse[];
       nextCursor: string | null;
@@ -222,9 +218,7 @@ export const getMeetings = async (
     Object.entries(params).filter(([, v]) => v !== undefined && v !== null),
   );
 
-  return api
-    .get(`${TEAM_ID}/meetings`, { searchParams })
-    .json<MeetingListResponse>();
+  return api.get(`meetings`, { searchParams }).json<MeetingListResponse>();
 };
 
 //-----------------------------------------------------------------
