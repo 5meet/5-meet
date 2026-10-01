@@ -6,6 +6,7 @@ import Image from "next/image";
 interface TimeFieldProps {
   value: string; // "17:30"
   onChange: (time: string) => void;
+  isError?: boolean;
 }
 
 const HOURS = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, "0"));
@@ -17,7 +18,11 @@ const MINUTES = Array.from({ length: 60 }, (_, m) =>
 //   String(i * 5).padStart(2, "0"),
 // );
 
-export const TimeField = ({ value, onChange }: TimeFieldProps) => {
+export const TimeField = ({
+  value,
+  onChange,
+  isError = false,
+}: TimeFieldProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +51,8 @@ export const TimeField = ({ value, onChange }: TimeFieldProps) => {
         onClick={() => setIsOpen((prev) => !prev)}
         className={`flex w-full gap-2 items-center rounded-xl border px-4 py-2.5 bg-[#F9FAFB] text-left text-sm
           ${isOpen ? "border-primary-500 text-gray-800" : "border-gray-300"}
-          ${value ? "text-gray-800" : "text-gray-400"}`}
+          ${value ? "text-gray-800" : "text-gray-400"}
+          ${isError ? "border-error-100" : ""}`}
       >
         <Image src="ic_clock.svg" alt="시계" width={24} height={24} />
         {value || "00 : 00"}
