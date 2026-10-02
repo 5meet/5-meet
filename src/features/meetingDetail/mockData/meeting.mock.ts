@@ -16,7 +16,7 @@ export const mockMeeting: MeetingDetail = {
   address: "서울시 광진구 자양동 123-45",
   latitude: 37.5407,
   longitude: 127.0693,
-  createdAt: "2026-02-01T10:00:00.000Z",
+  createdAt: "2026.12.01",
   hostId: 1,
   host: { id: 1, name: "홍길동", image: null },
   initialIsFavorited: false,

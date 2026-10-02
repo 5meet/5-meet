@@ -244,21 +244,25 @@ const MeetingDetailPageClient = ({
         {!isOwner && recommended && recommended.length > 0 && (
           <section className="flex flex-col gap-4 w-full">
             <h3>이런 모임은 어때요?</h3>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hidden max-w-[664px] md:max-w-[1256px]">
+            <div
+              className="flex gap-4 overflow-x-auto scrollbar-hidden snap-x snap-mandatory max-w-[664px] md:max-w-[1256px]"
+              style={{ scrollSnapType: "x mandatory" }}
+            >
               {recommended.map((r) => (
-                <CompactCard
-                  key={r.id}
-                  variant="meeting"
-                  id={r.id}
-                  title={r.title}
-                  image={r.image}
-                  location={r.location}
-                  category={r.category}
-                  date={r.date}
-                  time={r.time}
-                  registrationEnd={r.registrationEnd}
-                  initialIsFavorited={r.initialIsFavorited}
-                />
+                <div key={r.id} className="snap-start shrink-0">
+                  <CompactCard
+                    variant="meeting"
+                    id={r.id}
+                    title={r.title}
+                    image={r.image}
+                    location={r.location}
+                    category={r.category}
+                    date={r.date}
+                    time={r.time}
+                    registrationEnd={r.registrationEnd}
+                    initialIsFavorited={r.initialIsFavorited}
+                  />
+                </div>
               ))}
             </div>
           </section>
