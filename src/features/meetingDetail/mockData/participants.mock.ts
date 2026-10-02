@@ -30,12 +30,12 @@ const buildMockParticipant = (index: number): ParticipantProfile => ({
 });
 
 /**
- * 참가자 5명 (mockMeeting의 participantCount: 5와 맞춘 기본 세트).
+ * 참가자 15명 (mockMeeting의 participantCount: 15와 맞춘 기본 세트).
  * ParticipantProfiles가 MAX_VISIBLE_PROFILES(4)를 넘는 "+N" 뱃지까지 보이도록
  * capacity 안에서 조금 더 여유 있는 buildMockParticipants도 함께 제공합니다.
  */
 export const mockParticipants: ParticipantProfile[] = Array.from(
-  { length: 5 },
+  { length: 15 },
   (_, i) => buildMockParticipant(i),
 );
 
@@ -44,8 +44,8 @@ export const mockParticipantsSingle: ParticipantProfile[] = [
   buildMockParticipant(0),
 ];
 
-/** 정원(mockMeeting.capacity: 10)에 가득 찬 케이스 — "개설 확정" 뱃지, +N 뱃지 동시 테스트용 */
+/** 정원(mockMeeting.capacity: 30)에 가득 찬 케이스 — "개설 확정" 뱃지, +N 뱃지 동시 테스트용 */
 export const mockParticipantsFull: ParticipantProfile[] = Array.from(
-  { length: 10 },
+  { length: 30 },
   (_, i) => buildMockParticipant(i),
 );
