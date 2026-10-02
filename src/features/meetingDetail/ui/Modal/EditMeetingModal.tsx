@@ -47,7 +47,7 @@ const EditMeetingModal = ({
           className="flex-1"
           size="sm"
           isLoading={editMutation.isPending}
-          onClick={() => editMutation.mutate()}
+          // onClick={() => editMutation.mutate()}
         >
           수정하기
         </Button>
