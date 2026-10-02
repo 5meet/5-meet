@@ -38,7 +38,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
       <div className="relative aspect-16/10 w-full overflow-hidden bg-gray-100">
         {image ? (
           <Image
-            src={image}
+            src="/meetings-hero.jpg"
             alt={name}
             fill
             className="object-cover"

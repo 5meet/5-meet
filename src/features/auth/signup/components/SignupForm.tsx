@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button/Button";
 
 import { useModal } from "@/contexts/ModalContext";
 import { checkEmail } from "../api/emailCheck";
-import { SignupRequest } from "../types";
+import { SignupRequest } from "@/features/auth/type";
 import PasswordInput from "@/components/ui/Form/input/PasswordInput";
 import FormErrorMessage from "@/components/ui/Form/formErrorMessage/FormErrorMessage";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";

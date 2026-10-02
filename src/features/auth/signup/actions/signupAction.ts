@@ -4,7 +4,7 @@
 import { ApiError } from "@/lib/api/ApiError";
 import { serverFetch } from "@/lib/api/serverFetch";
 
-import type { SignupRequest, SignupResponse } from "../types";
+import type { SignupRequest, SignupResponse } from "@/features/auth/type";
 
 interface SignupActionResult {
   success: boolean;

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { serverFetch } from "@/lib/api/serverFetch";
 import { ApiError } from "@/lib/api/ApiError";
 
-import type { LoginRequest, LoginResponse } from "../types";
+import type { LoginRequest, LoginResponse } from "@/features/auth/type";
 import { setAuthCookies } from '@/lib/auth/authCookies';
 
 // 백엔드에서 받은 결과를 그대로 전달하는게 아닌 성공여부, message, 유저정보만 담아서 클라이언트에 전달
