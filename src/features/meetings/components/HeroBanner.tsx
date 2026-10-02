@@ -1,70 +1,82 @@
 "use client";
 
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
 import { useState } from "react";
+
 import { HERO_SLIDES } from "../constants/filters";
 
-type HeroBannerProps = {
-  searchSlot?: ReactNode;
-};
-
-/** 시안: 왼쪽 그린 카피 + 오른쪽 사진, 검색바는 배너 하단에 겹침. 배너 콘텐츠는 정적. */
-export function HeroBanner({ searchSlot }: HeroBannerProps) {
+export function HeroBanner() {
   const [index, setIndex] = useState(0);
-  const slide = HERO_SLIDES[index] ?? HERO_SLIDES[0];
-  const last = HERO_SLIDES.length - 1;
+
+  const slide = HERO_SLIDES[index];
+
+  const handlePrev = () => {
+    setIndex((prev) =>
+      prev === 0 ? HERO_SLIDES.length - 1 : prev - 1,
+    );
+  };
+
+  const handleNext = () => {
+    setIndex((prev) =>
+      prev === HERO_SLIDES.length - 1 ? 0 : prev + 1,
+    );
+  };
 
   return (
-    <section className="relative pb-8">
-      <div className="relative h-[220px] overflow-hidden rounded-[28px] md:h-[280px]">
-        <div className="absolute inset-0 flex">
-          <div className="relative z-10 flex w-full flex-col justify-center bg-[#0C7665] px-12 py-8 md:w-[46%] md:px-14">
-            <p className="max-w-[280px] text-2xl font-bold leading-snug text-white md:text-3xl">
-              {slide.title}
-            </p>
-            <p className="mt-3 max-w-[260px] text-sm leading-relaxed text-white/85 md:text-base">
-              {slide.subtitle}
-            </p>
-          </div>
-          <div className="relative hidden flex-1 md:block">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/meetings-hero.jpg"
-              alt=""
-              className="h-full w-full object-cover object-[center_30%]"
-            />
-            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0C7665] to-transparent" />
-          </div>
-        </div>
+    <section className="relative flex h-50 w-full overflow-hidden bg-primary-700 md:h-70 md:rounded-3xl">
+      {/* 이미지 영역 */}
+      <div className="absolute inset-0 md:relative md:inset-auto md:order-2 md:w-[58%]">
+        <Image
+          src="/meetings-hero.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover"
+        />
 
-        <button
-          type="button"
-          aria-label="이전 배너"
-          onClick={() => setIndex((i) => (i === 0 ? last : i - 1))}
-          className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-sm md:left-4"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          aria-label="다음 배너"
-          onClick={() => setIndex((i) => (i === last ? 0 : i + 1))}
-          className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow-sm md:right-4"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-        <span className="absolute bottom-12 right-6 z-20 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white md:bottom-14">
-          <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-primary-500" />
-          {index + 1}/{HERO_SLIDES.length}
-        </span>
+        {/* 모바일 이미지 오버레이 */}
+        <div className="absolute inset-0 bg-black/35 md:hidden" />
+
+        {/* 데스크톱 그라데이션 */}
+        <div className="absolute inset-y-0 left-0 hidden w-16 bg-linear-to-r from-primary-700 to-transparent md:block" />
       </div>
 
-      {searchSlot ? (
-        <div className="absolute inset-x-6 bottom-2 z-30 md:inset-x-10">
-          {searchSlot}
-        </div>
-      ) : null}
+      {/* 텍스트 영역 */}
+      <div className="relative z-10 flex w-full flex-col justify-center gap-2 px-12 text-white md:w-[42%] md:gap-3 md:px-14">
+        <h2 className="whitespace-pre-line text-xl font-bold md:text-3xl">
+          {slide.title}
+        </h2>
+
+        <p className="whitespace-pre-line text-sm md:text-base">
+          {slide.subtitle}
+        </p>
+      </div>
+
+      {/* 이전 버튼 */}
+      <button
+        type="button"
+        aria-label="이전 슬라이드"
+        onClick={handlePrev}
+        className="absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-1.5 text-white md:left-3 md:p-2"
+      >
+        <ChevronLeft className="size-5" />
+      </button>
+
+      {/* 다음 버튼 */}
+      <button
+        type="button"
+        aria-label="다음 슬라이드"
+        onClick={handleNext}
+        className="absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-black/20 p-1.5 text-white md:right-3 md:p-2"
+      >
+        <ChevronRight className="size-5" />
+      </button>
+
+      {/* 슬라이드 페이지 표시 */}
+      <div className="absolute right-4 bottom-7 z-20 rounded-full bg-black/40 px-2.5 py-1 text-xs text-white md:right-4 md:bottom-9 md:px-3">
+        {index + 1} / {HERO_SLIDES.length}
+      </div>
     </section>
   );
 }
