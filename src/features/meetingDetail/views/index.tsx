@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
 import { PersonnelCard } from "@/features/meetingDetail/ui/PersonnelCard";
@@ -22,17 +24,16 @@ import {
 import { useRef } from "react";
 import { useState } from "react";
 
-// TODO: 인증 구현 전까지 쓰는 임시값. 실제 로그인 사용자 id로 교체 필요
-const TEMP_CURRENT_USER_ID = 1;
-
 interface MeetingDetailPageClientProps {
   meetingId: number;
   isLoggedIn: boolean;
+  currentUserId: number | null;
 }
 
 const MeetingDetailPageClient = ({
   meetingId,
   isLoggedIn,
+  currentUserId,
 }: MeetingDetailPageClientProps) => {
   // const {
   //   data: meeting,
@@ -96,6 +97,7 @@ const MeetingDetailPageClient = ({
   //   });
   // };
 
+  // mock 데이터용 리뷰 페이지네이션
   const handleReviewPageChange = (page: number) => {
     setReviewPage(page);
     reviewSectionRef.current?.scrollIntoView({
@@ -128,7 +130,8 @@ const MeetingDetailPageClient = ({
   // }
 
   // isOwner는 API 응답이 아니라, 로그인한 사용자와 hostId를 비교해 클라이언트가 계산
-  const isOwner = isLoggedIn && meeting.hostId === TEMP_CURRENT_USER_ID;
+  const isOwner =
+    isLoggedIn && currentUserId !== null && meeting.hostId === currentUserId;
 
   return (
     <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 font-semibold text-black text-base md:text-xl lg:text-2xl md:mb-20 lg:mb-40 md:mt-30">
