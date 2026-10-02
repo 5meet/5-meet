@@ -35,8 +35,8 @@ export const Tabs = ({ tabs, activeTab, onChange }: TabsProps) => {
                   relative z-10
                   flex h-full w-full items-center justify-center
                   whitespace-nowrap
-                  text-sm font-semibold leading-5 tracking-[-0.28px]
-                  sm:text-xl sm:leading-[30px] sm:tracking-[-0.4px]
+                  text-base font-semibold leading-5 tracking-[-0.28px]
+                  md:text-lg md:leading-7.5 md:tracking-[-0.4px]
                   ${
                     isActive
                       ? "text-primary-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary-500"
