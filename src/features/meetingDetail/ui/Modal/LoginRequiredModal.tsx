@@ -12,7 +12,7 @@ const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
       <Modal.Header onClose={onClose} />
 
       <Modal.Body>
-        <div className="text-center font-bold text-lg">
+        <div className="text-center font-bold text-lg md:text-2xl">
           로그인이 필요한 서비스입니다.
         </div>
       </Modal.Body>

@@ -20,7 +20,12 @@ const EditMeetingModal = ({
   return (
     <Modal isOpen={isOpen}>
       <Modal.Header onClose={onClose}>
-        <Modal.Title>모임 수정하기</Modal.Title>
+        <Modal.Title>
+          <div>
+            <h3 className="text-lg font-semibold md:text-2xl">모임 수정하기</h3>
+            {/* Tab - 기본 정보 / 일정 및 인원 */}
+          </div>
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
