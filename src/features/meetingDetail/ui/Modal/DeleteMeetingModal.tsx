@@ -22,9 +22,9 @@ const DeleteMeetingModal = ({
       <Modal.Header onClose={onClose} />
 
       <Modal.Body>
-        <div className="flex gap-3 text-center font-semibold text-2xl text-gray-800">
+        <div className="flex flex-col gap-3 text-center font-semibold text-2xl text-gray-800">
           <span>모임을 정말 삭제하시겠어요?</span>
-          <span className="font-medium text-lg text-gray-500">
+          <span className="font-normal text-sm text-gray-500 md:font-medium md:text-lg">
             삭제 후에는 되돌릴 수 없습니다.
           </span>
         </div>
