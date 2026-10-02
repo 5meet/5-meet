@@ -13,7 +13,7 @@ export async function MeetingsContent() {
 
   const meetings = response.data.slice(0, 4);
   return (
-    <main className="md:mt-4">
+    <main className="bg-[#f5f7f8] md:py-4">
       <div className="mx-auto w-full md:w-[90%] md:max-w-360">
         <HeroBanner />
 

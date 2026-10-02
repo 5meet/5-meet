@@ -23,7 +23,7 @@ const NAV_ITEMS = [
 export default function GNB() {
   return (
     <header className="relative w-full bg-[#f5f7f8]">
-      <div className="mx-auto flex h-16 w-full items-center px-4 md:max-w-280 md:px-6 lg:max-w-350">
+      <div className="mx-auto flex h-16 w-full items-center px-4 md:max-w-280 md:px-6 md:w-[90%] lg:max-w-350">
         {/* 로고 */}
         <Link
           href="/meetings"
