@@ -2,10 +2,7 @@
 
 import { SectionHeader } from "../SectionHeader";
 import { MeetingCardList } from "./MeetingCardList";
-import { MeetingsResponse } from "../../types/meeting";
 import { ReactNode, Suspense } from "react";
-import { serverFetch } from "@/lib/api/serverFetch";
-import { EmptyState } from "../EmptyState";
 import { MeetingCardListSkeleton } from "./MeetingCardListSkeleton";
 
 interface MeetingSectionProps {

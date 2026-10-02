@@ -10,7 +10,7 @@ interface MeetingCardListProps {
 
 export async function MeetingCardList({ endpoint }: MeetingCardListProps) {
   const response = await serverFetch<MeetingsResponse>(endpoint);
-  const meetings = response.data.slice(0, 4);
+  const meetings = response.data;
 
   if (meetings.length === 0) {
     return (

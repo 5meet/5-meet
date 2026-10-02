@@ -18,14 +18,14 @@ export async function MeetingsContent() {
         <MeetingSection
           title="지금 인기 있는 모임"
           moreHref="/meetings/list"
-          endpoint="/meetings"
+          endpoint="/meetings?size=4"
           icon={<Flame className="h-5 w-5 text-orange-500" />}
         />
 
         <MeetingSection
           title="추천 모임"
           moreHref="/meetings/list"
-          endpoint="/meetings"
+          endpoint="/meetings?size=4"
           icon={<Sparkles className="h-5 w-5 text-violet-500" />}
         />
       </div>
