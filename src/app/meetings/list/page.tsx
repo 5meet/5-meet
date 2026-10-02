@@ -1,7 +1,16 @@
+import MeetingsFindContent from '@/features/meetings/components/meeting/MeetingsFindContent';
 
 
-export default function MeetingList() {
-  return (
-    <div>미팅 리스트 페이지</div>
-  )
+interface MeetingsListPageProps {
+  searchParams: Promise<{
+    keyword?: string;
+  }>;
+}
+
+export default async function MeetingsListPage({
+  searchParams,
+}: MeetingsListPageProps) {
+  const { keyword } = await searchParams;
+
+  return <MeetingsFindContent keyword={keyword} />;
 }
