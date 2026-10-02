@@ -11,6 +11,13 @@ import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeeting
 import { useParticipantsQuery } from "@/features/meetingDetail/hooks/useParticipantsQuery";
 import { useReviewsPagination } from "@/features/meetingDetail/hooks/useReviewsPagination";
 import { useRecommendedMeetingsQuery } from "@/features/meetingDetail/hooks/useRecommendedMeetingsQuery";
+//mock 데이터
+import {
+  mockMeeting,
+  mockParticipants,
+  mockReviewsAll,
+  mockRecommendedMeetings,
+} from "@/features/meetingDetail/mockData";
 
 // TODO: 인증 구현 전까지 쓰는 임시값. 실제 로그인 사용자 id로 교체 필요
 const TEMP_CURRENT_USER_ID = 1;
@@ -30,40 +37,26 @@ const MeetingDetailPageClient = ({
   //   isError,
   //   error,
   // } = useMeetingDetailQuery(meetingId);
-  const meeting = {
-    id: 1,
-    title: "작은 독서 습관 만들기",
-    location: "건대입구",
-    category: "달램핏",
-    date: "2월 15일",
-    time: "17:30",
-    registrationEnd: "2027-02-09T23:59:59.000Z",
-    capacity: 10,
-    participantCount: 5,
-    image: "/sample.jpg",
-    description:
-      "작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~ 작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~",
-    address: "서울시 광진구 자양동 123-45",
-    latitude: 37.5407,
-    longitude: 127.0693,
-    createdAt: "2026-02-01T10:00:00.000Z",
-    hostId: 1,
-    host: { id: 1, name: "홍길동", image: null },
-    initialIsFavorited: false,
-    initialIsParticipating: false,
-    isCompleted: false,
-    canceledAt: null,
-    confirmedAt: null,
-    dateTime: "2027-02-10T14:00:00.000Z",
-  };
+  // const { data: participantsData } = useParticipantsQuery(meetingId);
+  // const { reviews, currentPage, totalPages, onPageChange } =
+  //   useReviewsPagination(meetingId);
+  // const { data: recommended } = useRecommendedMeetingsQuery(meeting);
+
+  //mock 데이터
+  const meeting = mockMeeting;
   const isLoading = false;
   const isError = false;
   const error = null;
-
-  const { data: participantsData } = useParticipantsQuery(meetingId);
-  const { reviews, currentPage, totalPages, onPageChange } =
-    useReviewsPagination(meetingId);
-  const { data: recommended } = useRecommendedMeetingsQuery(meeting);
+  const participantsData = {
+    data: mockParticipants,
+    nextCursor: null,
+    hasMore: false,
+  };
+  const reviews = mockReviewsAll.slice(0, 10);
+  const currentPage = 1;
+  const totalPages = Math.ceil(mockReviewsAll.length / 10);
+  const onPageChange = (page: number) => console.log("mock page change:", page);
+  const recommended = mockRecommendedMeetings;
 
   // 주소 복사하기
   const handleShare = async () => {
