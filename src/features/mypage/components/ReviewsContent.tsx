@@ -97,7 +97,6 @@ export default function ReviewsContent() {
 
   return (
     <div className="w-full">
-      {/* 리뷰 탭 */}
       <div className="mb-5 mt-6 flex gap-2">
         <button
           type="button"
@@ -167,14 +166,10 @@ export default function ReviewsContent() {
                 overflow-y-auto
                 rounded-[24px]
                 bg-white
-
                 px-5
                 py-2
-
                 sm:px-6
-
                 md:px-8
-
                 [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-thumb]:rounded-full
