@@ -11,6 +11,7 @@ import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeeting
 import { useParticipantsQuery } from "@/features/meetingDetail/hooks/useParticipantsQuery";
 import { useReviewsPagination } from "@/features/meetingDetail/hooks/useReviewsPagination";
 import { useRecommendedMeetingsQuery } from "@/features/meetingDetail/hooks/useRecommendedMeetingsQuery";
+
 //mock 데이터
 import {
   mockMeeting,
@@ -19,6 +20,7 @@ import {
   mockRecommendedMeetings,
 } from "@/features/meetingDetail/mockData";
 import { useRef } from "react";
+import { useState } from "react";
 
 // TODO: 인증 구현 전까지 쓰는 임시값. 실제 로그인 사용자 id로 교체 필요
 const TEMP_CURRENT_USER_ID = 1;
@@ -54,8 +56,13 @@ const MeetingDetailPageClient = ({
     hasMore: false,
   };
   const REVIEW_PAGE_SIZE = 4;
-  const reviews = mockReviewsAll.slice(0, REVIEW_PAGE_SIZE);
-  const currentPage = 1;
+  const [reviewPage, setReviewPage] = useState(1);
+
+  const reviews = mockReviewsAll.slice(
+    (reviewPage - 1) * REVIEW_PAGE_SIZE,
+    reviewPage * REVIEW_PAGE_SIZE,
+  );
+  const currentPage = reviewPage;
   const totalPages = Math.ceil(mockReviewsAll.length / REVIEW_PAGE_SIZE);
   const onPageChange = (page: number) => console.log("mock page change:", page);
   const recommended = mockRecommendedMeetings;
@@ -81,8 +88,16 @@ const MeetingDetailPageClient = ({
   // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
   const reviewSectionRef = useRef<HTMLElement>(null);
 
+  // const handleReviewPageChange = (page: number) => {
+  //   onPageChange(page);
+  //   reviewSectionRef.current?.scrollIntoView({
+  //     behavior: "smooth",
+  //     block: "start",
+  //   });
+  // };
+
   const handleReviewPageChange = (page: number) => {
-    onPageChange(page);
+    setReviewPage(page);
     reviewSectionRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
@@ -229,7 +244,7 @@ const MeetingDetailPageClient = ({
         {!isOwner && recommended && recommended.length > 0 && (
           <section className="flex flex-col gap-4 w-full">
             <h3>이런 모임은 어때요?</h3>
-            <div className="flex gap-4 overflow-x-auto scrollbar-hidden">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hidden max-w-[664px] md:max-w-[1256px]">
               {recommended.map((r) => (
                 <CompactCard
                   key={r.id}
