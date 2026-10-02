@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, Heart, MapPin, Users } from "lucide-react";
 
-import type { Meeting } from "../types/meeting";
+import type { Meeting } from "@/features/meetings/types/meeting";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -35,7 +35,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   return (
     <article className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       {/* 이미지 */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+      <div className="relative aspect-16/10 w-full overflow-hidden bg-gray-100">
         {image ? (
           <Image
             src={image}
