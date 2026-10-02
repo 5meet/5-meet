@@ -33,7 +33,9 @@ export default function ReviewMeetingCard({
   isFavorite = false,
   rating,
 }: ReviewMeetingCardProps) {
-  const [isLiked, setIsLiked] = useState(isFavorite);
+  const [isLiked, setIsLiked] =
+    useState(isFavorite);
+
   const [isReviewModalOpen, setIsReviewModalOpen] =
     useState(false);
 
@@ -46,11 +48,11 @@ export default function ReviewMeetingCard({
   };
 
   const handleReviewSubmit = (
-    rating: number,
+    reviewRating: number,
     content: string,
   ) => {
     console.log("리뷰 등록", {
-      rating,
+      rating: reviewRating,
       content,
     });
 
@@ -107,7 +109,6 @@ export default function ReviewMeetingCard({
           />
         </div>
 
-
         <div
           className="
             flex
@@ -155,11 +156,13 @@ export default function ReviewMeetingCard({
                 </div>
               )}
             </div>
+
             <LikeButton
               isLiked={isLiked}
               onToggle={handleFavoriteClick}
             />
           </div>
+
           <div
             className="
               mt-7
@@ -269,7 +272,9 @@ export default function ReviewMeetingCard({
 
       <ReviewWriteModal
         isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
+        onClose={() =>
+          setIsReviewModalOpen(false)
+        }
         onSubmit={handleReviewSubmit}
       />
     </>

@@ -13,8 +13,6 @@ type ReviewTabType = "available" | "written";
 interface ReviewTabProps {
   meetings: ReviewMeetingCardProps[];
   writtenMeetings?: ReviewMeetingCardProps[];
-  onReviewClick?: (meetingId: number) => void;
-  onFavoriteClick?: (meetingId: number) => void;
 }
 
 export default function ReviewTab({
@@ -78,7 +76,7 @@ export default function ReviewTab({
       <div className="flex flex-col gap-5">
         {currentMeetings.map((meeting, index) => (
           <ReviewMeetingCard
-            key={index}
+            key={`${meeting.title}-${index}`}
             {...meeting}
           />
         ))}

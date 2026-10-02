@@ -90,10 +90,11 @@ const writtenReviews: Review[] = [
   },
 ];
 
+type ReviewTabType = "available" | "written";
+
 export default function ReviewsContent() {
-  const [activeTab, setActiveTab] = useState<
-    "available" | "written"
-  >("available");
+  const [activeTab, setActiveTab] =
+    useState<ReviewTabType>("available");
 
   return (
     <div className="w-full">
@@ -168,8 +169,11 @@ export default function ReviewsContent() {
                 bg-white
                 px-5
                 py-2
+
                 sm:px-6
+
                 md:px-8
+
                 [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-thumb]:rounded-full
