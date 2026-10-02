@@ -5,14 +5,14 @@ import { ReviewCardListProps } from "@/features/meetingDetail/types/meetingDetai
 const ReviewCardList = ({ reviews }: ReviewCardListProps) => {
   if (reviews.length === 0) {
     return (
-      <section className="flex w-[343px] items-center justify-center px-5 pt-4 pb-2 rounded-4xl shadow-sm md:px-12 md:py-6 md:w-174 lg:w-7xl">
+      <section className="flex w-full items-center justify-center px-5 pt-4 pb-2 rounded-4xl shadow-sm md:px-12 md:py-6">
         <EmptyReview />
       </section>
     );
   }
 
   return (
-    <section className="flex flex-col w-[343px] px-5 pt-4 pb-2 rounded-4xl shadow-sm md:rounded-4xl md:px-12 md:py-6 md:w-174 lg:w-7xl">
+    <section className="flex flex-col w-full px-5 pt-4 pb-2 rounded-4xl shadow-sm md:px-12 md:py-6">
       {reviews.map((review, index) => (
         <ReviewCard
           key={review.id}

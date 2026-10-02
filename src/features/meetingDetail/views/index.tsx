@@ -18,6 +18,7 @@ import {
   mockReviewsAll,
   mockRecommendedMeetings,
 } from "@/features/meetingDetail/mockData";
+import { useRef } from "react";
 
 // TODO: 인증 구현 전까지 쓰는 임시값. 실제 로그인 사용자 id로 교체 필요
 const TEMP_CURRENT_USER_ID = 1;
@@ -52,9 +53,10 @@ const MeetingDetailPageClient = ({
     nextCursor: null,
     hasMore: false,
   };
-  const reviews = mockReviewsAll.slice(0, 4);
+  const REVIEW_PAGE_SIZE = 4;
+  const reviews = mockReviewsAll.slice(0, REVIEW_PAGE_SIZE);
   const currentPage = 1;
-  const totalPages = Math.ceil(mockReviewsAll.length / 4);
+  const totalPages = Math.ceil(mockReviewsAll.length / REVIEW_PAGE_SIZE);
   const onPageChange = (page: number) => console.log("mock page change:", page);
   const recommended = mockRecommendedMeetings;
 
@@ -74,6 +76,17 @@ const MeetingDetailPageClient = ({
         message: "주소 복사에 실패했습니다.",
       });
     }
+  };
+
+  // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
+  const reviewSectionRef = useRef<HTMLElement>(null);
+
+  const handleReviewPageChange = (page: number) => {
+    onPageChange(page);
+    reviewSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   if (isLoading || !meeting) {
@@ -200,14 +213,15 @@ const MeetingDetailPageClient = ({
           </div>
         </section>
 
-        <section className="flex flex-col gap-4 w-full">
+        <section ref={reviewSectionRef} className="flex flex-col gap-4 w-full">
           <h3>리뷰 모아보기</h3>
           <ReviewCardList reviews={reviews} />
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={onPageChange}
+              onPageChange={handleReviewPageChange}
+              scrollToTop={false}
             />
           )}
         </section>
