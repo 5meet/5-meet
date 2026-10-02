@@ -20,8 +20,6 @@ interface ReviewTabProps {
 export default function ReviewTab({
   meetings,
   writtenMeetings = [],
-  onReviewClick,
-  onFavoriteClick,
 }: ReviewTabProps) {
   const [activeTab, setActiveTab] =
     useState<ReviewTabType>("available");
@@ -34,6 +32,7 @@ export default function ReviewTab({
   return (
     <section className="w-full">
       <MyPageTabs />
+
       <div className="mb-5 mt-6 flex items-center gap-2">
         <button
           type="button"
@@ -76,18 +75,11 @@ export default function ReviewTab({
         </button>
       </div>
 
-      {/* 리뷰 목록 */}
       <div className="flex flex-col gap-5">
-        {currentMeetings.map((meeting) => (
+        {currentMeetings.map((meeting, index) => (
           <ReviewMeetingCard
-            key={meeting.id}
+            key={index}
             {...meeting}
-            onReviewClick={() =>
-              onReviewClick?.(meeting.id)
-            }
-            onFavoriteClick={() =>
-              onFavoriteClick?.(meeting.id)
-            }
           />
         ))}
       </div>

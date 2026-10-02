@@ -46,12 +46,10 @@ export default function ReviewMeetingCard({
   };
 
   const handleReviewSubmit = (
-    meetingID: number,
     rating: number,
     content: string,
   ) => {
     console.log("리뷰 등록", {
-      meetingID,
       rating,
       content,
     });
@@ -59,7 +57,6 @@ export default function ReviewMeetingCard({
     setIsReviewModalOpen(false);
   };
 
-  
   return (
     <>
       <article
@@ -81,7 +78,6 @@ export default function ReviewMeetingCard({
           md:p-4
         "
       >
-        {/* 모임 이미지 */}
         <div
           className="
             relative
@@ -111,7 +107,7 @@ export default function ReviewMeetingCard({
           />
         </div>
 
-        {/* 카드 내용 */}
+
         <div
           className="
             flex
@@ -124,7 +120,6 @@ export default function ReviewMeetingCard({
             md:pt-0
           "
         >
-          {/* 제목 + 찜 */}
           <div
             className="
               flex
@@ -151,7 +146,6 @@ export default function ReviewMeetingCard({
                 {title}
               </h3>
 
-              {/* 별점 */}
               {rating !== undefined && (
                 <div className="mt-2">
                   <HeartRating
@@ -161,15 +155,11 @@ export default function ReviewMeetingCard({
                 </div>
               )}
             </div>
-
-            {/* 찜 */}
             <LikeButton
               isLiked={isLiked}
-              onClick={handleFavoriteClick}
+              onToggle={handleFavoriteClick}
             />
           </div>
-
-          {/* 하단 정보 + 리뷰 작성 */}
           <div
             className="
               mt-7
@@ -184,9 +174,7 @@ export default function ReviewMeetingCard({
               md:gap-5
             "
           >
-            {/* 모임 정보 */}
             <div className="min-w-0">
-              {/* 참여 인원 */}
               <div
                 className="
                   flex
@@ -213,7 +201,6 @@ export default function ReviewMeetingCard({
                 </span>
               </div>
 
-              {/* 위치 / 날짜 / 시간 */}
               <div
                 className="
                   mt-2
@@ -252,7 +239,6 @@ export default function ReviewMeetingCard({
               </div>
             </div>
 
-            {/* 리뷰 작성 */}
             <Button
               type="button"
               size="md"
@@ -281,7 +267,6 @@ export default function ReviewMeetingCard({
         </div>
       </article>
 
-      {/* 리뷰 작성 모달 */}
       <ReviewWriteModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
