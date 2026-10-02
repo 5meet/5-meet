@@ -31,12 +31,13 @@ export const DateField = ({ value, onChange }: DateFieldProps) => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`flex w-full gap-2 items-center rounded-xl border px-4 py-2.5 bg-[#F9FAFB] text-left text-sm
-          ${isOpen ? "border-primary-500 text-gray-800" : "border-gray-300 "}
-          ${value ? "text-gray-800" : "text-gray-400"}`}
+        className={`flex w-full gap-2 items-center rounded-xl border px-4 py-2.5 bg-white text-left text-sm
+          ${isOpen ? "border-primary-500 text-gray-800" : "border-gray-300"}
+          ${value ? "text-gray-800" : "text-gray-400"}
+          focus-visible:border-primary-500 focus-visible:outline-none`}
       >
-        <Image src="ic_calendar.svg" alt="달력" width={24} height={24} />
-        {value || "YYYY-MM-DD"}
+        <Image src="/ic_calendar.svg" alt="달력" width={24} height={24} />
+        {value || "YY-MM-DD"}
       </button>
 
       {isOpen && (
