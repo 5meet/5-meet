@@ -58,7 +58,6 @@ const MeetingDetailPageClient = ({
   };
   const REVIEW_PAGE_SIZE = 4;
   const [reviewPage, setReviewPage] = useState(1);
-
   const reviews = mockReviewsAll.slice(
     (reviewPage - 1) * REVIEW_PAGE_SIZE,
     reviewPage * REVIEW_PAGE_SIZE,
@@ -134,8 +133,8 @@ const MeetingDetailPageClient = ({
     isLoggedIn && currentUserId !== null && meeting.hostId === currentUserId;
 
   return (
-    <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 font-semibold text-black text-base md:text-xl lg:text-2xl md:mb-20 lg:mb-40 md:mt-30">
-      <div className="flex flex-col w-full max-w-[343px] gap-20 md:max-w-174 lg:max-w-7xl">
+    <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 md:mb-20 lg:mb-40 md:mt-30">
+      <div className="flex flex-col w-full max-w-[343px] gap-20 font-semibold text-black text-base md:text-xl lg:text-2xl md:max-w-174 lg:max-w-7xl">
         {/* 모임 information */}
         <section className="w-full">
           <div className="flex gap-4 justify-center flex-wrap md:flex-nowrap">
