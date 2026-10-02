@@ -1,0 +1,22 @@
+"use client";
+
+import { useParams, notFound } from "next/navigation";
+import MeetingDetailPageClient from "@/features/meetingDetail/views";
+
+const MeetingDetailPage = () => {
+  const params = useParams<{ id: string }>();
+
+  if (!params) {
+    return notFound();
+  }
+
+  if (!params.id) {
+    return notFound();
+  }
+
+  return (
+    <MeetingDetailPageClient currentUserId={null} meetingId={Number(params.id)} isLoggedIn={false} />
+  );
+};
+
+export default MeetingDetailPage;
