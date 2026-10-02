@@ -44,6 +44,7 @@ export const WithLabel: Story = {
     </div>
   ),
 };
+
 export const Required: Story = {
   render: () => (
     <div className="flex flex-col gap-2">
@@ -75,7 +76,7 @@ export const Error: Story = {
         placeholder="이메일을 입력해주세요"
         required
         aria-invalid
-        aria-describedby='email-error'
+        aria-describedby="email-error"
       />
       <p id="email-error" className="text-sm text-error-100">
         올바른 이메일 형식을 입력해주세요.
@@ -94,6 +95,24 @@ export const Disabled: Story = {
         type="email"
         placeholder="이메일을 입력해주세요"
         disabled
+      />
+    </div>
+  ),
+};
+
+export const Number: Story = {
+  render: () => (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="capacity" required>
+        모임 정원
+      </Label>
+
+      <Input
+        id="capacity"
+        type="number"
+        min={0}
+        placeholder="모임 정원을 입력해주세요"
+        required
       />
     </div>
   ),
