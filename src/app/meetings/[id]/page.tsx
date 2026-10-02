@@ -15,7 +15,7 @@ const MeetingDetailPage = () => {
   }
 
   return (
-    <MeetingDetailPageClient meetingId={Number(params.id)} isLoggedIn={false} />
+    <MeetingDetailPageClient currentUserId={null} meetingId={Number(params.id)} isLoggedIn={false} />
   );
 };
 
