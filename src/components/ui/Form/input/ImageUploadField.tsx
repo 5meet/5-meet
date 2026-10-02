@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 
@@ -9,6 +9,8 @@ interface ImageUploadFieldProps {
   onFileSelect: (file: File) => void;
   onRemove: () => void;
 }
+
+const isBlobUrl = (url: string) => url.startsWith("blob:");
 
 export const ImageUploadField = ({
   value,
@@ -20,21 +22,45 @@ export const ImageUploadField = ({
   const [prevValue, setPrevValue] = useState(value);
 
   if (value !== prevValue) {
+    if (previewUrl && isBlobUrl(previewUrl) && previewUrl !== value) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setPrevValue(value);
     setPreviewUrl(value);
   }
+
+  // 컴포넌트가 사라질 때, 마지막까지 들고 있던 blob을 정리
+  useEffect(() => {
+    return () => {
+      if (previewUrl && isBlobUrl(previewUrl)) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   // 이미지 업로드
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setPreviewUrl(URL.createObjectURL(file));
+
+    if (previewUrl && isBlobUrl(previewUrl)) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    const nextUrl = URL.createObjectURL(file);
+    setPreviewUrl(nextUrl);
     onFileSelect(file);
   };
 
   // 이미지 삭제
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (previewUrl && isBlobUrl(previewUrl)) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
     setPreviewUrl("");
     if (inputRef.current) inputRef.current.value = "";
     onRemove();
