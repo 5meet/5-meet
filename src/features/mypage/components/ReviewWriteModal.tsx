@@ -37,7 +37,7 @@ export default function ReviewWriteModal({
   };
 
   return (
-    <Modal isOpen={isOpen} size="xl">
+    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
       <Modal.Header onClose={handleClose}>
         <Modal.Title>리뷰 쓰기</Modal.Title>
       </Modal.Header>
@@ -68,9 +68,7 @@ export default function ReviewWriteModal({
                       strokeWidth={0}
                       fill="currentColor"
                       className={
-                        isActive
-                          ? "text-primary-500"
-                          : "text-gray-200"
+                        isActive ? "text-primary-500" : "text-gray-200"
                       }
                     />
                   </button>
