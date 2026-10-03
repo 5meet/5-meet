@@ -20,6 +20,7 @@ import {
   useJoinMeetingMutation,
   useCancelMeetingMutation,
   useChangeMeetingStatusMutation,
+  useFavoriteMeetingMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
 
 const InfoCard = ({
@@ -44,6 +45,7 @@ const InfoCard = ({
 
   // TODO: 찜하기 TanStack Query 사용 -> useState 삭제 후 Query와 mutation으로 관리
   const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
+  const favoriteMutation = useFavoriteMeetingMutation(id);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -63,25 +65,21 @@ const InfoCard = ({
     joinMutation.isPending || cancelMutation.isPending;
 
   // 찜하기
-  const handleLikeToggle = async () => {
-    try {
-      // TODO: const result = await toggleLike(meetingId);
-
-      setIsFavorited((prev) => !prev);
-
-      // TODO: API 연결 후 result.isFavorited으로 변경
-      showToast({
-        kind: "success",
-        message: isFavorited
-          ? "찜 목록에서 삭제되었습니다."
-          : "찜 목록에 추가되었습니다.",
-      });
-    } catch {
-      showToast({
-        kind: "error",
-        message: "찜 상태 변경에 실패했습니다.",
-      });
+  const handleLikeToggle = () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
     }
+    if (favoriteMutation.isPending) return;
+
+    const wasFavorited = isFavorited;
+    setIsFavorited((prev) => !prev); // 즉시 UI 반영
+
+    favoriteMutation.mutate(wasFavorited, {
+      onError: () => {
+        setIsFavorited(wasFavorited); // 실패 시 되돌림
+      },
+    });
   };
 
   // 참여하기 <-> 참여 취소하기

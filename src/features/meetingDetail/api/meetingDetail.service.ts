@@ -16,6 +16,7 @@ import {
   GetMeetingsParams,
   RecommendedMeeting,
   GetRecommendedMeetingsParams,
+  FavoriteResponse,
 } from "@/features/meetingDetail/types/meetingDetail";
 import {
   convertDateType1,
@@ -309,4 +310,20 @@ export const getRecommendedMeetings = async ({
   ];
 
   return result.slice(0, size).map(mapToRecommendedMeeting);
+};
+
+//-----------------------------------------------------------------
+
+// 찜 추가
+export const favoriteMeeting = async (
+  meetingId: number,
+): Promise<FavoriteResponse> => {
+  return api.post(`meetings/${meetingId}/favorites`).json<FavoriteResponse>();
+};
+
+// 찜 해제
+export const unfavoriteMeeting = async (
+  meetingId: number,
+): Promise<ResponseMessage> => {
+  return api.delete(`meetings/${meetingId}/favorites`).json<ResponseMessage>();
 };
