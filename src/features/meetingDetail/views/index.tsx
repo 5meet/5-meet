@@ -175,7 +175,7 @@ const MeetingDetailPageClient = ({
           </div>
         </section>
 
-        {!isOwner && meeting.description && (
+        {meeting.description && (
           <section className="flex flex-col gap-4 w-full">
             <h3>모임 설명</h3>
 
