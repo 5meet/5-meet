@@ -62,6 +62,7 @@ const InfoCard = ({
   const isParticipationLoading =
     joinMutation.isPending || cancelMutation.isPending;
 
+  // TODO: 찜하기 기능 구현 완료 후 수정 예정
   // 찜하기
   const handleLikeToggle = () => {
     if (!isLoggedIn) {

@@ -1,3 +1,6 @@
+// useFavoriteMeetingMutation은 "모임 상세"(meetingKeys.detail)만 갱신하도록 좁게 설계되어 있습니다.
+// 추후 찜하기 기능의 구현이 완료된다면 교체할 예정입니다.
+
 import { HTTPError } from "ky";
 import { AppError } from "@/lib/api/type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

@@ -40,12 +40,10 @@ const CompactCard = (props: CompactCardProps) => {
 
   const titleId = `card-title-${props.id}`;
 
+  // TODO: 찜하기 기능 구현 완료 후 수정 예정
   // 찜하기
   const handleLikeToggle = () => {
-    // if (!isLoggedIn) {
-    //   setIsLoginModalOpen(true);
-    //   return;
-    // }
+    if (props.variant !== "meeting") return;
 
     if (favoriteMutation.isPending) return;
 
