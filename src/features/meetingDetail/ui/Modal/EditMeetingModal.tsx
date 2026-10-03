@@ -137,13 +137,19 @@ const EditMeetingModal = ({
     };
 
     editMutation.mutate(payload, {
-      onSuccess: () => onClose(),
+      onSuccess: () => handleClose(),
     });
+  };
+
+  const handleClose = () => {
+    setForm(INITIAL_FORM);
+    setInitializedMeetingId(null);
+    onClose();
   };
 
   return (
     <Modal isOpen={isOpen}>
-      <Modal.Header onClose={onClose}>
+      <Modal.Header onClose={handleClose}>
         <Modal.Title>
           <h3 className="text-base font-semibold md:text-xl">모임 수정하기</h3>
         </Modal.Title>
@@ -294,7 +300,7 @@ const EditMeetingModal = ({
           variant="secondary"
           className="flex-1"
           size="sm"
-          onClick={onClose}
+          onClick={handleClose}
         >
           취소
         </Button>
