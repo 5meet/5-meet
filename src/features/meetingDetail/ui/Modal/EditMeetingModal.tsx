@@ -150,7 +150,7 @@ const EditMeetingModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <Modal.Header onClose={handleClose}>
         <Modal.Title>
           <span className="text-base font-semibold md:text-xl">
