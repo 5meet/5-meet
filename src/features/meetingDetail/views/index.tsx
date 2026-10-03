@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
 import { PersonnelCard } from "@/features/meetingDetail/ui/PersonnelCard";
@@ -10,10 +9,12 @@ import Pagination from "@/components/ui/Pagination/Pagination";
 import CompactCard from "@/components/ui/CompactCard/CompactCard";
 import { showToast } from "@/components/ui/Sonner";
 import { Spinner } from "@/components/ui/Spinner/Spinner";
-import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeetingDetailQuery";
-import { useParticipantsQuery } from "@/features/meetingDetail/hooks/useParticipantsQuery";
-import { useReviewsPagination } from "@/features/meetingDetail/hooks/useReviewsPagination";
-import { useRecommendedMeetingsQuery } from "@/features/meetingDetail/hooks/useRecommendedMeetingsQuery";
+import {
+  useMeetingDetailQuery,
+  useParticipantsQuery,
+  useRecommendedMeetingsQuery,
+  useReviewsPagination,
+} from "@/features/meetingDetail/hooks";
 
 interface MeetingDetailPageClientProps {
   meetingId: number;

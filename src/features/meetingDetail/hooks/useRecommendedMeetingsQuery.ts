@@ -4,7 +4,7 @@ import { meetingKeys } from "../queryKeys";
 import { getRecommendedMeetings } from "../api/meetingDetail.service";
 import { MeetingDetail } from "../types/meetingDetail";
 
-export function useRecommendedMeetingsQuery(
+export default function useRecommendedMeetingsQuery(
   meeting: MeetingDetail | undefined,
 ) {
   return useQuery({

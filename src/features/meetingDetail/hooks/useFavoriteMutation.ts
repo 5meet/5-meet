@@ -19,7 +19,7 @@ import {
 } from "@/features/meetingDetail/api/favorite.service";
 import { mapToMeetingDetail } from "@/features/meetingDetail/api/meetingDetail.service";
 
-export function useFavoriteMeetingMutation(meetingId: number) {
+function useFavoriteMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -110,3 +110,5 @@ export function useFavoriteMeetingMutation(meetingId: number) {
     },
   });
 }
+
+export default useFavoriteMeetingMutation;

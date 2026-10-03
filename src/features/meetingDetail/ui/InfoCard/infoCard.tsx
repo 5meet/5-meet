@@ -21,7 +21,7 @@ import {
   useCancelMeetingMutation,
   useChangeMeetingStatusMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
-import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks/useFavoriteMutation";
+import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
 
 const InfoCard = ({
   id,

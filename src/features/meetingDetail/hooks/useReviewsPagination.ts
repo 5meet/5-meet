@@ -28,7 +28,7 @@ async function fetchAllReviews(meetingId: number): Promise<Review[]> {
   return all;
 }
 
-export function useReviewsPagination(meetingId: number) {
+export default function useReviewsPagination(meetingId: number) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const query = useQuery({

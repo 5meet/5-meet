@@ -17,7 +17,7 @@ import TextArea from "@/components/ui/Form/input/Textarea";
 import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
 import { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
 import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
-import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeetingDetailQuery";
+import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
 
 import {

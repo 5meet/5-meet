@@ -5,7 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Tags from "@/components/ui/Tags/Tags";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
-import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks/useFavoriteMutation";
+import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
 
 interface BaseCompactCardProps {
   id: number;
