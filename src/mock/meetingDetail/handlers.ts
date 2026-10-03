@@ -1,43 +1,94 @@
 import { http, HttpResponse } from "msw";
 import {
-  mockMeetingResponse,
+  mockMeetingResponseList,
   mockParticipantsResponse,
   mockReviewsResponseAll,
   mockRecommendedResponseAll,
 } from "@/features/meetingDetail/mockData";
+import type { MeetingDetailResponse } from "@/features/meetingDetail/types/meetingDetail";
 
 const API_BASE = process.env.NEXT_PUBLIC_CODEIT_API_URL;
+
+const meetingStore = new Map<number, MeetingDetailResponse>(
+  mockMeetingResponseList.map((meeting) => [meeting.id, meeting]),
+);
 
 // service.ts가 호출하는 경로 그대로 매칭 (TEAM_ID 접두사 없이 `meetings/...`로 요청 중)
 export const handlers = [
   // 모임 상세 조회
   http.get(`${API_BASE}/meetings/:meetingId`, ({ params }) => {
-    return HttpResponse.json({
-      ...mockMeetingResponse,
-      id: Number(params.meetingId),
-    });
+    const id = Number(params.meetingId);
+    const meeting = meetingStore.get(id);
+
+    if (!meeting) {
+      return HttpResponse.json(
+        { code: "NOT_FOUND", message: "존재하지 않는 모임입니다." },
+        { status: 404 },
+      );
+    }
+
+    return HttpResponse.json(meeting);
   }),
 
   // 모임 수정
   http.patch(`${API_BASE}/meetings/:meetingId`, async ({ request, params }) => {
+    const id = Number(params.meetingId);
+    const existing = meetingStore.get(id);
+
+    if (!existing) {
+      return HttpResponse.json(
+        { code: "NOT_FOUND", message: "존재하지 않는 모임입니다." },
+        { status: 404 },
+      );
+    }
+
     const body = (await request.json()) as Record<string, unknown>;
-    return HttpResponse.json({
-      ...mockMeetingResponse,
+    const updated = {
+      ...existing,
       ...body,
-      id: Number(params.meetingId),
-    });
+      id,
+      updatedAt: new Date().toISOString(),
+    };
+
+    meetingStore.set(id, updated);
+    return HttpResponse.json(updated);
   }),
 
   // 모임 삭제
-  http.delete(`${API_BASE}/meetings/:meetingId`, () => {
+  http.delete(`${API_BASE}/meetings/:meetingId`, ({ params }) => {
+    const id = Number(params.meetingId);
+    meetingStore.delete(id);
     return HttpResponse.json({ message: "모임이 삭제되었습니다." });
   }),
 
-  // 모임 참여 / 취소
-  http.post(`${API_BASE}/meetings/:meetingId/join`, () => {
+  // 모임 참여 / 취소도 meetingStore와 연동 (isJoined, participantCount 갱신)
+  http.post(`${API_BASE}/meetings/:meetingId/join`, ({ params }) => {
+    const id = Number(params.meetingId);
+    const meeting = meetingStore.get(id);
+
+    if (meeting) {
+      meetingStore.set(id, {
+        ...meeting,
+        isJoined: true,
+        participantCount: meeting.participantCount + 1,
+      });
+    }
+
     return HttpResponse.json({ message: "모임 참여가 완료되었습니다." });
   }),
-  http.delete(`${API_BASE}/meetings/:meetingId/join`, () => {
+
+  http.delete(`${API_BASE}/meetings/:meetingId/join`, ({ params }) => {
+    const id = Number(params.meetingId);
+    const meeting = meetingStore.get(id);
+
+    if (meeting) {
+      meetingStore.set(id, {
+        ...meeting,
+        isJoined: false,
+        participantCount: Math.max(0, meeting.participantCount - 1),
+      });
+    }
+
     return HttpResponse.json({ message: "참여가 취소되었습니다." });
   }),
 
@@ -45,15 +96,27 @@ export const handlers = [
   http.patch(
     `${API_BASE}/meetings/:meetingId/status`,
     async ({ request, params }) => {
+      const id = Number(params.meetingId);
+      const existing = meetingStore.get(id);
+
+      if (!existing) {
+        return HttpResponse.json(
+          { code: "NOT_FOUND", message: "존재하지 않는 모임입니다." },
+          { status: 404 },
+        );
+      }
+
       const body = (await request.json()) as { status: string };
-      return HttpResponse.json({
-        ...mockMeetingResponse,
-        id: Number(params.meetingId),
+      const updated = {
+        ...existing,
         confirmedAt:
           body.status === "CONFIRMED" ? new Date().toISOString() : null,
         canceledAt:
           body.status === "CANCELED" ? new Date().toISOString() : null,
-      });
+      };
+
+      meetingStore.set(id, updated);
+      return HttpResponse.json(updated);
     },
   ),
 

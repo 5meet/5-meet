@@ -15,7 +15,7 @@ export {
 } from "./participants.mock";
 
 // MSW용 mock 데이터
-export { mockMeetingResponse } from "./meetingResponse.mock";
+export { mockMeetingResponseList } from "./meetingResponse.mock";
 export { mockParticipantsResponse } from "./participantsResponse.mock";
 export { mockReviewsResponseAll } from "./reviewsResponse.mock";
 export { mockRecommendedResponseAll } from "./recommendedResponse.mock";
