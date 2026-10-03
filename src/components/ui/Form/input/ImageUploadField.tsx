@@ -8,6 +8,7 @@ interface ImageUploadFieldProps {
   value: string;
   onFileSelect: (file: File) => void;
   onRemove: () => void;
+  alt?: string;
 }
 
 const isBlobUrl = (url: string) => url.startsWith("blob:");
@@ -16,6 +17,7 @@ export const ImageUploadField = ({
   value,
   onFileSelect,
   onRemove,
+  alt,
 }: ImageUploadFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState(value);
@@ -98,7 +100,7 @@ export const ImageUploadField = ({
         {previewUrl ? (
           <Image
             src={previewUrl}
-            alt="모임 이미지 미리보기"
+            alt={alt || "모임 이미지 미리보기"}
             fill
             className="object-cover"
           />
@@ -106,7 +108,7 @@ export const ImageUploadField = ({
           <div className="flex flex-col items-center gap-2">
             <Image
               src="/ic_image_plus.svg"
-              alt="모임 이미지"
+              alt="파일 첨부"
               width={24}
               height={24}
             />

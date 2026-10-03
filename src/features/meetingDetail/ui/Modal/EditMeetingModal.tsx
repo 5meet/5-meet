@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { Tabs } from "@/components/ui/Tabs/Tabs";
@@ -8,12 +9,20 @@ import Label from "@/components/ui/Form/label/Label";
 import Input from "@/components/ui/Form/input/Input";
 import { InputDropdown } from "@/components/ui/Dropdown/InputDropdown";
 import { AddressSearchField } from "@/components/ui/Form/input/AddressSearchField";
-import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
-import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { ImageUploadField } from "@/components/ui/Form/input/ImageUploadField";
-import TextArea from "@/components/ui/Form/input/Textarea";
 import { DateField } from "@/components/ui/Form/input/DateField";
 import { TimeField } from "@/components/ui/Form/input/TimeField";
+import TextArea from "@/components/ui/Form/input/Textarea";
+
+import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
+import { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
+import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
+import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeetingDetailQuery";
+
+import {
+  splitISOToKSTDateTime,
+  combineKSTDateTimeToISO,
+} from "@/lib/convertDate/formatMeetingDate";
 
 interface EditMeetingModalProps {
   meetingId: number;
@@ -29,15 +38,108 @@ const EDIT_TABS = [
 
 type EditTabValue = (typeof EDIT_TABS)[number]["value"];
 
+// 폼 내부에서 쓰는 상태
+interface EditMeetingFormState {
+  name: string;
+  type: string;
+  region: string; // 도로명 주소 (AddressSearchField의 address)
+  address: string; // 상세 주소
+  latitude: number;
+  longitude: number;
+  date: string; // "2027-02-10"
+  time: string; // "17:30"
+  registrationEndDate: string;
+  registrationEndTime: string;
+  capacity: number;
+  image: string; // 미리보기/업로드된 URL
+  description: string;
+}
+
+const INITIAL_FORM: EditMeetingFormState = {
+  name: "",
+  type: "",
+  region: "",
+  address: "",
+  latitude: 0,
+  longitude: 0,
+  date: "",
+  time: "",
+  registrationEndDate: "",
+  registrationEndTime: "",
+  capacity: 0,
+  image: "",
+  description: "",
+};
+
 const EditMeetingModal = ({
   meetingId,
   isOpen,
   onClose,
 }: EditMeetingModalProps) => {
+  const { data: meeting } = useMeetingDetailQuery(meetingId);
   const editMutation = useUpdateMeetingMutation(meetingId);
-  const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
 
-  const [value, setValue] = useState<string | null>(editMutation.type);
+  const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
+  const [form, setForm] = useState<EditMeetingFormState>(INITIAL_FORM);
+  const [initializedMeetingId, setInitializedMeetingId] = useState<
+    number | null
+  >(null);
+
+  // 서버 데이터가 도착하면 이 모임에 대해 아직 초기화하지 않았을 때만 폼 채우기
+  // 렌더 중 처리: useEffect 대신 불필요한 리렌더 사이클을 줄이기
+  if (meeting && initializedMeetingId !== meeting.id) {
+    const { date, time } = splitISOToKSTDateTime(meeting.dateTime);
+    const { date: regDate, time: regTime } = splitISOToKSTDateTime(
+      meeting.registrationEnd,
+    );
+
+    setForm({
+      name: meeting.title,
+      type: meeting.category,
+      region: meeting.location,
+      address: meeting.address,
+      latitude: meeting.latitude,
+      longitude: meeting.longitude,
+      date,
+      time,
+      registrationEndDate: regDate,
+      registrationEndTime: regTime,
+      capacity: meeting.capacity,
+      image: meeting.image,
+      description: meeting.description,
+    });
+    setInitializedMeetingId(meeting.id);
+  }
+
+  const handleField = <K extends keyof EditMeetingFormState>(
+    field: K,
+    value: EditMeetingFormState[K],
+  ) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = () => {
+    const payload: MeetingUpdateRequest = {
+      name: form.name,
+      type: form.type,
+      region: form.region,
+      address: form.address,
+      latitude: form.latitude,
+      longitude: form.longitude,
+      dateTime: combineKSTDateTimeToISO(form.date, form.time),
+      registrationEnd: combineKSTDateTimeToISO(
+        form.registrationEndDate,
+        form.registrationEndTime,
+      ),
+      capacity: form.capacity,
+      image: form.image,
+      description: form.description,
+    };
+
+    editMutation.mutate(payload, {
+      onSuccess: () => onClose(),
+    });
+  };
 
   return (
     <Modal isOpen={isOpen}>
@@ -63,9 +165,9 @@ const EditMeetingModal = ({
                   </Label>
                   <InputDropdown
                     options={MEETING_TYPE_OPTIONS}
-                    value={value}
+                    value={form.type || null}
                     placeholder="모임 종류를 선택하세요"
-                    onChange={setValue}
+                    onChange={(v) => handleField("type", v)}
                     disabled={false}
                   />
                 </div>
@@ -79,21 +181,24 @@ const EditMeetingModal = ({
                     type="text"
                     placeholder="모임 이름을 입력하세요"
                     required
+                    value={form.name}
+                    onChange={(e) => handleField("name", e.target.value)}
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
                   <AddressSearchField
-                  // address={address}
-                  // detailAddress={detailAddress}
-                  // onSelectAddress={(result) => {
-                  //   setAddress(result.address);
-                  //   args.onSelectAddress(result);
-                  // }}
-                  // onDetailAddressChange={(value) => {
-                  //   setDetailAddress(value);
-                  //   args.onDetailAddressChange(value);
-                  // }}
+                    address={form.region}
+                    detailAddress={form.address}
+                    onSelectAddress={({ address, latitude, longitude }) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        region: address,
+                        latitude: latitude ?? prev.latitude,
+                        longitude: longitude ?? prev.longitude,
+                      }))
+                    }
+                    onDetailAddressChange={(v) => handleField("address", v)}
                   />
                 </div>
 
@@ -102,13 +207,14 @@ const EditMeetingModal = ({
                     이미지
                   </Label>
                   <ImageUploadField
-                  // value={value}
-                  // onFileSelect={(file) => {
-                  //   const previewUrl = URL.createObjectURL(file);
-
-                  //   setValue(previewUrl);
-                  //   args.onFileSelect(file);
-                  // }}
+                    value={form.image}
+                    alt={meeting?.title}
+                    onFileSelect={(file) => {
+                      const previewUrl = URL.createObjectURL(file);
+                      handleField("image", previewUrl);
+                      // TODO: 실제 업로드는 useUploadImageMutation 연결 후 publicUrl로 교체
+                    }}
+                    onRemove={() => handleField("image", "")}
                   />
                 </div>
 
@@ -116,7 +222,12 @@ const EditMeetingModal = ({
                   <Label htmlFor="meeting-description" required>
                     모임 설명
                   </Label>
-                  <TextArea required />
+                  <TextArea
+                    id="meeting-description"
+                    required
+                    value={form.description}
+                    onChange={(e) => handleField("description", e.target.value)}
+                  />
                 </div>
               </div>
             )}
@@ -129,18 +240,12 @@ const EditMeetingModal = ({
                   </Label>
                   <div className="flex gap-3">
                     <DateField
-                    // value={value}
-                    // onChange={(date) => {
-                    //   setValue(date);
-                    //   args.onChange(date);
-                    // }}
+                      value={form.date}
+                      onChange={(v) => handleField("date", v)}
                     />
                     <TimeField
-                    // value={value}
-                    // onChange={(time) => {
-                    //   setValue(time);
-                    //   args.onChange(time);
-                    // }}
+                      value={form.time}
+                      onChange={(v) => handleField("time", v)}
                     />
                   </div>
                 </div>
@@ -151,18 +256,13 @@ const EditMeetingModal = ({
                   </Label>
                   <div className="flex gap-3">
                     <DateField
-                    // value={value}
-                    // onChange={(date) => {
-                    //   setValue(date);
-                    //   args.onChange(date);
-                    // }}
+                      value={form.registrationEndDate}
+                      onChange={(v) => handleField("registrationEndDate", v)}
+                      // }}
                     />
                     <TimeField
-                    // value={value}
-                    // onChange={(time) => {
-                    //   setValue(time);
-                    //   args.onChange(time);
-                    // }}
+                      value={form.registrationEndTime}
+                      onChange={(v) => handleField("registrationEndTime", v)}
                     />
                   </div>
                 </div>
@@ -177,9 +277,12 @@ const EditMeetingModal = ({
                     min={0}
                     placeholder="모임 정원을 입력해주세요"
                     required
+                    value={form.capacity}
+                    onChange={(e) =>
+                      handleField("capacity", Number(e.target.value))
+                    }
                   />
                 </div>
-                {/* DateField+TimeField(모임 일정), DateField+TimeField(마감), Input(정원) */}
               </div>
             )}
           </div>
@@ -199,7 +302,7 @@ const EditMeetingModal = ({
           className="flex-1"
           size="sm"
           isLoading={editMutation.isPending}
-          onClick={() => editMutation.mutate()}
+          onClick={handleSubmit}
         >
           수정하기
         </Button>
