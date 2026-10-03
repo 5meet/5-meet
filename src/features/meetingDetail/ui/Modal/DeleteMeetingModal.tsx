@@ -35,7 +35,7 @@ const DeleteMeetingModal = ({
           aria-label="취소"
           variant="secondary"
           className="flex-1"
-          size="sm"
+          size="md"
           onClick={onClose}
         >
           취소
@@ -43,7 +43,7 @@ const DeleteMeetingModal = ({
         <Button
           aria-label="확인"
           className="flex-1"
-          size="sm"
+          size="md"
           isLoading={deleteMutation.isPending}
           onClick={() => deleteMutation.mutate()}
         >

@@ -18,12 +18,15 @@ import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeet
 import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
 import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
-import type { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
-
 import {
   splitISOToKSTDateTime,
   combineKSTDateTimeToISO,
 } from "@/lib/convertDate/formatMeetingDate";
+import {
+  validateMeetingForm,
+  MeetingFormErrors,
+} from "@/lib/validators/meetingFormValidators";
+import type { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
 
 interface EditMeetingModalProps {
   meetingId: number;
@@ -81,6 +84,7 @@ const EditMeetingModal = ({
   const editMutation = useUpdateMeetingMutation(meetingId);
   const uploadImageMutation = useUploadImageMutation();
 
+  const [errors, setErrors] = useState<MeetingFormErrors>({});
   const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
   const [form, setForm] = useState<EditMeetingFormState>(INITIAL_FORM);
   const [initializedMeetingId, setInitializedMeetingId] = useState<
@@ -120,7 +124,19 @@ const EditMeetingModal = ({
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // const errors = useMemo(() => validateMeetingForm(form), [form]);
+  const isFormValid = Object.keys(validateMeetingForm(form)).length === 0;
+
   const handleSubmit = () => {
+    const validationErrors = validateMeetingForm(form);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+
     const payload: MeetingUpdateRequest = {
       name: form.name,
       type: form.type,
@@ -137,10 +153,7 @@ const EditMeetingModal = ({
       image: form.image,
       description: form.description,
     };
-
-    editMutation.mutate(payload, {
-      onSuccess: () => handleClose(),
-    });
+    editMutation.mutate(payload, { onSuccess: () => handleClose() });
   };
 
   const handleClose = () => {
@@ -189,10 +202,12 @@ const EditMeetingModal = ({
                   <Input
                     id="meeting-name"
                     type="text"
+                    value={form.name}
+                    maxLength={20}
+                    onChange={(e) => handleField("name", e.target.value)}
+                    isError={!!errors.name}
                     placeholder="모임 이름을 입력하세요"
                     required
-                    value={form.name}
-                    onChange={(e) => handleField("name", e.target.value)}
                   />
                 </div>
 
@@ -290,12 +305,13 @@ const EditMeetingModal = ({
                     id="capacity"
                     type="number"
                     min={0}
-                    placeholder="모임 정원을 입력해주세요"
-                    required
                     value={form.capacity}
                     onChange={(e) =>
                       handleField("capacity", Number(e.target.value))
                     }
+                    isError={!!errors.capacity}
+                    placeholder="모임 정원을 입력해주세요"
+                    required
                   />
                 </div>
               </div>
@@ -309,7 +325,7 @@ const EditMeetingModal = ({
           aria-label="취소"
           variant="secondary"
           className="flex-1"
-          size="sm"
+          size="md"
           onClick={handleClose}
         >
           취소
@@ -317,9 +333,9 @@ const EditMeetingModal = ({
         <Button
           aria-label="수정하기"
           className="flex-1"
-          size="sm"
+          size="md"
           isLoading={editMutation.isPending || uploadImageMutation.isPending}
-          disabled={uploadImageMutation.isPending}
+          disabled={!isFormValid || uploadImageMutation.isPending}
           onClick={handleSubmit}
         >
           수정하기
