@@ -18,6 +18,7 @@ import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
 import { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
 import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeetingDetailQuery";
+import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
 
 import {
   splitISOToKSTDateTime,
@@ -78,6 +79,7 @@ const EditMeetingModal = ({
 }: EditMeetingModalProps) => {
   const { data: meeting } = useMeetingDetailQuery(meetingId);
   const editMutation = useUpdateMeetingMutation(meetingId);
+  const uploadImageMutation = useUploadImageMutation();
 
   const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
   const [form, setForm] = useState<EditMeetingFormState>(INITIAL_FORM);
@@ -219,8 +221,13 @@ const EditMeetingModal = ({
                     alt={meeting?.title}
                     onFileSelect={(file) => {
                       const previewUrl = URL.createObjectURL(file);
-                      handleField("image", previewUrl);
-                      // TODO: 실제 업로드는 useUploadImageMutation 연결 후 publicUrl로 교체
+                      handleField("image", previewUrl); // 즉시 미리보기 반영
+
+                      uploadImageMutation.mutate(file, {
+                        onSuccess: (publicUrl) => {
+                          handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
+                        },
+                      });
                     }}
                     onRemove={() => handleField("image", "")}
                   />
@@ -309,7 +316,8 @@ const EditMeetingModal = ({
         <Button
           className="flex-1"
           size="sm"
-          isLoading={editMutation.isPending}
+          isLoading={editMutation.isPending || uploadImageMutation.isPending}
+          disabled={uploadImageMutation.isPending}
           onClick={handleSubmit}
         >
           수정하기
