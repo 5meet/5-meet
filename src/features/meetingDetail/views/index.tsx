@@ -124,6 +124,8 @@ const MeetingDetailPageClient = ({
                 capacity={meeting.capacity}
                 initialIsFavorited={meeting.initialIsFavorited}
                 isLoggedIn={isLoggedIn}
+                confirmedAt={meeting.confirmedAt}
+                canceledAt={meeting.canceledAt}
               />
 
               <PersonnelCard

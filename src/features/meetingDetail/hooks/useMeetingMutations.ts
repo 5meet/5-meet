@@ -9,10 +9,15 @@ import {
   cancelMeeting,
   updateMeetingDetail,
   deleteMeetingDetail,
+  changeMeetingStatus,
 } from "../api/meetingDetail.service";
-import { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
+import {
+  MeetingUpdateRequest,
+  MeetingStatus,
+} from "@/features/meetingDetail/types/meetingDetail";
 import { showToast } from "@/components/ui/Sonner";
 
+// 모임 참여 (참여자)
 export function useJoinMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
 
@@ -36,6 +41,7 @@ export function useJoinMeetingMutation(meetingId: number) {
   });
 }
 
+// 모임 참여 취소 (참여자)
 export function useCancelMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
 
@@ -51,6 +57,7 @@ export function useCancelMeetingMutation(meetingId: number) {
   });
 }
 
+// 모임 수정 (주최자)
 export function useUpdateMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
 
@@ -108,6 +115,7 @@ export function useUpdateMeetingMutation(meetingId: number) {
   });
 }
 
+// 모임 삭제 (주최자)
 export function useDeleteMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -128,6 +136,52 @@ export function useDeleteMeetingMutation(meetingId: number) {
         router.push("/meetings");
         return;
       }
+      showToast({ kind: "error", message: (error as Error).message });
+    },
+  });
+}
+
+// 모임 상태 변경 (주최자)
+export function useChangeMeetingStatusMutation(meetingId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (status: MeetingStatus) =>
+      changeMeetingStatus(meetingId, status),
+    onSuccess: (_data, status) => {
+      queryClient.invalidateQueries({ queryKey: meetingKeys.all });
+      showToast({
+        kind: "success",
+        message:
+          status === "CONFIRMED"
+            ? "모임이 확정되었습니다."
+            : "모임이 취소되었습니다.",
+      });
+    },
+    onError: (error) => {
+      const code = (error as AppError).code;
+
+      // 400: 이미 취소된 모임
+      if (code === "CANCELED") {
+        showToast({
+          kind: "error",
+          message: "이미 취소된 모임은 상태를 변경할 수 없습니다.",
+        });
+        return;
+      }
+
+      if (error instanceof HTTPError && error.response.status === 403) {
+        showToast({
+          kind: "error",
+          message: "호스트만 모임 상태를 변경할 수 있습니다.",
+        });
+        return;
+      }
+      if (error instanceof HTTPError && error.response.status === 404) {
+        showToast({ kind: "error", message: "존재하지 않는 모임입니다." });
+        return;
+      }
+
       showToast({ kind: "error", message: (error as Error).message });
     },
   });

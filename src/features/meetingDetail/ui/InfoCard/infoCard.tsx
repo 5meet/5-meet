@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
+import { IconButton } from "@/components/ui/IconButton/IconButton";
+import { Share2 } from "lucide-react";
 import Tags from "@/components/ui/Tags/Tags";
 import Kebab from "@/components/ui/Kebab/Kebab";
 import {
@@ -17,6 +19,7 @@ import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meeti
 import {
   useJoinMeetingMutation,
   useCancelMeetingMutation,
+  useChangeMeetingStatusMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
 
 const InfoCard = ({
@@ -33,6 +36,8 @@ const InfoCard = ({
   capacity,
   initialIsFavorited,
   isLoggedIn,
+  confirmedAt,
+  canceledAt,
 }: MeetingDetailInfoCardProps) => {
   // TODO: 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
   // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
@@ -48,9 +53,12 @@ const InfoCard = ({
 
   const isFull = participantCount >= capacity;
   const { isClosed } = formatRegistrationEnd(registrationEnd);
+  const isConfirmed = confirmedAt !== null;
+  const isCanceled = canceledAt !== null;
 
   const joinMutation = useJoinMeetingMutation(id);
   const cancelMutation = useCancelMeetingMutation(id);
+  const changeStatusMutation = useChangeMeetingStatusMutation(id);
   const isParticipationLoading =
     joinMutation.isPending || cancelMutation.isPending;
 
@@ -109,6 +117,11 @@ const InfoCard = ({
     }
   };
 
+  // 모임 확정하기
+  const handleConfirmMeeting = () => {
+    changeStatusMutation.mutate("CONFIRMED");
+  };
+
   return (
     <>
       <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:min-h-70.5 lg:px-10 lg:py-8">
@@ -152,27 +165,44 @@ const InfoCard = ({
             </div>
           </section>
 
-          <section className="flex w-full shrink-0 gap-4">
-            <LikeButton
-              isLiked={isFavorited}
-              onToggle={handleLikeToggle}
-              size="lg"
-            />
+          <section className="flex items-center w-full shrink-0 gap-2">
+            <div>
+              <LikeButton
+                isLiked={isFavorited}
+                onToggle={handleLikeToggle}
+                size="md"
+              />
+            </div>
 
-            {/* TODO: isLoading - 추후 API 연결 및 공유 기능 구현 후 수정 */}
             {isOwner ? (
-              <Button
-                size="lg"
-                variant="primary"
-                fullWidth
-                onClick={handleShare}
-              >
-                공유하기
-              </Button>
+              <div className="flex items-center w-full gap-3">
+                <div className="flex-1 items-center">
+                  <IconButton aria-label="공유하기" onClick={handleShare}>
+                    <Share2 className="w-12 h-12 text-neutral-600" />
+                  </IconButton>
+                </div>
+
+                <Button
+                  size="lg"
+                  variant="primary"
+                  aria-label={
+                    isConfirmed ? "확정된 모임입니다" : "모임 확정하기"
+                  }
+                  fullWidth
+                  disabled={isConfirmed || isCanceled}
+                  // TODO: 정원 미달이어도 주최자가 수동으로 확정가능하다면 아래 코드
+                  // disabled={isConfirmed || isCanceled || !isFull}
+                  isLoading={changeStatusMutation.isPending}
+                  onClick={handleConfirmMeeting}
+                >
+                  {isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
+                </Button>
+              </div>
             ) : (
               <Button
                 size="lg"
-                variant={isParticipating ? "secondary" : "primary"}
+                variant="primary"
+                aria-label={isParticipating ? "참여 취소하기" : "참여하기"}
                 fullWidth
                 disabled={!isParticipating && (isFull || isClosed)}
                 onClick={handleParticipation}
