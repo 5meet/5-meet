@@ -122,6 +122,11 @@ const InfoCard = ({
     changeStatusMutation.mutate("CONFIRMED");
   };
 
+  // // 모임 취소하기
+  // const handleCancelMeeting = () => {
+  //   changeStatusMutation.mutate("CANCELED");
+  // };
+
   return (
     <>
       <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:min-h-70.5 lg:px-10 lg:py-8">
@@ -190,7 +195,7 @@ const InfoCard = ({
                   }
                   fullWidth
                   disabled={isConfirmed || isCanceled}
-                  // TODO: 정원 미달이어도 주최자가 수동으로 확정가능하다면 아래 코드
+                  // TODO: 정원 미달이어도 주최자가 수동으로 확정가능하지 않다면 아래 코드
                   // disabled={isConfirmed || isCanceled || !isFull}
                   isLoading={changeStatusMutation.isPending}
                   onClick={handleConfirmMeeting}

@@ -151,7 +151,9 @@ const EditMeetingModal = ({
     <Modal isOpen={isOpen}>
       <Modal.Header onClose={handleClose}>
         <Modal.Title>
-          <h3 className="text-base font-semibold md:text-xl">모임 수정하기</h3>
+          <span className="text-base font-semibold md:text-xl">
+            모임 수정하기
+          </span>
         </Modal.Title>
       </Modal.Header>
 
