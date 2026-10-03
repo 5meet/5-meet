@@ -37,7 +37,7 @@ export const DateField = ({ value, onChange }: DateFieldProps) => {
           focus-visible:border-primary-500 focus-visible:outline-none`}
       >
         <Image src="/ic_calendar.svg" alt="달력" width={24} height={24} />
-        {value || "YY-MM-DD"}
+        {value || "YYYY-MM-DD"}
       </button>
 
       {isOpen && (
