@@ -1,8 +1,10 @@
 import { http, HttpResponse } from "msw";
-import { mockMeetingResponse } from "@/features/meetingDetail/mockData/meetingResponse.mock";
-import { mockParticipantsResponse } from "@/features/meetingDetail/mockData/participantsResponse.mock";
-import { mockReviewsResponseAll } from "@/features/meetingDetail/mockData/reviewsResponse.mock";
-import { mockRecommendedResponseAll } from "@/features/meetingDetail/mockData/recommendedResponse.mock";
+import {
+  mockMeetingResponse,
+  mockParticipantsResponse,
+  mockReviewsResponseAll,
+  mockRecommendedResponseAll,
+} from "@/features/meetingDetail/mockData";
 
 const API_BASE = process.env.NEXT_PUBLIC_CODEIT_API_URL;
 
