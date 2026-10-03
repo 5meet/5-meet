@@ -179,30 +179,26 @@ const InfoCard = ({
               />
             </div>
 
-            {isOwner ? (
-              <div className="flex items-center w-full gap-3">
-                <div className="flex-1 items-center">
-                  <IconButton aria-label="공유하기" onClick={handleShare}>
-                    <Share2 className="w-12 h-12 text-neutral-600" />
-                  </IconButton>
-                </div>
+            <div>
+              <IconButton aria-label="공유하기" onClick={handleShare}>
+                <Share2 className="w-12 h-12 text-neutral-600" />
+              </IconButton>
+            </div>
 
-                <Button
-                  size="lg"
-                  variant="primary"
-                  aria-label={
-                    isConfirmed ? "확정된 모임입니다" : "모임 확정하기"
-                  }
-                  fullWidth
-                  disabled={isConfirmed || isCanceled}
-                  // TODO: 정원 미달이어도 주최자가 수동으로 확정가능하지 않다면 아래 코드
-                  // disabled={isConfirmed || isCanceled || !isFull}
-                  isLoading={changeStatusMutation.isPending}
-                  onClick={handleConfirmMeeting}
-                >
-                  {isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
-                </Button>
-              </div>
+            {isOwner ? (
+              <Button
+                size="lg"
+                variant="primary"
+                aria-label={isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
+                fullWidth
+                disabled={isConfirmed || isCanceled}
+                // TODO: 정원 미달이어도 주최자가 수동으로 확정가능하지 않다면 아래 코드
+                // disabled={isConfirmed || isCanceled || !isFull}
+                isLoading={changeStatusMutation.isPending}
+                onClick={handleConfirmMeeting}
+              >
+                {isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
+              </Button>
             ) : (
               <Button
                 size="lg"
