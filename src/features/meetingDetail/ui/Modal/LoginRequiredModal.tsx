@@ -8,7 +8,7 @@ interface LoginRequiredModalProps {
 
 const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header onClose={onClose} />
 
       <Modal.Body>

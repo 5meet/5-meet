@@ -306,6 +306,7 @@ const EditMeetingModal = ({
 
       <Modal.Footer>
         <Button
+          aria-label="취소"
           variant="secondary"
           className="flex-1"
           size="sm"
@@ -314,6 +315,7 @@ const EditMeetingModal = ({
           취소
         </Button>
         <Button
+          aria-label="수정하기"
           className="flex-1"
           size="sm"
           isLoading={editMutation.isPending || uploadImageMutation.isPending}
