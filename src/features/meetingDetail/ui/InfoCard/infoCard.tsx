@@ -20,8 +20,8 @@ import {
   useJoinMeetingMutation,
   useCancelMeetingMutation,
   useChangeMeetingStatusMutation,
-  useFavoriteMeetingMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
+import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks/useFavoriteMutation";
 
 const InfoCard = ({
   id,

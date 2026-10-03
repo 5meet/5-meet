@@ -16,7 +16,6 @@ import {
   GetMeetingsParams,
   RecommendedMeeting,
   GetRecommendedMeetingsParams,
-  FavoriteResponse,
 } from "@/features/meetingDetail/types/meetingDetail";
 import {
   convertDateType1,
@@ -26,7 +25,9 @@ import {
 // const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 // 응답 매핑 공통 함수
-const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
+export const mapToMeetingDetail = (
+  res: MeetingDetailResponse,
+): MeetingDetail => {
   const { date, time } = convertDateType1(res.dateTime);
   const createdAt = convertDateType4(new Date(res.createdAt));
 
@@ -313,17 +314,3 @@ export const getRecommendedMeetings = async ({
 };
 
 //-----------------------------------------------------------------
-
-// 찜 추가
-export const favoriteMeeting = async (
-  meetingId: number,
-): Promise<FavoriteResponse> => {
-  return api.post(`meetings/${meetingId}/favorites`).json<FavoriteResponse>();
-};
-
-// 찜 해제
-export const unfavoriteMeeting = async (
-  meetingId: number,
-): Promise<ResponseMessage> => {
-  return api.delete(`meetings/${meetingId}/favorites`).json<ResponseMessage>();
-};

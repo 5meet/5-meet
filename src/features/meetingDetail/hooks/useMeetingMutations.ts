@@ -4,20 +4,20 @@ import { AppError } from "@/lib/api/type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { meetingKeys } from "../queryKeys";
+
+import { showToast } from "@/components/ui/Sonner";
+
 import {
   joinMeeting,
   cancelMeeting,
   updateMeetingDetail,
   deleteMeetingDetail,
   changeMeetingStatus,
-  favoriteMeeting,
-  unfavoriteMeeting,
 } from "../api/meetingDetail.service";
-import {
+import type {
   MeetingUpdateRequest,
   MeetingStatus,
 } from "@/features/meetingDetail/types/meetingDetail";
-import { showToast } from "@/components/ui/Sonner";
 
 // 모임 참여 (참여자)
 export function useJoinMeetingMutation(meetingId: number) {
@@ -183,62 +183,6 @@ export function useChangeMeetingStatusMutation(meetingId: number) {
       }
       if (error instanceof HTTPError && error.response.status === 404) {
         showToast({ kind: "error", message: "존재하지 않는 모임입니다." });
-        return;
-      }
-
-      showToast({ kind: "error", message: (error as Error).message });
-    },
-  });
-}
-
-//-----------------------------------------------------------------
-
-export function useFavoriteMeetingMutation(meetingId: number) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (isFavorited: boolean) =>
-      isFavorited ? unfavoriteMeeting(meetingId) : favoriteMeeting(meetingId),
-    onSuccess: (_data, isFavorited) => {
-      queryClient.invalidateQueries({
-        queryKey: meetingKeys.detail(meetingId),
-      });
-      showToast({
-        kind: "success",
-        message: isFavorited
-          ? "찜 목록에서 삭제되었습니다."
-          : "찜 목록에 추가되었습니다.",
-      });
-    },
-    onError: (error, isFavorited) => {
-      const code = (error as AppError).code;
-
-      // 409: 이미 찜한 모임을 다시 찜하려 할 때 — 상태 동기화
-      if (
-        code === "ALREADY_FAVORITED" ||
-        (error instanceof HTTPError && error.response.status === 409)
-      ) {
-        queryClient.invalidateQueries({
-          queryKey: meetingKeys.detail(meetingId),
-        });
-        showToast({ kind: "error", message: "이미 찜한 모임입니다." });
-        return;
-      }
-
-      if (error instanceof HTTPError && error.response.status === 401) {
-        showToast({ kind: "error", message: "로그인이 필요합니다." });
-        return;
-      }
-      if (error instanceof HTTPError && error.response.status === 404) {
-        showToast({
-          kind: "error",
-          message: isFavorited
-            ? "찜하지 않은 모임입니다."
-            : "존재하지 않는 모임입니다.",
-        });
-        queryClient.invalidateQueries({
-          queryKey: meetingKeys.detail(meetingId),
-        });
         return;
       }
 
