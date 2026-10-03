@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
 import { PersonnelCard } from "@/features/meetingDetail/ui/PersonnelCard";
@@ -14,16 +15,6 @@ import { useParticipantsQuery } from "@/features/meetingDetail/hooks/useParticip
 import { useReviewsPagination } from "@/features/meetingDetail/hooks/useReviewsPagination";
 import { useRecommendedMeetingsQuery } from "@/features/meetingDetail/hooks/useRecommendedMeetingsQuery";
 
-//mock 데이터
-import {
-  mockMeeting,
-  mockParticipants,
-  mockReviewsAll,
-  mockRecommendedMeetings,
-} from "@/features/meetingDetail/mockData";
-import { useRef } from "react";
-import { useState } from "react";
-
 interface MeetingDetailPageClientProps {
   meetingId: number;
   isLoggedIn: boolean;
@@ -35,37 +26,16 @@ const MeetingDetailPageClient = ({
   isLoggedIn,
   currentUserId,
 }: MeetingDetailPageClientProps) => {
-  // const {
-  //   data: meeting,
-  //   isLoading,
-  //   isError,
-  //   error,
-  // } = useMeetingDetailQuery(meetingId);
-  // const { data: participantsData } = useParticipantsQuery(meetingId);
-  // const { reviews, currentPage, totalPages, onPageChange } =
-  //   useReviewsPagination(meetingId);
-  // const { data: recommended } = useRecommendedMeetingsQuery(meeting);
-
-  //mock 데이터
-  const meeting = mockMeeting;
-  const isLoading = false;
-  const isError = false;
-  const error = null;
-  const participantsData = {
-    data: mockParticipants,
-    nextCursor: null,
-    hasMore: false,
-  };
-  const REVIEW_PAGE_SIZE = 4;
-  const [reviewPage, setReviewPage] = useState(1);
-  const reviews = mockReviewsAll.slice(
-    (reviewPage - 1) * REVIEW_PAGE_SIZE,
-    reviewPage * REVIEW_PAGE_SIZE,
-  );
-  const currentPage = reviewPage;
-  const totalPages = Math.ceil(mockReviewsAll.length / REVIEW_PAGE_SIZE);
-  const onPageChange = (page: number) => console.log("mock page change:", page);
-  const recommended = mockRecommendedMeetings;
+  const {
+    data: meeting,
+    isLoading,
+    isError,
+    error,
+  } = useMeetingDetailQuery(meetingId);
+  const { data: participantsData } = useParticipantsQuery(meetingId);
+  const { reviews, currentPage, totalPages, onPageChange } =
+    useReviewsPagination(meetingId);
+  const { data: recommended } = useRecommendedMeetingsQuery(meeting);
 
   // 주소 복사하기
   const handleShare = async () => {
@@ -88,17 +58,8 @@ const MeetingDetailPageClient = ({
   // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
   const reviewSectionRef = useRef<HTMLElement>(null);
 
-  // const handleReviewPageChange = (page: number) => {
-  //   onPageChange(page);
-  //   reviewSectionRef.current?.scrollIntoView({
-  //     behavior: "smooth",
-  //     block: "start",
-  //   });
-  // };
-
-  // mock 데이터용 리뷰 페이지네이션
   const handleReviewPageChange = (page: number) => {
-    setReviewPage(page);
+    onPageChange(page);
     reviewSectionRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
