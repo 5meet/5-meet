@@ -124,6 +124,7 @@ const EditMeetingModal = ({
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // validateMeetingForm이 현재 2번 실행 중(isFormValid 계산용, handleSubmit 내부) -> 성능상 문제는 X, useMemo로 감쌀 수 있음
   // const errors = useMemo(() => validateMeetingForm(form), [form]);
   const isFormValid = Object.keys(validateMeetingForm(form)).length === 0;
 
