@@ -43,8 +43,6 @@ const InfoCard = ({
   // TODO: 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
   // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
 
-  // TODO: 찜하기 TanStack Query 사용 -> useState 삭제 후 Query와 mutation으로 관리
-  const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
   const favoriteMutation = useFavoriteMeetingMutation(id);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -72,14 +70,7 @@ const InfoCard = ({
     }
     if (favoriteMutation.isPending) return;
 
-    const wasFavorited = isFavorited;
-    setIsFavorited((prev) => !prev); // 즉시 UI 반영
-
-    favoriteMutation.mutate(wasFavorited, {
-      onError: () => {
-        setIsFavorited(wasFavorited); // 실패 시 되돌림
-      },
-    });
+    favoriteMutation.mutate(initialIsFavorited);
   };
 
   // 참여하기 <-> 참여 취소하기
@@ -171,7 +162,7 @@ const InfoCard = ({
           <section className="flex items-center w-full shrink-0 gap-2">
             <div>
               <LikeButton
-                isLiked={isFavorited}
+                isLiked={initialIsFavorited}
                 onToggle={handleLikeToggle}
                 size="md"
               />
