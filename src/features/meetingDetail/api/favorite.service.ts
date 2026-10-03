@@ -1,10 +1,10 @@
 import { api } from "@/lib/api/api";
 
-import {
+import type {
   FavoriteResponse,
   FavoriteToggleResult,
 } from "@/features/meetingDetail/types/favorite";
-import { ResponseMessage } from "@/features/meetingDetail/types/meetingDetail";
+import type { ResponseMessage } from "@/features/meetingDetail/types/meetingDetail";
 
 // 찜 추가
 export const favoriteMeeting = async (

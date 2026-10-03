@@ -14,11 +14,11 @@ import { DateField } from "@/components/ui/Form/input/DateField";
 import { TimeField } from "@/components/ui/Form/input/TimeField";
 import TextArea from "@/components/ui/Form/input/Textarea";
 
-import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
-import { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
 import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
+import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
+import type { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
 
 import {
   splitISOToKSTDateTime,

@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/api";
 
-import {
+import type {
   ResponseMessage,
   MeetingDetail,
   MeetingDetailResponse,

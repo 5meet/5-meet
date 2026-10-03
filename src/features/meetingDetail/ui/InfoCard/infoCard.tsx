@@ -14,14 +14,15 @@ import {
   DeleteMeetingModal,
 } from "@/features/meetingDetail/ui/Modal";
 import { showToast } from "@/components/ui/Sonner";
-import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
-import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
+
 import {
   useJoinMeetingMutation,
   useCancelMeetingMutation,
   useChangeMeetingStatusMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
+import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
+import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 
 const InfoCard = ({
   id,
