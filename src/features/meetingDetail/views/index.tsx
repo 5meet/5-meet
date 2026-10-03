@@ -55,16 +55,15 @@ const MeetingDetailPageClient = ({
     }
   };
 
-  // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
-  const reviewSectionRef = useRef<HTMLElement>(null);
-
-  const handleReviewPageChange = (page: number) => {
-    onPageChange(page);
-    reviewSectionRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
+  // // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
+  // const reviewSectionRef = useRef<HTMLElement>(null);
+  // const handleReviewPageChange = (page: number) => {
+  //   onPageChange(page);
+  //   reviewSectionRef.current?.scrollIntoView({
+  //     behavior: "smooth",
+  //     block: "start",
+  //   });
+  // };
 
   if (isLoading || !meeting) {
     return (
@@ -191,14 +190,14 @@ const MeetingDetailPageClient = ({
           </div>
         </section>
 
-        <section ref={reviewSectionRef} className="flex flex-col gap-4 w-full">
+        <section className="flex flex-col gap-4 w-full">
           <h3>리뷰 모아보기</h3>
           <ReviewCardList reviews={reviews} />
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={handleReviewPageChange}
+              onPageChange={onPageChange}
               scrollToTop={false}
             />
           )}
