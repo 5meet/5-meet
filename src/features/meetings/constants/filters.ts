@@ -26,17 +26,17 @@ export const MOCKUP_SORT_OPTIONS = [
 export const HERO_SLIDES = [
   {
     id: "1",
-    title: "좋은 사람들과 특별한 순간을 만들어보세요",
-    subtitle: "취미부터 자기개발까지, 지금 우리, 함께해요!",
+    title: "좋은 사람들과\n특별한 순간을 만들어보세요",
+    subtitle: "취미부터 자기계발까지,\n지금 우리, 함께해요!",
   },
   {
     id: "2",
-    title: "오늘 만날 모임을 찾아보세요",
-    subtitle: "필터로 지역과 날짜를 맞춰 보세요.",
+    title: "새로운 관심사를\n함께 시작해보세요",
+    subtitle: "나와 같은 관심사를 가진 사람들을 만나보세요.",
   },
   {
     id: "3",
-    title: "직접 모임을 열어보세요",
-    subtitle: "3단계면 모임을 만들 수 있어요.",
+    title: "함께하면\n더 즐거운 순간",
+    subtitle: "다양한 모임을 찾아보고 참여해보세요.",
   },
 ] as const;

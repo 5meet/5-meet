@@ -13,7 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const safeRedirect = getSafeRedirect(redirect, "/meetings");
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+    <main className="flex flex-1 items-center justify-center bg-[#f5f7f8] px-4">
       <LoginForm redirect={safeRedirect} />
     </main>
   );
