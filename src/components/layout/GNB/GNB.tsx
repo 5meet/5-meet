@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MobileMenu } from './MobileMenu';
+import { MobileMenu } from "./MobileMenu";
 
 const NAV_ITEMS = [
   {
@@ -23,26 +23,43 @@ const NAV_ITEMS = [
 export default function GNB() {
   return (
     <header className="relative w-full bg-[#f5f7f8]">
-      <div className="mx-auto flex h-16 w-full items-center px-4 md:max-w-280 md:px-6 lg:max-w-350">
+      <div
+        className="
+          mx-auto flex h-16 w-full items-center px-4
+          min-[744px]:max-w-280 min-[744px]:px-6
+          lg:max-w-350
+        "
+      >
         {/* 로고 */}
         <Link
           href="/meetings"
-          className="shrink-0 text-xl font-bold text-emerald-500 md:text-2xl"
+          className="
+            shrink-0 text-xl font-bold text-emerald-500
+            min-[744px]:text-2xl
+          "
         >
           같이달램
         </Link>
 
-        {/* 데스크탑 / 태블릿 메뉴 */}
+        {/* Tablet / Desktop 메뉴 */}
         <nav
           aria-label="주요 메뉴"
-          className="ml-10 hidden h-full md:block"
+          className="
+            ml-10 hidden h-full
+            min-[744px]:block
+          "
         >
           <ul className="flex h-full items-center gap-8">
             {NAV_ITEMS.map((item) => (
               <li key={item.href} className="h-full">
                 <Link
                   href={item.href}
-                  className="flex h-full items-center border-b-2 border-transparent px-1 text-sm font-semibold text-gray-500 transition-colors hover:text-primary-500"
+                  className="
+                    flex h-full items-center
+                    border-b-2 border-transparent px-1
+                    text-sm font-semibold text-gray-500
+                    transition-colors hover:text-primary-500
+                  "
                 >
                   {item.label}
                 </Link>
@@ -55,13 +72,21 @@ export default function GNB() {
         <div className="ml-auto flex items-center gap-3">
           <Link
             href="/login"
-            className="inline-flex h-8 items-center justify-center rounded-lg bg-emerald-500 px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-600 md:h-9 md:px-5 md:text-sm"
+            className="
+              inline-flex h-8 items-center justify-center
+              rounded-lg bg-emerald-500 px-4
+              text-xs font-semibold text-white
+              transition-colors hover:bg-primary-600
+              min-[744px]:h-9 min-[744px]:px-5 min-[744px]:text-sm
+            "
           >
             로그인
           </Link>
 
-          {/* 모바일 햄버거 */}
-          <MobileMenu />
+          {/* Mobile */}
+          <div className="min-[744px]:hidden">
+            <MobileMenu />
+          </div>
         </div>
       </div>
     </header>
