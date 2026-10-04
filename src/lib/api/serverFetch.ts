@@ -37,11 +37,15 @@ export async function serverFetch<T>(
       }
     }
 
+    console.log("[serverFetch] BASE_URL:", BASE_URL);
+    console.log("[serverFetch] request:", `${BASE_URL}${url}`);
+
     const response = await fetch(`${BASE_URL}${url}`, {
       ...fetchOptions,
       headers: requestHeaders,
       signal,
     });
+
 
     // 1. 서버 HTTP 에러 (4xx, 5xx)
     if (!response.ok) {
@@ -57,6 +61,7 @@ export async function serverFetch<T>(
     return (await response.json()) as T;
   } catch (error) {
     // 2. !response.ok에서 생성한 ApiError
+    console.error("[serverFetch] error:", error);
     if (error instanceof ApiError) {
       throw error;
     }
