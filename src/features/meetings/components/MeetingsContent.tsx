@@ -8,10 +8,11 @@ import { MeetingCardList } from "./MeetingCardList";
 import { FloatingActionButton } from "@/components/ui/FloatingActionButton/FloatingActionButton";
 
 export async function MeetingsContent() {
-  const response = await serverFetch<MeetingsResponse>("/meetings");
-  console.log("모임 데이터", response);
+  const response = await serverFetch<MeetingsResponse>(
+    "/meetings?sortBy=participantCount&sortOrder=desc",
+  );
 
-  const meetings = response.data.slice(0, 4);
+  const popularMeetings = response.data.slice(0, 4);
   return (
     <main className="md:mt-4">
       <div className="mx-auto w-full md:w-[90%] md:max-w-360">
