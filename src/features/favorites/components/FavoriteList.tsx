@@ -1,4 +1,3 @@
-import Image from "next/image";
 
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState"; 
 import { MeetingCard } from "@/components/ui/MeetingCard/MeetingCard";

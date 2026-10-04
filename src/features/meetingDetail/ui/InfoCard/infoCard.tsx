@@ -6,14 +6,20 @@ import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import Tags from "@/components/ui/Tags/Tags";
 import Kebab from "@/components/ui/Kebab/Kebab";
-import { Modal } from "@/components/ui/Modal/Modal";
+import {
+  LoginRequiredModal,
+  EditMeetingModal,
+  DeleteMeetingModal,
+} from "@/features/meetingDetail/ui/Modal";
 import { showToast } from "@/components/ui/Sonner";
 import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 import { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
+import {
+  useJoinMeetingMutation,
+  useCancelMeetingMutation,
+} from "@/features/meetingDetail/hooks/useMeetingMutations";
 
-// 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
-
-const MeetingDetailInfoCard = ({
+const InfoCard = ({
   id,
   title,
   location,
@@ -28,19 +34,25 @@ const MeetingDetailInfoCard = ({
   initialIsFavorited,
   isLoggedIn,
 }: MeetingDetailInfoCardProps) => {
-  // 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
+  // TODO: 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
   // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
 
-  //IF : TanStack Query 사용 -> useState 삭제 후 Query와 mutation으로 관리
+  // TODO: 찜하기 TanStack Query 사용 -> useState 삭제 후 Query와 mutation으로 관리
   const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
-  const [isParticipating, setIsParticipating] = useState(
-    initialIsParticipating,
-  );
-  const [isParticipationLoading, setIsParticipationLoading] = useState(false);
+
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const isParticipating = initialIsParticipating;
 
   const isFull = participantCount >= capacity;
   const { isClosed } = formatRegistrationEnd(registrationEnd);
+
+  const joinMutation = useJoinMeetingMutation(id);
+  const cancelMutation = useCancelMeetingMutation(id);
+  const isParticipationLoading =
+    joinMutation.isPending || cancelMutation.isPending;
 
   // 찜하기
   const handleLikeToggle = async () => {
@@ -56,9 +68,7 @@ const MeetingDetailInfoCard = ({
           ? "찜 목록에서 삭제되었습니다."
           : "찜 목록에 추가되었습니다.",
       });
-    } catch (error) {
-      console.error("찜 상태 변경에 실패했습니다.", error);
-
+    } catch {
       showToast({
         kind: "error",
         message: "찜 상태 변경에 실패했습니다.",
@@ -73,45 +83,16 @@ const MeetingDetailInfoCard = ({
       return;
     }
 
-    if (isParticipationLoading) {
-      return;
-    }
+    if (isParticipationLoading) return;
 
-    setIsParticipationLoading(true);
-
-    try {
-      if (isParticipating) {
-        // TODO: await cancelParticipation(meetingId);
-
-        setIsParticipating(false);
-
-        showToast({
-          kind: "success",
-          message: "참여가 취소되었습니다.",
-        });
-      } else {
-        // TODO: await participateMeeting(meetingId);
-
-        setIsParticipating(true);
-
-        showToast({
-          kind: "success",
-          message: "모임 참여가 완료되었습니다.",
-        });
-      }
-    } catch (error) {
-      console.error("참여 상태 변경에 실패했습니다.", error);
-
-      showToast({
-        kind: "error",
-        message: "참여 상태 변경에 실패했습니다.",
-      });
-    } finally {
-      setIsParticipationLoading(false);
+    if (isParticipating) {
+      cancelMutation.mutate();
+    } else {
+      joinMutation.mutate();
     }
   };
 
-  // 공유하기
+  // 모임 공유하기
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -120,9 +101,7 @@ const MeetingDetailInfoCard = ({
         kind: "success",
         message: "모임 링크가 복사되었습니다.",
       });
-    } catch (error) {
-      console.error("URL 복사에 실패했습니다.", error);
-
+    } catch {
       showToast({
         kind: "error",
         message: "모임 링크 복사에 실패했습니다.",
@@ -141,18 +120,18 @@ const MeetingDetailInfoCard = ({
               {isOwner && (
                 <Kebab
                   onEdit={() => {
-                    // TODO: 모임 수정
+                    setIsEditModalOpen(true);
                   }}
                   onDelete={() => {
-                    // TODO: 모임 삭제
+                    setIsDeleteModalOpen(true);
                   }}
                 />
               )}
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center gap-1.5 text-lg font-semibold text-[#1F2937] lg:text-[28px]">
-                <span className="min-w-0 break-words">{title}</span>
+                <span className="min-w-0 text-wrap">{title}</span>
 
                 {isOwner && (
                   <Image
@@ -205,39 +184,24 @@ const MeetingDetailInfoCard = ({
         </div>
       </section>
 
-      <Modal isOpen={isLoginModalOpen}>
-        <Modal.Header onClose={() => setIsLoginModalOpen(false)} />
-        <Modal.Body>
-          <div className="text-center font-bold text-lg">
-            로그인이 필요한 서비스입니다.
-          </div>
-        </Modal.Body>
+      <LoginRequiredModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
 
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            className="flex-1"
-            onClick={() => setIsLoginModalOpen(false)}
-            size="sm"
-          >
-            취소
-          </Button>
+      <DeleteMeetingModal
+        meetingId={id}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
 
-          <Button
-            className="flex-1"
-            onClick={() => {
-              // TODO: 로그인 페이지 이동
-
-              setIsLoginModalOpen(false);
-            }}
-            size="sm"
-          >
-            확인
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <EditMeetingModal
+        meetingId={id}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </>
   );
 };
 
-export default MeetingDetailInfoCard;
+export default InfoCard;

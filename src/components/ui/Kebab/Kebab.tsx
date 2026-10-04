@@ -46,7 +46,7 @@ const Kebab = ({ onEdit, onDelete }: KebabProps) => {
         onClick={() => setIsOpen((prev) => !prev)}
         className="flex h-6 w-6 items-center justify-center rounded-full text-gray-600 hover:bg-gray-50 lg:h-8 lg:w-8"
       >
-        <Image src="/ic_meetballs.svg" alt="" width={40} height={40} />
+        <Image src="/ic_kebab.svg" alt="" width={40} height={40} />
       </button>
 
       {isOpen && (
