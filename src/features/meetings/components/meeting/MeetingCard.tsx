@@ -21,7 +21,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   } = meeting;
 
   const date = new Date(dateTime);
-
+  console.log("MeetingCard:", meeting); // Debugging line to check the date value
   const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
   const formattedTime = date.toLocaleTimeString("ko-KR", {
@@ -36,27 +36,20 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
     <article className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       {/* 이미지 */}
       <div className="relative aspect-16/10 w-full overflow-hidden bg-gray-100">
-        {image ? (
-          <Image
-            src="/meetings-hero.jpg"
-            alt={name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 25vw"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-gray-400">
-            이미지 없음
-          </div>
-        )}
+        <Image
+          src={image || "/meetings-hero.jpg"}
+          alt={name}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 25vw"
+        />
 
         {/* 상태 배지 */}
         <span
-          className={`absolute bottom-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${
-            isFull
+          className={`absolute bottom-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${isFull
               ? "bg-blue-50 text-blue-500"
               : "bg-emerald-50 text-emerald-600"
-          }`}
+            }`}
         >
           {isFull ? "모집 마감" : "참여 가능"}
         </span>
