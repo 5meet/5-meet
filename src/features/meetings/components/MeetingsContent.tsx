@@ -29,9 +29,9 @@ export async function MeetingsContent() {
           icon={<Sparkles className="h-5 w-5 text-violet-500" />}
         />
       </div>
-      <div className="fixed right-4 bottom-25 z-50 md:right-8 md:bottom-8">
+      {/* <div className="fixed right-4 bottom-25 z-50 md:right-8 md:bottom-8">
         <FloatingActionButton icon={UserPlus} label="모임 만들기" />
-      </div>
+      </div> */}
     </main>
   );
 }
