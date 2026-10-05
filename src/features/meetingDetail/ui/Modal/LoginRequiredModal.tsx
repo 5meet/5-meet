@@ -8,7 +8,7 @@ interface LoginRequiredModalProps {
 
 const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header onClose={onClose} />
 
       <Modal.Body>
@@ -21,7 +21,7 @@ const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
         <Button
           variant="secondary"
           className="flex-1"
-          size="sm"
+          size="md"
           onClick={onClose}
         >
           취소
@@ -32,7 +32,7 @@ const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
             // TODO: 로그인 페이지 이동
             onClose();
           }}
-          size="sm"
+          size="md"
         >
           확인
         </Button>

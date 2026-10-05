@@ -8,6 +8,7 @@ interface ImageUploadFieldProps {
   value: string;
   onFileSelect: (file: File) => void;
   onRemove: () => void;
+  alt?: string;
 }
 
 const isBlobUrl = (url: string) => url.startsWith("blob:");
@@ -16,6 +17,7 @@ export const ImageUploadField = ({
   value,
   onFileSelect,
   onRemove,
+  alt,
 }: ImageUploadFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState(value);
@@ -66,11 +68,23 @@ export const ImageUploadField = ({
     onRemove();
   };
 
+  // 키보드 접근성
+  const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault(); // Space의 경우 페이지 스크롤 방지
+      inputRef.current?.click();
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <div
+        role="button"
+        tabIndex={0}
+        aria-label={previewUrl ? "모임 이미지 변경" : "모임 이미지 업로드"}
         onClick={() => inputRef.current?.click()}
-        className="relative flex h-29 w-29 cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-[#F9FAFB] md:h-37 md:w-37"
+        onKeyDown={handleTriggerKeyDown}
+        className="relative flex h-29 w-29 cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-[#F9FAFB] border border-white md:h-37 md:w-37 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
       >
         {previewUrl && (
           <button
@@ -86,7 +100,7 @@ export const ImageUploadField = ({
         {previewUrl ? (
           <Image
             src={previewUrl}
-            alt="모임 이미지 미리보기"
+            alt={alt || "모임 이미지 미리보기"}
             fill
             className="object-cover"
           />
@@ -94,7 +108,7 @@ export const ImageUploadField = ({
           <div className="flex flex-col items-center gap-2">
             <Image
               src="/ic_image_plus.svg"
-              alt="모임 이미지"
+              alt="파일 첨부"
               width={24}
               height={24}
             />

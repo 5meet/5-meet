@@ -11,7 +11,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ) => {
     const boxSize = "h-12 w-full px-5 py-3.5";
     const borderType = {
-      default: "border-gray-300",
+      default: "border-gray-300 focus-within:border-primary-500",
       error: "border-error-100",
     };
     const text = `text-base font-normal text-gray-800 placeholder:text-gray-500`;
@@ -19,9 +19,9 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const inputStyle = `${text} ${scrollbar}`;
 
     return (
-      <div className="flex flex-col gap-1 min-w-0 w-112">
+      <div className="flex flex-col gap-1 min-w-0">
         <div
-          className={`flex h-25 items-center justify-start rounded-2xl bg-[#F9FAFB] outline-none border ${boxSize} ${borderType[errMsg ? "error" : "default"]}`}
+          className={`flex h-25 items-center justify-start rounded-2xl bg-white border ${boxSize} ${borderType[errMsg ? "error" : "default"]}`}
         >
           <textarea
             ref={ref}

@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import Tags from "@/components/ui/Tags/Tags";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
-import { showToast } from "@/components/ui/Sonner";
-import Link from "next/link";
+import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
 
 interface BaseCompactCardProps {
   id: number;
@@ -36,23 +36,25 @@ const CompactCard = (props: CompactCardProps) => {
   const [isFavorited, setIsFavorited] = useState(
     props.variant === "meeting" ? props.initialIsFavorited : false,
   );
+  const favoriteMutation = useFavoriteMeetingMutation(props.id);
 
   const titleId = `card-title-${props.id}`;
 
-  const handleLikeToggle = async () => {
+  // TODO: 찜하기 기능 구현 완료 후 수정 예정
+  // 찜하기
+  const handleLikeToggle = () => {
     if (props.variant !== "meeting") return;
-    try {
-      setIsFavorited((prev) => !prev);
-      showToast({
-        kind: "success",
-        message: isFavorited
-          ? "찜 목록에서 삭제되었습니다."
-          : "찜 목록에 추가되었습니다.",
-      });
-    } catch (error) {
-      console.error("찜 상태 변경에 실패했습니다.", error);
-      showToast({ kind: "error", message: "찜 상태 변경에 실패했습니다." });
-    }
+
+    if (favoriteMutation.isPending) return;
+
+    const wasFavorited = isFavorited;
+    setIsFavorited((prev) => !prev); // 즉시 UI 반영
+
+    favoriteMutation.mutate(wasFavorited, {
+      onError: () => {
+        setIsFavorited(wasFavorited); // 실패 시 되돌림
+      },
+    });
   };
 
   const href =
