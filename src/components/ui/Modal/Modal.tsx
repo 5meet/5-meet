@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect } from "react";
+
 /**프로젝트 전반에 사용할 basemodal 컴포넌트 입니다. */
 
 import { ModalHeader } from "./ModalHeader";
@@ -9,6 +13,7 @@ export type ModalSize = "md" | "lg" | "xl";
 
 interface ModalProps {
   isOpen: boolean;
+  onClose: () => void;
   children: React.ReactNode;
   size?: ModalSize;
 }
@@ -19,8 +24,30 @@ const sizeStyles: Record<ModalSize, string> = {
   xl: "max-w-xl",
 };
 
-export const ModalRoot = ({ isOpen, children, size = "md" }: ModalProps) => {
+export const ModalRoot = ({
+  isOpen,
+  onClose,
+  children,
+  size = "md",
+}: ModalProps) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* 오버레이 */}

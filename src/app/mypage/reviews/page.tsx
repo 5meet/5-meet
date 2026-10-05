@@ -1,3 +1,5 @@
-export default function MyReviewsPage() {
-  return <main>나의 리뷰 페이지</main>;
+import ReviewsContent from "@/features/mypage/components/ReviewsContent";
+
+export default function ReviewsPage() {
+  return <ReviewsContent />;
 }

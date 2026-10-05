@@ -32,5 +32,10 @@
     ".storybook/**/*" 
 
   ],
-  "exclude": ["node_modules"]
+  // 중간발표가 급하기 때문에 스토리북은 제외하고 build하도록 설정(추후에 꼭 수정)
+    "exclude": [
+    "node_modules",
+    "**/*.stories.ts",
+    "**/*.stories.tsx"
+  ]
 }

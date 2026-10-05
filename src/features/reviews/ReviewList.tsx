@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import type { Review } from "@/data/reviews";
-import { ReviewCard } from "./ReviewCard";
+import { ReviewCard } from "../../components/ui/ReviewCard/ReviewCard";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 
 interface ReviewListProps {
@@ -29,13 +29,7 @@ export function ReviewList({
           <ReviewCard review={review} />
 
           {index < reviews.length - 1 && (
-            <div
-              className="
-                mx-7
-                border-b
-                border-[#e2e2e2]
-              "
-            />
+            <div/>
           )}
         </div>
       ))}
