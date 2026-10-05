@@ -46,6 +46,7 @@ const InfoCard = ({
 
   const favoriteMutation = useFavoriteMeetingMutation(id);
 
+  const [isSharing, setIsSharing] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -197,6 +198,7 @@ const InfoCard = ({
                 aria-label={isParticipating ? "참여 취소하기" : "참여하기"}
                 fullWidth
                 disabled={!isParticipating && (isFull || isClosed)}
+                isLoading={isParticipationLoading}
                 onClick={handleParticipation}
               >
                 {isParticipating ? "참여 취소하기" : "참여하기"}
