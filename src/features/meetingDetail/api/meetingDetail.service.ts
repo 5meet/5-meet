@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/api";
 
-import {
+import type {
   ResponseMessage,
   MeetingDetail,
   MeetingDetailResponse,
@@ -25,7 +25,9 @@ import {
 // const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 // 응답 매핑 공통 함수
-const mapToMeetingDetail = (res: MeetingDetailResponse): MeetingDetail => {
+export const mapToMeetingDetail = (
+  res: MeetingDetailResponse,
+): MeetingDetail => {
   const { date, time } = convertDateType1(res.dateTime);
   const createdAt = convertDateType4(new Date(res.createdAt));
 
@@ -310,3 +312,5 @@ export const getRecommendedMeetings = async ({
 
   return result.slice(0, size).map(mapToRecommendedMeeting);
 };
+
+//-----------------------------------------------------------------

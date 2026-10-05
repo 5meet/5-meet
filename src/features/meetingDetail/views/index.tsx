@@ -9,20 +9,12 @@ import Pagination from "@/components/ui/Pagination/Pagination";
 import CompactCard from "@/components/ui/CompactCard/CompactCard";
 import { showToast } from "@/components/ui/Sonner";
 import { Spinner } from "@/components/ui/Spinner/Spinner";
-import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks/useMeetingDetailQuery";
-import { useParticipantsQuery } from "@/features/meetingDetail/hooks/useParticipantsQuery";
-import { useReviewsPagination } from "@/features/meetingDetail/hooks/useReviewsPagination";
-import { useRecommendedMeetingsQuery } from "@/features/meetingDetail/hooks/useRecommendedMeetingsQuery";
-
-//mock 데이터
 import {
-  mockMeeting,
-  mockParticipants,
-  mockReviewsAll,
-  mockRecommendedMeetings,
-} from "@/features/meetingDetail/mockData";
-import { useRef } from "react";
-import { useState } from "react";
+  useMeetingDetailQuery,
+  useParticipantsQuery,
+  useRecommendedMeetingsQuery,
+  useReviewsPagination,
+} from "@/features/meetingDetail/hooks";
 
 interface MeetingDetailPageClientProps {
   meetingId: number;
@@ -35,38 +27,16 @@ const MeetingDetailPageClient = ({
   isLoggedIn,
   currentUserId,
 }: MeetingDetailPageClientProps) => {
-  // const {
-  //   data: meeting,
-  //   isLoading,
-  //   isError,
-  //   error,
-  // } = useMeetingDetailQuery(meetingId);
-  // const { data: participantsData } = useParticipantsQuery(meetingId);
-  // const { reviews, currentPage, totalPages, onPageChange } =
-  //   useReviewsPagination(meetingId);
-  // const { data: recommended } = useRecommendedMeetingsQuery(meeting);
-
-  //mock 데이터
-  const meeting = mockMeeting;
-  const isLoading = false;
-  const isError = false;
-  const error = null;
-  const participantsData = {
-    data: mockParticipants,
-    nextCursor: null,
-    hasMore: false,
-  };
-  const REVIEW_PAGE_SIZE = 4;
-  const [reviewPage, setReviewPage] = useState(1);
-
-  const reviews = mockReviewsAll.slice(
-    (reviewPage - 1) * REVIEW_PAGE_SIZE,
-    reviewPage * REVIEW_PAGE_SIZE,
-  );
-  const currentPage = reviewPage;
-  const totalPages = Math.ceil(mockReviewsAll.length / REVIEW_PAGE_SIZE);
-  const onPageChange = (page: number) => console.log("mock page change:", page);
-  const recommended = mockRecommendedMeetings;
+  const {
+    data: meeting,
+    isLoading,
+    isError,
+    error,
+  } = useMeetingDetailQuery(meetingId);
+  const { data: participantsData } = useParticipantsQuery(meetingId);
+  const { reviews, currentPage, totalPages, onPageChange } =
+    useReviewsPagination(meetingId);
+  const { data: recommended } = useRecommendedMeetingsQuery(meeting);
 
   // 주소 복사하기
   const handleShare = async () => {
@@ -86,9 +56,8 @@ const MeetingDetailPageClient = ({
     }
   };
 
-  // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
-  const reviewSectionRef = useRef<HTMLElement>(null);
-
+  // // 리뷰 페이지네이션 시, 리뷰 섹션으로 스크롤 이동
+  // const reviewSectionRef = useRef<HTMLElement>(null);
   // const handleReviewPageChange = (page: number) => {
   //   onPageChange(page);
   //   reviewSectionRef.current?.scrollIntoView({
@@ -96,15 +65,6 @@ const MeetingDetailPageClient = ({
   //     block: "start",
   //   });
   // };
-
-  // mock 데이터용 리뷰 페이지네이션
-  const handleReviewPageChange = (page: number) => {
-    setReviewPage(page);
-    reviewSectionRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
 
   if (isLoading || !meeting) {
     return (
@@ -134,8 +94,8 @@ const MeetingDetailPageClient = ({
     isLoggedIn && currentUserId !== null && meeting.hostId === currentUserId;
 
   return (
-    <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 font-semibold text-black text-base md:text-xl lg:text-2xl md:mb-20 lg:mb-40 md:mt-30">
-      <div className="flex flex-col w-full max-w-[343px] gap-20 md:max-w-174 lg:max-w-7xl">
+    <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 md:mb-20 lg:mb-40 md:mt-30">
+      <div className="flex flex-col w-full max-w-[343px] gap-20 font-semibold text-black text-base md:text-xl lg:text-2xl md:max-w-174 lg:max-w-7xl">
         {/* 모임 information */}
         <section className="w-full">
           <div className="flex gap-4 justify-center flex-wrap md:flex-nowrap">
@@ -165,6 +125,8 @@ const MeetingDetailPageClient = ({
                 capacity={meeting.capacity}
                 initialIsFavorited={meeting.initialIsFavorited}
                 isLoggedIn={isLoggedIn}
+                confirmedAt={meeting.confirmedAt}
+                canceledAt={meeting.canceledAt}
               />
 
               <PersonnelCard
@@ -176,7 +138,7 @@ const MeetingDetailPageClient = ({
           </div>
         </section>
 
-        {!isOwner && meeting.description && (
+        {meeting.description && (
           <section className="flex flex-col gap-4 w-full">
             <h3>모임 설명</h3>
 
@@ -231,14 +193,14 @@ const MeetingDetailPageClient = ({
           </div>
         </section>
 
-        <section ref={reviewSectionRef} className="flex flex-col gap-4 w-full">
+        <section className="flex flex-col gap-4 w-full">
           <h3>리뷰 모아보기</h3>
           <ReviewCardList reviews={reviews} />
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={handleReviewPageChange}
+              onPageChange={onPageChange}
               scrollToTop={false}
             />
           )}

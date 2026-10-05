@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export const useCursorPagination = () => {
+const useCursorPagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   // cursors[n] = n페이지를 요청할 때 쓸 커서 (1페이지는 커서 없음)
   const [cursors, setCursors] = useState<Record<number, string>>({});
@@ -41,3 +41,5 @@ export const useCursorPagination = () => {
     reset,
   };
 };
+
+export default useCursorPagination;
