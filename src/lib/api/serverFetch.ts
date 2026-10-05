@@ -23,20 +23,19 @@ export async function serverFetch<T>(
     ? AbortSignal.any([externalSignal, timeoutSignal])
     : timeoutSignal;
 
-  try {
-    const requestHeaders = new Headers(fetchOptions.headers);
+  const requestHeaders = new Headers(fetchOptions.headers);
 
-    // 외부에서 Authorization을 직접 전달하지 않은 경우에만
-    // Cookie의 Access Token을 사용
-    if (auth && !requestHeaders.has("Authorization")) {
-      const cookieStore = await cookies();
-      const accessToken = cookieStore.get("accessToken")?.value;
+  // 외부에서 Authorization을 직접 전달하지 않은 경우에만
+  // Cookie의 Access Token을 사용
+  if (auth && !requestHeaders.has("Authorization")) {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
 
-      if (accessToken) {
-        requestHeaders.set("Authorization", `Bearer ${accessToken}`);
-      }
+    if (accessToken) {
+      requestHeaders.set("Authorization", `Bearer ${accessToken}`);
     }
-
+  }
+  try {
     const response = await fetch(`${BASE_URL}${url}`, {
       ...fetchOptions,
       headers: requestHeaders,
