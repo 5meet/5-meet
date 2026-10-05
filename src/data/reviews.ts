@@ -7,7 +7,6 @@ export interface Review {
   imageUrl: string;
   groupName: string;
   category: string;
-  imageUrl?: string;
 }
 
 export const mockReviews: Review[] = [
