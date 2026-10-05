@@ -271,7 +271,7 @@ const EditMeetingModal = ({
                       });
                     }}
                     onRemove={() => {
-                      revokePendingBlob();
+                      revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
                       handleField("image", "");
                     }}
                   />
