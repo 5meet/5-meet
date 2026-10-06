@@ -66,21 +66,21 @@ const MeetingDetailPageClient = ({
   //   });
   // };
 
-  if (isLoading || !meeting) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 p-20 text-gray-500">
-        <Spinner size="lg" className="text-primary-500" />
-        <span className="text-sm">불러오는 중...</span>
-      </div>
-    );
-  }
-
   if (isError) {
     console.error("모임 상세 조회 실패:", error);
 
     return (
       <div className="flex items-center justify-center p-20 text-gray-500">
         <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
+      </div>
+    );
+  }
+
+  if (isLoading || !meeting) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 p-20 text-gray-500">
+        <Spinner size="lg" className="text-primary-500" />
+        <span className="text-sm">불러오는 중...</span>
       </div>
     );
   }

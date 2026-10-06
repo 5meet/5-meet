@@ -1,5 +1,6 @@
 import Image from "next/image";
 import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
+import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
 
 interface TagsProps {
   date: string;
@@ -14,8 +15,8 @@ const Tags = ({
   registrationEnd,
   order = "deadline-first",
 }: TagsProps) => {
-  const { text: registrationEndText, isClosed } =
-    formatRegistrationEnd(registrationEnd);
+  const isClosed = useIsPastDeadline(registrationEnd); // 구조분해 없이 바로 받음
+  const { text: registrationEndText } = formatRegistrationEnd(registrationEnd);
 
   const deadlineTag = (
     <div
