@@ -94,7 +94,7 @@ const MeetingDetailPageClient = ({
     isLoggedIn && currentUserId !== null && meeting.hostId === currentUserId;
 
   return (
-    <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 md:mb-20 lg:mb-40 md:mt-30">
+    <main className="flex flex-col items-center mt-10 mb-10 px-2 md:mb-20 lg:mb-40 md:mt-20">
       <div className="flex flex-col w-full max-w-[343px] gap-20 font-semibold text-black text-base md:text-xl lg:text-2xl md:max-w-174 lg:max-w-7xl">
         {/* 모임 information */}
         <section className="w-full">
