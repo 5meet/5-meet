@@ -29,8 +29,13 @@ export const validateMeetingAddress = (address: string): ValidationResult => {
   return null;
 };
 
-export const validateMeetingImage = (image: string): ValidationResult => {
-  if (image.trim().length === 0) return "모임 이미지를 등록해주세요.";
+export const validateMeetingImage = (
+  image?: string | null,
+): ValidationResult => {
+  if (!image?.trim()) {
+    return "모임 이미지를 등록해주세요.";
+  }
+
   return null;
 };
 

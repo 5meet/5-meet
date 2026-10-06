@@ -159,7 +159,7 @@ export default function ReviewMeetingCard({
 
             <LikeButton
               isLiked={isLiked}
-              onClick={handleFavoriteClick}
+              onToggle={handleFavoriteClick}
             />
           </div>
 

@@ -39,7 +39,7 @@ export const FloatingActionButton = forwardRef<
         w-14 h-14 rounded-3xl
         md:w-auto md:h-14 md:px-6 md:gap-2
         bg-primary-500 text-white font-bold 
-        shadow-lg hover:bg-primary-600 active:scale-95 
+        shadow-lg cursor-pointer hover:bg-primary-600 active:scale-95 
         transition-all duration-200 select-none
         disabled:opacity-40 disabled:cursor-not-allowed
         disabled:pointer-events-none
