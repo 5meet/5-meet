@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/api";
-import type { EmailCheckRequest, EmailCheckResponse } from "../types";
+import type { EmailCheckRequest, EmailCheckResponse } from "@/features/auth/type";
 
 export const checkEmail = async (data: EmailCheckRequest) => {
   const response = await api

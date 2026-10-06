@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Filter } from "@/components/ui/Filter/Filter";
-import { favorites  } from "@/data/favorites";
+import { favorites } from "@/data/favorites";
 import { FavoriteList } from "@/features/favorites/components/FavoriteList";
 
 export function FavoritesPage() {
@@ -12,8 +12,8 @@ export function FavoritesPage() {
 
   const filteredGroups =
     selectedCategory === "전체"
-      ? favorites 
-      : favorites .filter(
+      ? favorites
+      : favorites.filter(
           (group) => group.category === selectedCategory,
         );
 

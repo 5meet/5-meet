@@ -18,7 +18,7 @@ const DeleteMeetingModal = ({
   const deleteMutation = useDeleteMeetingMutation(meetingId);
 
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header onClose={onClose} />
 
       <Modal.Body>
@@ -32,16 +32,18 @@ const DeleteMeetingModal = ({
 
       <Modal.Footer>
         <Button
+          aria-label="취소"
           variant="secondary"
           className="flex-1"
-          size="sm"
+          size="md"
           onClick={onClose}
         >
           취소
         </Button>
         <Button
+          aria-label="확인"
           className="flex-1"
-          size="sm"
+          size="md"
           isLoading={deleteMutation.isPending}
           onClick={() => deleteMutation.mutate()}
         >

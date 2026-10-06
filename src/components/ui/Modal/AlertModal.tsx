@@ -15,7 +15,7 @@ export default function AlertModal({
   onClose,
 }: AlertModalProps) {
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header onClose={onClose} />
 
       <Modal.Body>

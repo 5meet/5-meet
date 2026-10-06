@@ -59,9 +59,9 @@ export function InputDropdown<T extends string>({
         aria-expanded={isOpen}
         aria-controls={listboxId}
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`flex w-full items-center justify-between rounded-xl border px-4 py-2.5 text-sm transition-colors
+        className={`flex w-full items-center justify-between rounded-xl border px-4 py-2.5 text-sm transition-colors focus-visible:outline-primary-500
           ${isOpen ? "border-primary-500" : "border-gray-200"}
-          ${disabled ? "bg-gray-50 text-gray-400" : "bg-[#F9FAFB] text-gray-800"}
+          ${disabled ? "bg-gray-50 text-gray-400" : "bg-white text-gray-800"}
           ${isError ? "border-error-100" : ""}
         `}
       >

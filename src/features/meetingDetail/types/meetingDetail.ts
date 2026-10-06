@@ -13,6 +13,8 @@ export interface MeetingDetailInfoCardProps {
   capacity: number;
   initialIsFavorited: boolean;
   isLoggedIn: boolean;
+  confirmedAt: string | null;
+  canceledAt: string | null;
 }
 
 // API 원본 응답
@@ -281,3 +283,5 @@ export interface PaginationParmas {
 export interface ResponseMessage {
   message: string;
 }
+
+//-----------------------------------------------------------------

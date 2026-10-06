@@ -150,3 +150,51 @@ export function convertDateType7(date: Date): string {
   };
   return `${year}년 ${month}월 ${day}일 (${KRWeek[weekday as weekType]})`;
 }
+
+//----------------------------------------------------
+
+/**
+ * ISO 문자열(UTC)을 KST 기준 "YYYY-MM-DD" / "HH:mm"으로 분리합니다.
+ * 수정 폼처럼 DateField/TimeField에 각각 값을 채워야 할 때 사용합니다.
+ */
+export function splitISOToKSTDateTime(iso: string): MeetingDate {
+  const date = new Date(iso);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error("날짜 형식 없음");
+  }
+
+  const dateParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: KST_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const year = dateParts.find((part) => part.type === "year")?.value;
+  const month = dateParts.find((part) => part.type === "month")?.value;
+  const day = dateParts.find((part) => part.type === "day")?.value;
+
+  const time = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: KST_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+
+  return { date: `${year}-${month}-${day}`, time };
+}
+
+/**
+ * KST 기준 "YYYY-MM-DD" / "HH:mm"을 ISO 문자열(UTC)로 합칩니다.
+ * 수정 폼에서 DateField/TimeField의 값을 API Body(dateTime, registrationEnd)로 보낼 때 사용합니다.
+ */
+export function combineKSTDateTimeToISO(date: string, time: string): string {
+  const combined = new Date(`${date}T${time}:00+09:00`);
+
+  if (Number.isNaN(combined.getTime())) {
+    throw new Error("날짜 형식 없음");
+  }
+
+  return combined.toISOString();
+}

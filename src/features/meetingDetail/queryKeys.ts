@@ -19,6 +19,6 @@ export const meetingKeys = {
 export const reviewKeys = {
   all: ["reviews"] as const,
 
-  list: (meetingId: number, params?: PaginationParmas) =>
-    [...reviewKeys.all, "meeting", meetingId, params] as const,
+  list: (meetingId: number) =>
+    [...reviewKeys.all, "meeting", meetingId] as const,
 };
