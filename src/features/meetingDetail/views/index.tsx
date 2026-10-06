@@ -102,7 +102,7 @@ const MeetingDetailPageClient = ({
             <div className="relative w-[343px] h-[241px] bg-[#EDEDED] rounded-4xl shadow-sm overflow-hidden md:w-[333px] md:h-[362px] lg:w-[630px] lg:h-[443px]">
               {meeting.image && (
                 <Image
-                  src={meeting.image}
+                  src={meeting.image || "/meetings-hero.jpg"}
                   alt={meeting.title}
                   fill
                   className="object-cover"
