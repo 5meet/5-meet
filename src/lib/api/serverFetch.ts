@@ -55,12 +55,21 @@ export async function serverFetch<T>(
 
     return (await response.json()) as T;
   } catch (error) {
-    // 2. !response.ok에서 생성한 ApiError
+    // 백엔드가 응답한 HTTP 오류
     if (error instanceof ApiError) {
       throw error;
     }
 
-    // 3. 타임아웃
+    // 실제 fetch 실패만 로깅
+    console.error("API REQUEST FAILED:", error);
+
+    if (error instanceof Error) {
+      console.error("name:", error.name);
+      console.error("message:", error.message);
+      console.error("cause:", error.cause);
+      console.error("stack:", error.stack);
+    }
+
     if (error instanceof Error && error.name === "TimeoutError") {
       throw new ApiError(
         "요청 시간이 초과되었습니다. 다시 시도해주세요.",
@@ -68,12 +77,13 @@ export async function serverFetch<T>(
       );
     }
 
-    // 4. 외부 AbortSignal에 의한 요청 취소
     if (error instanceof Error && error.name === "AbortError") {
-      throw new ApiError("요청이 취소되었습니다.", "ABORT_ERROR");
+      throw new ApiError(
+        "요청이 취소되었습니다.",
+        "ABORT_ERROR",
+      );
     }
 
-    // 5. 네트워크 에러
     if (error instanceof TypeError) {
       throw new ApiError(
         "네트워크 연결이 불안정합니다. 잠시 후 다시 시도해주세요.",
@@ -81,7 +91,9 @@ export async function serverFetch<T>(
       );
     }
 
-    // 6. 예상하지 못한 에러
-    throw new ApiError("알 수 없는 오류가 발생했습니다.", "UNKNOWN_ERROR");
+    throw new ApiError(
+      "알 수 없는 오류가 발생했습니다.",
+      "UNKNOWN_ERROR",
+    );
   }
 }
