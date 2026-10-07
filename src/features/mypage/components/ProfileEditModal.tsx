@@ -12,7 +12,7 @@ interface ProfileEditModalProps {
   email: string;
   imageSrc?: string;
   onClose: () => void;
-  onSubmit?: (name: string, imageSrc?: string) => void;
+  onSubmit?: (name: string, imageFile?: File) => void;
 }
 
 export default function ProfileEditModal({
@@ -26,37 +26,37 @@ export default function ProfileEditModal({
   const [editedName, setEditedName] = useState(name);
   const [previewImageSrc, setPreviewImageSrc] = useState(imageSrc);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+
   const pendingObjectUrlRef = useRef<string | null>(null);
-  const croppedPreviewUrlRef = useRef<string | null>(null);
-
-  const clearPendingImage = () => {
-    if (pendingObjectUrlRef.current) {
-      URL.revokeObjectURL(pendingObjectUrlRef.current);
-      pendingObjectUrlRef.current = null;
-    }
-
-    setCropImageSrc(null);
-  };
-
-  const clearCroppedPreview = () => {
-    if (croppedPreviewUrlRef.current) {
-      URL.revokeObjectURL(croppedPreviewUrlRef.current);
-      croppedPreviewUrlRef.current = null;
-    }
-  };
+  const previewObjectUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    clearCroppedPreview();
+    if (previewObjectUrlRef.current) {
+      URL.revokeObjectURL(previewObjectUrlRef.current);
+      previewObjectUrlRef.current = null;
+    }
+
     setEditedName(name);
     setPreviewImageSrc(imageSrc);
+    setSelectedImageFile(null);
+  }, [imageSrc, isOpen, name]);
+
+  useEffect(() => {
+    if (!isOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
 
       if (cropImageSrc) {
-        clearPendingImage();
+        if (pendingObjectUrlRef.current) {
+          URL.revokeObjectURL(pendingObjectUrlRef.current);
+          pendingObjectUrlRef.current = null;
+        }
+
+        setCropImageSrc(null);
         return;
       }
 
@@ -68,7 +68,7 @@ export default function ProfileEditModal({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [cropImageSrc, imageSrc, isOpen, name, onClose]);
+  }, [cropImageSrc, isOpen, onClose]);
 
   useEffect(() => {
     return () => {
@@ -76,13 +76,22 @@ export default function ProfileEditModal({
         URL.revokeObjectURL(pendingObjectUrlRef.current);
       }
 
-      if (croppedPreviewUrlRef.current) {
-        URL.revokeObjectURL(croppedPreviewUrlRef.current);
+      if (previewObjectUrlRef.current) {
+        URL.revokeObjectURL(previewObjectUrlRef.current);
       }
     };
   }, []);
 
   if (!isOpen) return null;
+
+  const clearPendingImage = () => {
+    if (pendingObjectUrlRef.current) {
+      URL.revokeObjectURL(pendingObjectUrlRef.current);
+      pendingObjectUrlRef.current = null;
+    }
+
+    setCropImageSrc(null);
+  };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -99,12 +108,15 @@ export default function ProfileEditModal({
   };
 
   const handleCropApply = (croppedFile: File) => {
-    clearCroppedPreview();
+    if (previewObjectUrlRef.current) {
+      URL.revokeObjectURL(previewObjectUrlRef.current);
+    }
 
     const nextPreviewUrl = URL.createObjectURL(croppedFile);
-    croppedPreviewUrlRef.current = nextPreviewUrl;
-    setPreviewImageSrc(nextPreviewUrl);
+    previewObjectUrlRef.current = nextPreviewUrl;
 
+    setSelectedImageFile(croppedFile);
+    setPreviewImageSrc(nextPreviewUrl);
     clearPendingImage();
   };
 
@@ -113,7 +125,7 @@ export default function ProfileEditModal({
 
     if (!trimmedName) return;
 
-    onSubmit?.(trimmedName, previewImageSrc);
+    onSubmit?.(trimmedName, selectedImageFile ?? undefined);
   };
 
   return (
