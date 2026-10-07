@@ -80,9 +80,10 @@ export const AddressSearchField = ({
             type="text"
             placeholder="건물, 지번 또는 도로명 검색"
             value={address}
+            tabIndex={-1}
             onClick={handleSearch}
             readOnly
-            className="pr-12"
+            className="pr-12 cursor-default"
           />
 
           <button
