@@ -138,6 +138,16 @@ export default function LoginForm({ redirect }: LoginFormProps) {
         <SocialLoginButton provider="google" className="sm:flex-1" />
         <SocialLoginButton provider="kakao" className="sm:flex-1" />
       </div>
+      <p className="mt-8 text-center text-sm text-gray-700">
+        같이달램이 처음이신가요?{" "}
+        <button
+          type="button"
+          onClick={() => router.push("/signup")}
+          className=" cursor-pointer font-medium text-primary-500 underline underline-offset-2"
+        >
+          회원가입
+        </button>
+      </p>
     </section>
   );
 }

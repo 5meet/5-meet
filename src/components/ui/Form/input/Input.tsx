@@ -9,11 +9,30 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 //현재 w-full을 사용해서 가로 길이 전체를 사용하는데 나중에 길이 조절이 필요하면 props 방식으로 수정
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ isError, className = "", disabled, ...props }, ref) => {
+  (
+    { isError, className = "", disabled, type, min, onChange, ...props },
+    ref,
+  ) => {
+    const isNumberType = type === "number";
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      // 음수 타이핑 자체를 막는 제약 — 에러 표시와는 무관
+      if (isNumberType && min !== undefined && Number(min) >= 0) {
+        const { value } = e.target;
+        if (value !== "" && Number(value) < Number(min)) {
+          e.target.value = String(min);
+        }
+      }
+      onChange?.(e);
+    };
+
     return (
       <input
         ref={ref}
+        type={type}
+        min={min}
         disabled={disabled}
+        onChange={handleChange}
         className={`
           w-full h-12 
           px-5 py-3.5

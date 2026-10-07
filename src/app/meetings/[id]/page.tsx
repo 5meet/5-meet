@@ -1,13 +1,26 @@
-interface MeetingDetailPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
+"use client";
 
-export default async function MeetingDetailPage({
-  params,
-}: MeetingDetailPageProps) {
-  const { id } = await params;
+import { useParams, notFound } from "next/navigation";
+import MeetingDetailPageClient from "@/features/meetingDetail/views";
 
-  return <main>모임 상세 페이지 - ID: {id}</main>;
-}
+const MeetingDetailPage = () => {
+  const params = useParams<{ id: string }>();
+
+  if (!params) {
+    return notFound();
+  }
+
+  if (!params.id) {
+    return notFound();
+  }
+
+  return (
+    <MeetingDetailPageClient
+      currentUserId={1}
+      meetingId={Number(params.id)}
+      isLoggedIn={true}
+    />
+  );
+};
+
+export default MeetingDetailPage;

@@ -2,7 +2,7 @@
  * Server Component에서 인증이 필요한 API를 호출할 때 사용합니다.
  *
  * API가 401을 반환하면 Server Component에서는 쿠키를 수정할 수 없으므로
- * 세션 갱신을 처리하는 /auth/refresh 경로로 이동합니다.
+ * 세션 갱신을 처리하는 /api/auth/refresh 경로로 이동합니다.
  */
 
 import { redirect } from "next/navigation";

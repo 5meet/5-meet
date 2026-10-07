@@ -1,7 +1,10 @@
 /**
- * 서버 액션 / Route Handler 전용입니다. (서버 컴포넌트에서는 쿠키를 수정할 수 없어 사용 불가)
- * 서버 컴포넌트에서 인증이 필요한 요청은 serverFetch(url, { auth: true })를 사용하고,
- * 토큰 갱신은 proxy.ts가 담당합니다.
+ * Server Action / Route Handler 전용 인증 Fetch Wrapper입니다.
+ *
+ * 요청이 401이면 Refresh Token으로 토큰을 갱신한 뒤
+ * 새로운 Access Token으로 원래 요청을 한 번 재시도합니다.
+ *
+ * @note 쿠키를 수정하므로 Server Component에서는 사용할 수 없습니다.
  */
 
 import { cookies } from "next/headers";
