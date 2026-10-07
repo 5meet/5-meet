@@ -1,3 +1,4 @@
+// types/daum-postcode.d.ts
 export {};
 
 interface DaumPostcodeData {
