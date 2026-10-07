@@ -48,16 +48,24 @@ export default function ProfileCard({
             lg:flex-col lg:justify-start lg:gap-6
           "
         >
-          <Image
-            src={profileImageSrc}
-            alt=""
-            width={114}
-            height={114}
+          <div
             className="
-              h-[54px] w-[54px] shrink-0
+              relative h-[54px] w-[54px] shrink-0 overflow-hidden rounded-full
               sm:h-[114px] sm:w-[114px]
             "
-          />
+          >
+            <Image
+              src={profileImageSrc}
+              alt=""
+              fill
+              sizes="(min-width: 640px) 114px, 54px"
+              className="object-cover"
+              unoptimized={
+                profileImageSrc.startsWith("blob:") ||
+                profileImageSrc.startsWith("data:")
+              }
+            />
+          </div>
 
           <div
             className="
