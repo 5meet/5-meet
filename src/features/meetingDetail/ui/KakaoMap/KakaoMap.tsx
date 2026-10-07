@@ -23,7 +23,6 @@ const KakaoMap = ({
 
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // 지도 생성 + 중심/마커 갱신 + 마커 클릭 이벤트(오버레이)
   useEffect(() => {
@@ -112,9 +111,9 @@ const KakaoMap = ({
   }, []);
 
   // 카카오맵 링크 (이름에 쉼표가 있으면 링크 형식이 깨지므로 제거)
-  const safeName = encodeURIComponent(placeName.replace(/,/g, " "));
-  const viewUrl = `https://map.kakao.com/link/map/${safeName},${latitude},${longitude}`;
-  const routeUrl = `https://map.kakao.com/link/to/${safeName},${latitude},${longitude}`;
+  // const safeName = encodeURIComponent(placeName.replace(/,/g, " "));
+  // const viewUrl = `https://map.kakao.com/link/map/${safeName},${latitude},${longitude}`;
+  // const routeUrl = `https://map.kakao.com/link/to/${safeName},${latitude},${longitude}`;
 
   return (
     <div className="relative h-full w-full overflow-hidden">
