@@ -42,6 +42,7 @@ const KakaoMap = ({ latitude, longitude, address }: KakaoMapProps) => {
     };
   }, [isReady, latitude, longitude]);
 
+  // 화면 크기 변경 시 지도 레이아웃 재계산
   useEffect(() => {
     if (!isReady || !mapDivRef.current || !mapRef.current) return;
 
