@@ -21,7 +21,6 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   } = meeting;
 
   const date = new Date(dateTime);
-  console.log("MeetingCard:", meeting); // Debugging line to check the date value
   const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
   const formattedTime = date.toLocaleTimeString("ko-KR", {
