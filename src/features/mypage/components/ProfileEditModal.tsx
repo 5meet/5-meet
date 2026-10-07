@@ -190,7 +190,7 @@ function ProfileEditModalContent({
                     <input
                       id="profile-image"
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
                       onChange={handleImageChange}
                       className="sr-only"
                     />
