@@ -42,6 +42,7 @@ export async function serverFetch<T>(
       signal,
     });
 
+
     // 1. 서버 HTTP 에러 (4xx, 5xx)
     if (!response.ok) {
       const errorData = (await response.json()) as ApiErrorResponse;
