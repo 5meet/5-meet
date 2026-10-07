@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import ProfileEditModal from "./ProfileEditModal";
 
@@ -20,11 +20,26 @@ export default function ProfileCard({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [displayName, setDisplayName] = useState(name);
   const [profileImageSrc, setProfileImageSrc] = useState(imageSrc);
+  const localPreviewUrlRef = useRef<string | null>(null);
 
-  const handleSubmit = (nextName: string, nextImageSrc?: string) => {
+  useEffect(() => {
+    return () => {
+      if (localPreviewUrlRef.current) {
+        URL.revokeObjectURL(localPreviewUrlRef.current);
+      }
+    };
+  }, []);
+
+  const handleSubmit = (nextName: string, nextImageFile?: File) => {
     setDisplayName(nextName);
 
-    if (nextImageSrc) {
+    if (nextImageFile) {
+      if (localPreviewUrlRef.current) {
+        URL.revokeObjectURL(localPreviewUrlRef.current);
+      }
+
+      const nextImageSrc = URL.createObjectURL(nextImageFile);
+      localPreviewUrlRef.current = nextImageSrc;
       setProfileImageSrc(nextImageSrc);
     }
 
@@ -60,10 +75,7 @@ export default function ProfileCard({
               fill
               sizes="(min-width: 640px) 114px, 54px"
               className="object-cover"
-              unoptimized={
-                profileImageSrc.startsWith("blob:") ||
-                profileImageSrc.startsWith("data:")
-              }
+              unoptimized={profileImageSrc.startsWith("blob:")}
             />
           </div>
 
