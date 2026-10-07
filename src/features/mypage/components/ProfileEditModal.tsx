@@ -15,14 +15,16 @@ interface ProfileEditModalProps {
   onSubmit?: (name: string, imageFile?: File) => void;
 }
 
-export default function ProfileEditModal({
-  isOpen,
+interface ProfileEditModalContentProps
+  extends Omit<ProfileEditModalProps, "isOpen"> {}
+
+function ProfileEditModalContent({
   name,
   email,
   imageSrc = "/profile/profile_female1.svg",
   onClose,
   onSubmit,
-}: ProfileEditModalProps) {
+}: ProfileEditModalContentProps) {
   const [editedName, setEditedName] = useState(name);
   const [previewImageSrc, setPreviewImageSrc] = useState(imageSrc);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
@@ -32,21 +34,6 @@ export default function ProfileEditModal({
   const previewObjectUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    if (previewObjectUrlRef.current) {
-      URL.revokeObjectURL(previewObjectUrlRef.current);
-      previewObjectUrlRef.current = null;
-    }
-
-    setEditedName(name);
-    setPreviewImageSrc(imageSrc);
-    setSelectedImageFile(null);
-  }, [imageSrc, isOpen, name]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
 
@@ -68,7 +55,7 @@ export default function ProfileEditModal({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [cropImageSrc, isOpen, onClose]);
+  }, [cropImageSrc, onClose]);
 
   useEffect(() => {
     return () => {
@@ -81,8 +68,6 @@ export default function ProfileEditModal({
       }
     };
   }, []);
-
-  if (!isOpen) return null;
 
   const clearPendingImage = () => {
     if (pendingObjectUrlRef.current) {
@@ -299,4 +284,13 @@ export default function ProfileEditModal({
       )}
     </>
   );
+}
+
+export default function ProfileEditModal({
+  isOpen,
+  ...props
+}: ProfileEditModalProps) {
+  if (!isOpen) return null;
+
+  return <ProfileEditModalContent {...props} />;
 }
