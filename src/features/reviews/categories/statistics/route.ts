@@ -23,12 +23,13 @@ export async function GET(
   }
 
   try {
-    const response = await serverFetch(
-      `/${teamId}/reviews/categories/statistics`,
-      {
-        auth: true,
-      },
-    );
+    const response: Response =
+      await serverFetch(
+        `/${teamId}/reviews/categories/statistics`,
+        {
+          auth: true,
+        },
+      );
 
     const data = await response.json();
 
