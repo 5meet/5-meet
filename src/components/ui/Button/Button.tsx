@@ -2,6 +2,7 @@
 
 import { ButtonHTMLAttributes, forwardRef } from "react";
 import { Spinner } from "../Spinner/Spinner";
+import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -73,13 +74,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         type={type}
         disabled={isDisabled}
         aria-busy={isLoading}
-        className={`
-          ${baseStyle}
-          ${variantStyles[variant]}
-          ${sizeStyles[size]}
-          ${fullWidth ? "w-full" : ""}
-          ${className}
-        `.trim()}
+        className={cn(
+          baseStyle,
+          variantStyles[variant],
+          sizeStyles[size],
+          fullWidth && "w-full",
+          className,
+        )}
         {...props}
       >
         {isLoading && (
