@@ -15,8 +15,10 @@ interface ProfileEditModalProps {
   onSubmit?: (name: string, imageFile?: File) => void;
 }
 
-interface ProfileEditModalContentProps
-  extends Omit<ProfileEditModalProps, "isOpen"> {}
+type ProfileEditModalContentProps = Omit<
+  ProfileEditModalProps,
+  "isOpen"
+>;
 
 function ProfileEditModalContent({
   name,
