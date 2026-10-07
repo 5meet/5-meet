@@ -176,6 +176,7 @@ const MeetingDetailPageClient = ({
                 latitude={meeting.latitude}
                 longitude={meeting.longitude}
                 address={meeting.address}
+                placeName={meeting.title}
               />
             </div>
 
