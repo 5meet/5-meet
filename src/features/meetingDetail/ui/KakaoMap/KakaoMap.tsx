@@ -42,6 +42,28 @@ const KakaoMap = ({ latitude, longitude, address }: KakaoMapProps) => {
     };
   }, [isReady, latitude, longitude]);
 
+  useEffect(() => {
+    if (!isReady || !mapDivRef.current || !mapRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      const map = mapRef.current;
+
+      if (!map) return;
+
+      map.relayout();
+
+      const position = new window.kakao.maps.LatLng(latitude, longitude);
+
+      map.setCenter(position);
+    });
+
+    observer.observe(mapDivRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isReady, latitude, longitude]);
+
   // 언마운트 시 참조 정리
   useEffect(() => {
     return () => {

@@ -24,6 +24,7 @@ declare global {
       constructor(container: HTMLElement, options: MapOptions);
       setCenter(latlng: LatLng): void;
       panTo(latlng: LatLng): void;
+      relayout(): void;
     }
 
     interface MarkerOptions {
