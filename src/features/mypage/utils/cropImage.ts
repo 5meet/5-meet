@@ -1,6 +1,8 @@
 import type { Area } from "react-easy-crop";
 
 const OUTPUT_SIZE = 512;
+const OUTPUT_TYPE = "image/jpeg";
+const OUTPUT_QUALITY = 0.9;
 
 function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -16,7 +18,24 @@ function loadImage(src: string) {
   });
 }
 
-export async function createCroppedImageDataUrl(
+function canvasToBlob(canvas: HTMLCanvasElement) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+          return;
+        }
+
+        reject(new Error("크롭된 이미지를 생성하지 못했습니다."));
+      },
+      OUTPUT_TYPE,
+      OUTPUT_QUALITY,
+    );
+  });
+}
+
+export async function createCroppedImageFile(
   imageSrc: string,
   crop: Area,
 ) {
@@ -43,5 +62,9 @@ export async function createCroppedImageDataUrl(
     OUTPUT_SIZE,
   );
 
-  return canvas.toDataURL("image/jpeg", 0.9);
+  const blob = await canvasToBlob(canvas);
+
+  return new File([blob], `profile-${Date.now()}.jpg`, {
+    type: OUTPUT_TYPE,
+  });
 }
