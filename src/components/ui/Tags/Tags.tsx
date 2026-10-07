@@ -16,7 +16,15 @@ const Tags = ({
   order = "deadline-first",
 }: TagsProps) => {
   const isClosed = useIsPastDeadline(registrationEnd); // 구조분해 없이 바로 받음
-  const { text: registrationEndText } = formatRegistrationEnd(registrationEnd);
+  const { text: registrationEndText, isClosed: formatIsClosed } =
+    formatRegistrationEnd(registrationEnd);
+
+  console.log({
+    registrationEnd,
+    isClosed_fromHook: isClosed,
+    isClosed_fromFormat: formatIsClosed,
+    registrationEndText,
+  });
 
   const deadlineTag = (
     <div
