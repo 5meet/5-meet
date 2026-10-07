@@ -4,7 +4,7 @@ import Script from "next/script";
 import { useState } from "react";
 import { Input } from "@/components/ui/Form/input/Input";
 import { Label } from "@/components/ui/Form/label/Label";
-import Button from "@/components/ui/Button/Button";
+import { MapPin } from "lucide-react";
 
 interface AddressSearchResult {
   address: string;
@@ -74,24 +74,32 @@ export const AddressSearchField = ({
         <Label htmlFor="address" required>
           장소
         </Label>
-        <div className="flex gap-2">
+        <div className="relative">
           <Input
             id="address"
             type="text"
-            placeholder="건물, 지번 또는 도로명"
-            required
+            placeholder="건물, 지번 또는 도로명 검색"
             value={address}
+            onClick={handleSearch}
             readOnly
+            className="pr-12"
           />
 
-          <Button
-            variant="secondary"
+          <button
+            type="button"
             onClick={handleSearch}
             disabled={!isScriptReady}
-            className="flex-1"
+            aria-label="주소 검색"
+            className="
+              absolute top-1/2 right-4
+              -translate-y-1/2
+              cursor-pointer text-gray-700
+              disabled:cursor-not-allowed
+              disabled:text-gray-300
+            "
           >
-            주소 검색
-          </Button>
+            <MapPin className="h-5 w-5" />
+          </button>
         </div>
 
         <Input
