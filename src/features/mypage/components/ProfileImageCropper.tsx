@@ -4,12 +4,12 @@ import { X, ZoomIn } from "lucide-react";
 import { useCallback, useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 
-import { createCroppedImageDataUrl } from "../utils/cropImage";
+import { createCroppedImageFile } from "../utils/cropImage";
 
 interface ProfileImageCropperProps {
   imageSrc: string;
   onCancel: () => void;
-  onApply: (imageSrc: string) => void;
+  onApply: (file: File) => void;
 }
 
 export default function ProfileImageCropper({
@@ -34,11 +34,11 @@ export default function ProfileImageCropper({
 
     try {
       setIsApplying(true);
-      const croppedImageSrc = await createCroppedImageDataUrl(
+      const croppedFile = await createCroppedImageFile(
         imageSrc,
         croppedAreaPixels,
       );
-      onApply(croppedImageSrc);
+      onApply(croppedFile);
     } finally {
       setIsApplying(false);
     }
@@ -107,7 +107,11 @@ export default function ProfileImageCropper({
         </div>
 
         <div className="mt-5 flex items-center gap-3">
-          <ZoomIn size={20} className="shrink-0 text-gray-600" aria-hidden="true" />
+          <ZoomIn
+            size={20}
+            className="shrink-0 text-gray-600"
+            aria-hidden="true"
+          />
           <label htmlFor="profile-image-zoom" className="sr-only">
             이미지 확대 비율
           </label>
