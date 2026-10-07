@@ -133,6 +133,7 @@ const MeetingDetailPageClient = ({
                 participantCount={meeting.participantCount}
                 capacity={meeting.capacity}
                 participants={participantsData?.data ?? []}
+                confirmedAt={meeting.confirmedAt}
               />
             </div>
           </div>
