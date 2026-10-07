@@ -183,7 +183,7 @@ const MeetingDetailPageClient = ({
                 {meeting.address}
               </span>
               <button
-                className="flex gap-0.5 items-center font-medium text-xs md:text-lg text-primary-600"
+                className="flex gap-0.5 items-center font-medium text-xs md:text-lg text-primary-600 cursor-pointer hover:underline underline-offset-2"
                 onClick={handleShare}
               >
                 <Image src="/ic_copy.svg" alt="복사" width={18} height={18} />
