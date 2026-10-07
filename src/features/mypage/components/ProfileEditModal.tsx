@@ -27,6 +27,7 @@ export default function ProfileEditModal({
   const [previewImageSrc, setPreviewImageSrc] = useState(imageSrc);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const pendingObjectUrlRef = useRef<string | null>(null);
+  const croppedPreviewUrlRef = useRef<string | null>(null);
 
   const clearPendingImage = () => {
     if (pendingObjectUrlRef.current) {
@@ -37,9 +38,17 @@ export default function ProfileEditModal({
     setCropImageSrc(null);
   };
 
+  const clearCroppedPreview = () => {
+    if (croppedPreviewUrlRef.current) {
+      URL.revokeObjectURL(croppedPreviewUrlRef.current);
+      croppedPreviewUrlRef.current = null;
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) return;
 
+    clearCroppedPreview();
     setEditedName(name);
     setPreviewImageSrc(imageSrc);
 
@@ -47,11 +56,7 @@ export default function ProfileEditModal({
       if (event.key !== "Escape") return;
 
       if (cropImageSrc) {
-        if (pendingObjectUrlRef.current) {
-          URL.revokeObjectURL(pendingObjectUrlRef.current);
-          pendingObjectUrlRef.current = null;
-        }
-        setCropImageSrc(null);
+        clearPendingImage();
         return;
       }
 
@@ -70,6 +75,10 @@ export default function ProfileEditModal({
       if (pendingObjectUrlRef.current) {
         URL.revokeObjectURL(pendingObjectUrlRef.current);
       }
+
+      if (croppedPreviewUrlRef.current) {
+        URL.revokeObjectURL(croppedPreviewUrlRef.current);
+      }
     };
   }, []);
 
@@ -80,9 +89,7 @@ export default function ProfileEditModal({
 
     if (!file) return;
 
-    if (pendingObjectUrlRef.current) {
-      URL.revokeObjectURL(pendingObjectUrlRef.current);
-    }
+    clearPendingImage();
 
     const nextImageSrc = URL.createObjectURL(file);
     pendingObjectUrlRef.current = nextImageSrc;
@@ -91,8 +98,13 @@ export default function ProfileEditModal({
     event.target.value = "";
   };
 
-  const handleCropApply = (croppedImageSrc: string) => {
-    setPreviewImageSrc(croppedImageSrc);
+  const handleCropApply = (croppedFile: File) => {
+    clearCroppedPreview();
+
+    const nextPreviewUrl = URL.createObjectURL(croppedFile);
+    croppedPreviewUrlRef.current = nextPreviewUrl;
+    setPreviewImageSrc(nextPreviewUrl);
+
     clearPendingImage();
   };
 
@@ -161,10 +173,7 @@ export default function ProfileEditModal({
                       fill
                       sizes="114px"
                       className="object-cover"
-                      unoptimized={
-                        previewImageSrc.startsWith("blob:") ||
-                        previewImageSrc.startsWith("data:")
-                      }
+                      unoptimized={previewImageSrc.startsWith("blob:")}
                     />
                   </div>
 
