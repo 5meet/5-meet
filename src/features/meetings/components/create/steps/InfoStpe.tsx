@@ -4,8 +4,8 @@ import { useRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
 
-import { Input } from "@/components/ui/Form/input/Input";
 import { Label } from "@/components/ui/Form/label/Label";
+import { Input } from "@/components/ui/Form/input/Input";
 import { AddressSearchField } from "@/components/ui/Form/input/AddressSearchField";
 import { ImageUploadField } from "@/components/ui/Form/input/ImageUploadField";
 import { showToast } from "@/components/ui/Sonner";
@@ -82,6 +82,7 @@ export function InfoStep() {
           type="text"
           placeholder="모임 이름을 입력해주세요"
           {...register("name")}
+          required
         />
       </div>
 
@@ -103,7 +104,9 @@ export function InfoStep() {
 
       {/* 이미지 */}
       <div className="space-y-2">
-        <Label required>이미지</Label>
+        <Label htmlFor="meeting-image" required>
+          이미지
+        </Label>
 
         <ImageUploadField
           value={image}

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button/Button";
 import { CategoryStep } from "./steps/CategoryStep";
 import { InfoStep } from "./steps/InfoStpe";
 import { DescriptionStep } from "./steps/DescriptionStep";
+import ScheduleStep from "./steps/ScheduleStep";
 
 const TOTAL_STEPS = 4;
 
@@ -20,9 +21,13 @@ export interface CreateMeetingFormValues {
   name: string;
   address: string;
   detailAddress: string;
-  imageSelected: boolean;
   image: string;
   description: string;
+  date: string;
+  time: string;
+  registrationEndDate: string;
+  registrationEndTime: string;
+  capacity: number;
 }
 
 export function CreateMeetingModal({
@@ -39,6 +44,11 @@ export function CreateMeetingModal({
       detailAddress: "",
       image: "",
       description: "",
+      date: "",
+      time: "",
+      registrationEndDate: "",
+      registrationEndTime: "",
+      capacity: 0,
     },
   });
 
@@ -47,12 +57,23 @@ export function CreateMeetingModal({
   const address = methods.watch("address");
   const image = methods.watch("image");
   const description = methods.watch("description");
+  const date = methods.watch("date");
+  const time = methods.watch("time");
+  const registrationEndDate = methods.watch("registrationEndDate");
+  const registrationEndTime = methods.watch("registrationEndTime");
+  const capacity = methods.watch("capacity");
 
   // 다음 버튼 비활성화 조건
   const isNextDisabled =
     (step === 1 && !selectedType) ||
     (step === 2 && (!name.trim() || !address.trim() || !image)) ||
-    (step === 3 && !description);
+    (step === 3 && !description.trim()) ||
+    (step === 4 &&
+      (!date ||
+        !time ||
+        !registrationEndDate ||
+        !registrationEndTime ||
+        !capacity));
 
   const handleNextStep = () => {
     if (step < TOTAL_STEPS) {
@@ -92,6 +113,7 @@ export function CreateMeetingModal({
           {step === 1 && <CategoryStep />}
           {step === 2 && <InfoStep />}
           {step === 3 && <DescriptionStep />}
+          {step === 4 && <ScheduleStep />}
         </Modal.Body>
 
         <Modal.Footer>

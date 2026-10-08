@@ -17,9 +17,9 @@ export function DescriptionStep() {
 
         <TextArea
           id="meeting-description"
-          required
           placeholder="모임 이름을 입력해주세요"
           {...register("description")}
+          required
         />
       </div>
     </div>
