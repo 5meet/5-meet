@@ -19,6 +19,7 @@ export interface CreateMeetingFormValues {
   address: string;
   detailAddress: string;
   imageSelected: boolean;
+  image: string;
 }
 
 export function CreateMeetingModal({
@@ -33,19 +34,19 @@ export function CreateMeetingModal({
       name: "",
       address: "",
       detailAddress: "",
-      imageSelected: false,
+      image: "",
     },
   });
 
   const selectedType = methods.watch("type");
   const name = methods.watch("name");
   const address = methods.watch("address");
-  const imageSelected = methods.watch("imageSelected");
+  const image = methods.watch("image");
 
   // 다음 버튼 비활성화 조건
   const isNextDisabled =
-  (step === 1 && !selectedType) ||
-  (step === 2 && (!name.trim() || !address.trim() || !imageSelected));
+    (step === 1 && !selectedType) ||
+    (step === 2 && (!name.trim() || !address.trim() || !image));
 
   const handleNextStep = () => {
     if (step < TOTAL_STEPS) {
@@ -93,10 +94,7 @@ export function CreateMeetingModal({
           >
             {step === 1 ? "취소" : "이전"}
           </Button>
-          <Button
-            onClick={handleNextStep}
-            disabled={isNextDisabled}
-          >
+          <Button onClick={handleNextStep} disabled={isNextDisabled}>
             {step === TOTAL_STEPS ? "모임 만들기" : "다음"}
           </Button>
         </Modal.Footer>
