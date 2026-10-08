@@ -42,3 +42,6 @@ export interface EmailCheckRequest {
 export interface EmailCheckResponse {
   available: boolean;
 }
+
+// 소셜 로그인 
+export type SocialProvider = "kakao" | "google";
