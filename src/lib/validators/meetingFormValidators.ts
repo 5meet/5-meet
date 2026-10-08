@@ -1,4 +1,4 @@
-import { MeetingFormState } from "../types/meetingForm";
+import { MeetingFormState } from "@/features/meetingDetail/types/meetingForm";
 
 export type ValidationResult = string | null;
 

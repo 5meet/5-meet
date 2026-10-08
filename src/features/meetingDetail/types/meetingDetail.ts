@@ -101,6 +101,7 @@ export interface ParticipantProfilesProps {
 
 export interface PersonnelCardProps extends DetailsProgressBarProps {
   participants: ParticipantProfile[];
+  confirmedAt: string | null;
 }
 
 // API 응답의 user 객체
