@@ -1,138 +1,113 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { ReviewCard } from "@/components/ui/ReviewCard/ReviewCard";
 
-import type { ReviewApiItem } from "@/features/reviews/types";
+import { useMyReviewsQuery } from "@/features/mypage/hooks/useMyReviewsQuery";
 
-const writtenReviews: ReviewApiItem[] = [
-  {
-    id: 1,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 2,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 3,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 4,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 5,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 4,
-    comment:
-      "편안하고 따뜻한 분위기라서 즐겁게 참여할 수 있었습니다.",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-];
+const REVIEW_SIZE = 10;
 
 export default function WrittenReviews() {
-  if (writtenReviews.length === 0) {
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useMyReviewsQuery({
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    size: REVIEW_SIZE,
+  });
+
+  const reviews =
+    data?.pages.flatMap((page) => page.data) ?? [];
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+
+    if (
+      !target ||
+      !hasNextPage ||
+      isFetchingNextPage
+    ) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+
+        if (
+          firstEntry?.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage
+        ) {
+          void fetchNextPage();
+        }
+      },
+      {
+        rootMargin: "200px",
+      },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  ]);
+
+  if (isLoading) {
+    return (
+      <div
+        className="
+          flex
+          h-[780px]
+          w-full
+          items-center
+          justify-center
+          rounded-[24px]
+          bg-white
+        "
+      >
+        <p className="text-sm text-gray-500">
+          작성한 리뷰를 불러오는 중이에요.
+        </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div
+        className="
+          flex
+          h-[780px]
+          w-full
+          items-center
+          justify-center
+          rounded-[24px]
+          bg-white
+        "
+      >
+        <p className="text-sm text-gray-500">
+          작성한 리뷰를 불러오지 못했어요.
+        </p>
+      </div>
+    );
+  }
+
+  if (reviews.length === 0) {
     return (
       <EmptyState message="작성한 리뷰가 없어요." />
     );
@@ -160,12 +135,41 @@ export default function WrittenReviews() {
         [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
       "
     >
-      {writtenReviews.map((review) => (
+      {reviews.map((review) => (
         <ReviewCard
           key={review.id}
-          review={review}
+          review={{
+            id: review.id,
+            teamId: "5-meet",
+            meetingId: review.meetingId,
+            userId: 0,
+            score: review.score,
+            comment: review.comment,
+            createdAt: review.createdAt,
+            updatedAt: review.createdAt,
+            user: undefined,
+            meeting: {
+              id: review.meeting.id,
+              name: review.meeting.name,
+              type: review.meeting.type,
+              region: "",
+              image: review.meeting.image,
+              dateTime: review.meeting.dateTime,
+            },
+          }}
         />
       ))}
+
+      <div
+        ref={loadMoreRef}
+        className="flex min-h-10 items-center justify-center"
+      >
+        {isFetchingNextPage && (
+          <p className="text-sm text-gray-400">
+            리뷰를 더 불러오는 중이에요.
+          </p>
+        )}
+      </div>
     </div>
   );
 }
