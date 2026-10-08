@@ -4,6 +4,7 @@ export interface Review {
   authorName: string;
   createdAt: string;
   content: string;
+  imageUrl: string;
   groupName: string;
   category: string;
 }

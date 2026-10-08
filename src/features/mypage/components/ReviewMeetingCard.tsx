@@ -33,9 +33,7 @@ export default function ReviewMeetingCard({
   isFavorite = false,
   rating,
 }: ReviewMeetingCardProps) {
-  const [isLiked, setIsLiked] =
-    useState(isFavorite);
-
+  const [isLiked, setIsLiked] = useState(isFavorite);
   const [isReviewModalOpen, setIsReviewModalOpen] =
     useState(false);
 
@@ -51,7 +49,7 @@ export default function ReviewMeetingCard({
     reviewRating: number,
     content: string,
   ) => {
-    console.log("리뷰 등록", {
+    console.log("리뷰 제출", {
       rating: reviewRating,
       content,
     });
@@ -220,25 +218,19 @@ export default function ReviewMeetingCard({
                   md:text-[13px]
                 "
               >
-                <span>
-                  위치 {location}
-                </span>
+                <span>위치 {location}</span>
 
                 <span className="text-[#d2d2d2]">
                   |
                 </span>
 
-                <span>
-                  날짜 {date}
-                </span>
+                <span>날짜 {date}</span>
 
                 <span className="text-[#d2d2d2]">
                   |
                 </span>
 
-                <span>
-                  시간 {time}
-                </span>
+                <span>시간 {time}</span>
               </div>
             </div>
 
@@ -272,9 +264,7 @@ export default function ReviewMeetingCard({
 
       <ReviewWriteModal
         isOpen={isReviewModalOpen}
-        onClose={() =>
-          setIsReviewModalOpen(false)
-        }
+        onClose={() => setIsReviewModalOpen(false)}
         onSubmit={handleReviewSubmit}
       />
     </>

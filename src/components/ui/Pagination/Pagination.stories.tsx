@@ -53,6 +53,7 @@ export const Default: Story = {
     totalPages: 10,
     maxVisiblePages: 5,
     scrollToTop: false,
+    onPageChange: () => {},
   },
 };
 
@@ -62,6 +63,7 @@ export const MiddlePage: Story = {
     totalPages: 10,
     maxVisiblePages: 5,
     scrollToTop: false,
+    onPageChange: () => {},
   },
 };
 
@@ -71,6 +73,7 @@ export const LastPage: Story = {
     totalPages: 10,
     maxVisiblePages: 5,
     scrollToTop: false,
+    onPageChange: () => {},
   },
 };
 
@@ -80,6 +83,7 @@ export const FewPages: Story = {
     totalPages: 3,
     maxVisiblePages: 5,
     scrollToTop: false,
+    onPageChange: () => {},
   },
 };
 
@@ -89,6 +93,7 @@ export const ManyPages: Story = {
     totalPages: 50,
     maxVisiblePages: 7,
     scrollToTop: false,
+    onPageChange: () => {},
   },
 };
 
@@ -112,5 +117,6 @@ export const Interactive: Story = {
     totalPages: 20,
     maxVisiblePages: 5,
     scrollToTop: false,
+    onPageChange: () => {},
   },
 };
