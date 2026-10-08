@@ -7,7 +7,7 @@ import { TimeField } from "@/components/ui/Form/input/TimeField";
 
 import type { CreateMeetingFormValues } from "../CreateMeetingModal";
 
-export default function ScheduleStep() {
+export function ScheduleStep() {
   const { register, setValue, watch } =
     useFormContext<CreateMeetingFormValues>();
 

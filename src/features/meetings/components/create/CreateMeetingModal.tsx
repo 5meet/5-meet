@@ -4,10 +4,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
-import { CategoryStep } from "./steps/CategoryStep";
-import { InfoStep } from "./steps/InfoStpe";
-import { DescriptionStep } from "./steps/DescriptionStep";
-import ScheduleStep from "./steps/ScheduleStep";
+import { CategoryStep, InfoStep, DescriptionStep, ScheduleStep } from "./steps";
 
 const TOTAL_STEPS = 4;
 
