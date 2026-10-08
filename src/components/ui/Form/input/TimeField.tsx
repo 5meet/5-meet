@@ -49,12 +49,13 @@ export const TimeField = ({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`flex w-full gap-2 items-center rounded-xl border px-4 py-2.5 bg-[#F9FAFB] text-left text-sm
+        className={`flex w-full gap-2 items-center rounded-xl border px-4 py-2.5 bg-white text-left text-sm
           ${isOpen ? "border-primary-500 text-gray-800" : "border-gray-300"}
           ${value ? "text-gray-800" : "text-gray-400"}
-          ${isError ? "border-error-100" : ""}`}
+          ${isError ? "border-error-100" : ""} 
+          focus-visible:border-primary-500 focus-visible:outline-none`}
       >
-        <Image src="ic_clock.svg" alt="시계" width={24} height={24} />
+        <Image src="/ic_clock.svg" alt="시계" width={24} height={24} />
         {value || "00 : 00"}
       </button>
 

@@ -32,9 +32,7 @@ export default function ReviewsContent() {
           <button
             key={tab.value}
             type="button"
-            onClick={() =>
-              setActiveTab(tab.value)
-            }
+            onClick={() => setActiveTab(tab.value)}
             className={`
               rounded-full
               px-5

@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button/Button";
 
 import { useModal } from "@/contexts/ModalContext";
 import { checkEmail } from "../api/emailCheck";
-import { SignupRequest } from "../types";
+import { SignupRequest } from "@/features/auth/type";
 import PasswordInput from "@/components/ui/Form/input/PasswordInput";
 import FormErrorMessage from "@/components/ui/Form/formErrorMessage/FormErrorMessage";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";
@@ -233,6 +233,16 @@ export default function SignupForm() {
         <span className="text-sm text-gray-500">SNS 계정으로 회원가입</span>
         <div className="h-px flex-1 bg-gray-300" />
       </div>
+      <p className="mt-8 text-center text-sm text-gray-700">
+        이미 회원이신가요?{" "}
+        <button
+          type="button"
+          onClick={() => router.push("/login")}
+          className=" cursor-pointer font-medium text-primary-500 underline underline-offset-2"
+        >
+          로그인
+        </button>
+      </p>
     </section>
   );
 }
