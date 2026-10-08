@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ModalProvider } from "@/contexts/ModalContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useState, useEffect } from "react";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -31,8 +32,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   if (!mocksReady) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ModalProvider>{children}</ModalProvider>
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+      <QueryClientProvider client={queryClient}>
+        <ModalProvider>{children}</ModalProvider>
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
 }
