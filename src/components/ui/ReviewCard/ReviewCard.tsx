@@ -2,15 +2,31 @@ import Image from "next/image";
 import { CircleUserRound } from "lucide-react";
 
 import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
-import type { Review } from "@/data/reviews";
+
+import type {
+  ReviewApiItem,
+} from "@/features/reviews/types";
 
 interface ReviewCardProps {
-  review: Review;
+  review: ReviewApiItem;
 }
 
 export function ReviewCard({
   review,
 }: ReviewCardProps) {
+  const meeting = review.meeting;
+  const user = review.user;
+
+  const createdAt = review.createdAt
+    ? new Date(
+        review.createdAt,
+      ).toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+    : "";
+
   return (
     <article
       className="
@@ -25,7 +41,7 @@ export function ReviewCard({
         md:gap-[30px]
       "
     >
-      {/* 이미지 */}
+      {/* 모임 이미지 */}
       <div
         className="
           relative
@@ -36,10 +52,10 @@ export function ReviewCard({
           bg-[#eeeae8]
         "
       >
-        {review.imageUrl && (
+        {meeting?.image && (
           <Image
-            src={review.imageUrl}
-            alt=""
+            src={meeting.image}
+            alt={meeting.name ?? "모임 이미지"}
             fill
             sizes="180px"
             className="object-cover"
@@ -60,7 +76,7 @@ export function ReviewCard({
         {/* 별점 + 작성자 */}
         <div>
           <HeartRating
-            rating={review.rating}
+            rating={review.score}
             size="md"
           />
 
@@ -80,9 +96,13 @@ export function ReviewCard({
               className="text-[#c8c8c8]"
             />
 
-            <span>{review.authorName}</span>
+            <span>
+              {user?.name ?? "익명"}
+            </span>
 
-            <time>{review.createdAt}</time>
+            <time dateTime={review.createdAt}>
+              {createdAt}
+            </time>
           </div>
         </div>
 
@@ -98,7 +118,7 @@ export function ReviewCard({
               text-[#4c5360]
             "
           >
-            {review.content}
+            {review.comment}
           </p>
 
           <div
@@ -109,12 +129,17 @@ export function ReviewCard({
               text-[#a3a5aa]
             "
           >
-            <span>{review.groupName}</span>
+            <span>
+              {meeting?.name ?? "모임 정보 없음"}
+            </span>
+
             <span>·</span>
-            <span>{review.category}</span>
+
+            <span>
+              {meeting?.type ?? ""}
+            </span>
           </div>
 
-          {/* 오른쪽 콘텐츠 하단 구분선 */}
           <div
             className="
               mt-4

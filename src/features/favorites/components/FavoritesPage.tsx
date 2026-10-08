@@ -4,18 +4,22 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { Filter } from "@/components/ui/Filter/Filter";
-import { favorites } from "@/data/favorites";
 import { FavoriteList } from "@/features/favorites/components/FavoriteList";
 
 export function FavoritesPage() {
   const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("all");
+  const [isUrgent, setIsUrgent] = useState(false);
 
-  const filteredGroups =
-    selectedCategory === "전체"
-      ? favorites
-      : favorites.filter(
-          (group) => group.category === selectedCategory,
-        );
+  const handleDateChange = (
+    nextDateStart: string,
+    nextDateEnd: string,
+  ) => {
+    setDateStart(nextDateStart);
+    setDateEnd(nextDateEnd);
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f7f8]">
@@ -27,12 +31,10 @@ export function FavoritesPage() {
           px-5
           pb-16
           pt-10
-
           md:px-8
           md:pt-14
         "
       >
-
         <header
           className="
             mb-10
@@ -56,12 +58,22 @@ export function FavoritesPage() {
             </h1>
 
             <p className="mt-2 text-[16px] text-[#a1a4aa]">
-              마감되기 전에 지금 바로 참여해보세요 👀
+              마음에 드는 모임을 저장하고 빠르게 참여해보세요
             </p>
           </div>
         </header>
 
-        <Filter />
+        <Filter
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          dateStart={dateStart}
+          dateEnd={dateEnd}
+          onDateChange={handleDateChange}
+          selectedRegion={selectedRegion}
+          onRegionChange={setSelectedRegion}
+          isUrgent={isUrgent}
+          onUrgentChange={() => setIsUrgent((prev) => !prev)}
+        />
 
         <FavoriteList />
       </div>
