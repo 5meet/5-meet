@@ -1,19 +1,24 @@
-import Image from "next/image";
-
-import type { Review } from "@/data/reviews";
-import { ReviewCard } from "../../components/ui/ReviewCard/ReviewCard";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
+import { ReviewCard } from "@/components/ui/ReviewCard/ReviewCard";
+
+import type {
+  ReviewApiItem,
+} from "../types";
 
 interface ReviewListProps {
-  reviews: Review[];
+  reviews: ReviewApiItem[];
 }
 
 export function ReviewList({
   reviews,
 }: ReviewListProps) {
   if (reviews.length === 0) {
-  return <EmptyState message="아직 리뷰가 없어요" />;
-}
+    return (
+      <EmptyState
+        message="아직 리뷰가 없어요"
+      />
+    );
+  }
 
   return (
     <section
@@ -24,13 +29,11 @@ export function ReviewList({
         pt-7
       "
     >
-      {reviews.map((review, index) => (
+      {reviews.map((review) => (
         <div key={review.id}>
-          <ReviewCard review={review} />
-
-          {index < reviews.length - 1 && (
-            <div/>
-          )}
+          <ReviewCard
+            review={review}
+          />
         </div>
       ))}
     </section>
