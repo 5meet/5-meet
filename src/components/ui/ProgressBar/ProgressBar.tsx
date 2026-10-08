@@ -5,17 +5,12 @@ interface ProgressBarProps {
   animated?: boolean;
 }
 
-const ProgressBar = ({
-  percentage,
-  animated = false,
-}: ProgressBarProps) => {
-  const progressStyle: CSSProperties = animated
-    ? ({
-        "--progress-width": `${percentage}%`,
-      } as CSSProperties)
-    : {
-        width: `${percentage}%`,
-      };
+const ProgressBar = ({ percentage, animated = false }: ProgressBarProps) => {
+  const progressStyle: CSSProperties & {
+    "--progress-width"?: string;
+  } = animated
+    ? { "--progress-width": `${percentage}%` }
+    : { width: `${percentage}%` };
 
   return (
     <div className="h-2 w-full min-w-25">

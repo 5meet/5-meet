@@ -3,3 +3,5 @@ export interface ApiErrorResponse {
   code: string;
   message: string;
 }
+
+export type AppError = Error & Partial<ApiErrorResponse>;

@@ -46,11 +46,11 @@ export default function ReviewMeetingCard({
   };
 
   const handleReviewSubmit = (
-    rating: number,
+    reviewRating: number,
     content: string,
   ) => {
-    console.log("리뷰 등록", {
-      rating,
+    console.log("리뷰 제출", {
+      rating: reviewRating,
       content,
     });
 
@@ -107,7 +107,6 @@ export default function ReviewMeetingCard({
           />
         </div>
 
-
         <div
           className="
             flex
@@ -155,11 +154,13 @@ export default function ReviewMeetingCard({
                 </div>
               )}
             </div>
+
             <LikeButton
               isLiked={isLiked}
               onToggle={handleFavoriteClick}
             />
           </div>
+
           <div
             className="
               mt-7
@@ -217,25 +218,19 @@ export default function ReviewMeetingCard({
                   md:text-[13px]
                 "
               >
-                <span>
-                  위치 {location}
-                </span>
+                <span>위치 {location}</span>
 
                 <span className="text-[#d2d2d2]">
                   |
                 </span>
 
-                <span>
-                  날짜 {date}
-                </span>
+                <span>날짜 {date}</span>
 
                 <span className="text-[#d2d2d2]">
                   |
                 </span>
 
-                <span>
-                  시간 {time}
-                </span>
+                <span>시간 {time}</span>
               </div>
             </div>
 

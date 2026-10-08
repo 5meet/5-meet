@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { MeetingCard } from "@/components/ui/MeetingCard/MeetingCard";
+
 import type { FavoriteMeeting } from "../types";
 
 interface FavoriteListProps {
@@ -36,9 +37,7 @@ export function FavoriteList({
   onFavoriteClick,
 }: FavoriteListProps) {
   if (meetings.length === 0) {
-    return (
-      <EmptyState message="아직 찜한 모임이 없어요" />
-    );
+    return <EmptyState message="아직 찜한 모임이 없어요." />;
   }
 
   return (
@@ -55,20 +54,12 @@ export function FavoriteList({
             category={meeting.type}
             date={formatDate(meeting.dateTime)}
             time={formatTime(meeting.dateTime)}
-            registrationEnd={
-              meeting.registrationEnd
-            }
-            participantCount={
-              meeting.participantCount
-            }
+            registrationEnd={meeting.registrationEnd}
+            participantCount={meeting.participantCount}
             capacity={meeting.capacity}
             isFavorite={meeting.isFavorited}
-            isConfirmed={Boolean(
-              meeting.confirmedAt,
-            )}
-            onFavoriteClick={() =>
-              onFavoriteClick(meeting.id)
-            }
+            isConfirmed={Boolean(meeting.confirmedAt)}
+            onFavoriteClick={() => onFavoriteClick(meeting.id)}
           />
         );
       })}

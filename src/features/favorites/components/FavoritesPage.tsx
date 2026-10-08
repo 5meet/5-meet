@@ -13,9 +13,7 @@ function toStartOfDay(date: string) {
     return undefined;
   }
 
-  return new Date(
-    `${date}T00:00:00`,
-  ).toISOString();
+  return new Date(`${date}T00:00:00`).toISOString();
 }
 
 function toEndOfDay(date: string) {
@@ -23,29 +21,20 @@ function toEndOfDay(date: string) {
     return undefined;
   }
 
-  return new Date(
-    `${date}T23:59:59.999`,
-  ).toISOString();
+  return new Date(`${date}T23:59:59.999`).toISOString();
 }
 
 export function FavoritesPage() {
-  const [selectedCategory, setSelectedCategory] =
-    useState("전체");
+  const [selectedCategory, setSelectedCategory] = useState("전체");
 
-  const [dateStart, setDateStart] =
-    useState("");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
 
-  const [dateEnd, setDateEnd] =
-    useState("");
+  const [selectedRegion, setSelectedRegion] = useState("all");
 
-  const [selectedRegion, setSelectedRegion] =
-    useState("all");
+  const [isUrgent, setIsUrgent] = useState(false);
 
-  const [isUrgent, setIsUrgent] =
-    useState(false);
-
-  const deleteFavoriteMutation =
-    useDeleteFavoriteMutation();
+  const deleteFavoriteMutation = useDeleteFavoriteMutation();
 
   const queryParams = {
     ...(selectedCategory !== "전체" && {
@@ -84,9 +73,7 @@ export function FavoritesPage() {
     setDateEnd(nextDateEnd);
   };
 
-  const handleFavoriteClick = (
-    meetingId: number,
-  ) => {
+  const handleFavoriteClick = (meetingId: number) => {
     if (deleteFavoriteMutation.isPending) {
       return;
     }
@@ -131,7 +118,7 @@ export function FavoritesPage() {
             </h1>
 
             <p className="mt-2 text-[16px] text-[#a1a4aa]">
-              마감되기 전에 지금 바로 참여해보세요 👀
+              마음에 드는 모임을 저장하고 빠르게 참여해보세요
             </p>
           </div>
         </header>

@@ -27,7 +27,9 @@ export default function ReviewWriteModal({
   };
 
   const handleSubmit = () => {
-    if (rating === 0 || !content.trim()) return;
+    if (rating === 0 || !content.trim()) {
+      return;
+    }
 
     onSubmit?.(rating, content.trim());
 
@@ -37,17 +39,23 @@ export default function ReviewWriteModal({
   };
 
   return (
-    <Modal isOpen={isOpen} size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="xl"
+    >
       <Modal.Header onClose={handleClose}>
-        <Modal.Title>리뷰 쓰기</Modal.Title>
+        <Modal.Title>리뷰 작성</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <div className="flex flex-col gap-10">
           <section>
             <p className="text-lg font-medium text-gray-800">
-              만족스러운 경험이었나요?
-              <span className="ml-1 text-primary-500">*</span>
+              모임에서의 경험은 어떠셨나요?
+              <span className="ml-1 text-primary-500">
+                *
+              </span>
             </p>
 
             <div className="mt-6 flex gap-2">
@@ -78,20 +86,25 @@ export default function ReviewWriteModal({
               })}
             </div>
           </section>
+
           <section>
             <label
               htmlFor="review-content"
               className="text-lg font-medium text-gray-800"
             >
-              좋았던 점을 자유롭게 적어주세요.
-              <span className="ml-1 text-primary-500">*</span>
+              좋았던 점이나 아쉬웠던 점을 자유롭게 적어주세요.
+              <span className="ml-1 text-primary-500">
+                *
+              </span>
             </label>
 
             <textarea
               id="review-content"
               value={content}
-              onChange={(event) => setContent(event.target.value)}
-              placeholder="남겨주신 리뷰는 프로그램 운영 및 다른 회원 분들께 큰 도움이 됩니다."
+              onChange={(event) =>
+                setContent(event.target.value)
+              }
+              placeholder="모임에 참여한 경험이나 다른 회원분들에게 도움이 될 내용을 작성해주세요."
               className="
                 mt-3
                 h-48
