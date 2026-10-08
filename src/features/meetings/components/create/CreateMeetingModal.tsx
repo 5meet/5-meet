@@ -6,6 +6,8 @@ import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { CategoryStep } from "./steps/CategoryStep";
 import { InfoStep } from "./steps/InfoStpe";
+import { DescriptionStep } from "./steps/DescriptionStep";
+
 const TOTAL_STEPS = 4;
 
 interface CreateMeetingModalProps {
@@ -20,6 +22,7 @@ export interface CreateMeetingFormValues {
   detailAddress: string;
   imageSelected: boolean;
   image: string;
+  description: string;
 }
 
 export function CreateMeetingModal({
@@ -35,6 +38,7 @@ export function CreateMeetingModal({
       address: "",
       detailAddress: "",
       image: "",
+      description: "",
     },
   });
 
@@ -42,11 +46,13 @@ export function CreateMeetingModal({
   const name = methods.watch("name");
   const address = methods.watch("address");
   const image = methods.watch("image");
+  const description = methods.watch("description");
 
   // 다음 버튼 비활성화 조건
   const isNextDisabled =
     (step === 1 && !selectedType) ||
-    (step === 2 && (!name.trim() || !address.trim() || !image));
+    (step === 2 && (!name.trim() || !address.trim() || !image)) ||
+    (step === 3 && !description);
 
   const handleNextStep = () => {
     if (step < TOTAL_STEPS) {
@@ -85,6 +91,7 @@ export function CreateMeetingModal({
         <Modal.Body>
           {step === 1 && <CategoryStep />}
           {step === 2 && <InfoStep />}
+          {step === 3 && <DescriptionStep />}
         </Modal.Body>
 
         <Modal.Footer>
