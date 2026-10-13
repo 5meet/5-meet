@@ -17,7 +17,7 @@ import {
   unfavoriteMeeting,
   favoriteMeeting,
 } from "@/features/meetingDetail/api/favorite.service";
-import { mapToMeeting } from "@/features/meetingDetail/api/meetingDetail.service";
+import { mapToMeeting } from "@/features/meetings/meetings.mapper";
 
 function useFavoriteMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();

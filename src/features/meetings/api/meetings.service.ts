@@ -47,3 +47,7 @@ export const createMeeting = async (
 
   return mapToMeeting(res);
 };
+
+//------------------------------------------------------------------
+
+// 지금 인기 있는 모임 목록 조회

@@ -1,3 +1,4 @@
+// 모임 만들기 3단계 설명(description) 정하기
 import { useFormContext } from "react-hook-form";
 
 import { Label } from "@/components/ui/Form/label/Label";

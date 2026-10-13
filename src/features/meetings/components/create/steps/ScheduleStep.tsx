@@ -1,3 +1,4 @@
+// 모임 만들기 4단계 일정(dateTime, registrationEnd) 정하기
 import { useFormContext } from "react-hook-form";
 
 import { Label } from "@/components/ui/Form/label/Label";

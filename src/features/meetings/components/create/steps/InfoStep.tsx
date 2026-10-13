@@ -1,5 +1,6 @@
 "use client";
 
+// 모임 만들기 2단계 기본 정보(name, address, imageUrl) 정하기
 import { useRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
