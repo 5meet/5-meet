@@ -14,6 +14,8 @@ export const meetingKeys = {
 
   list: (params: GetMeetingsParams) =>
     [...meetingKeys.all, "list", params] as const,
+
+  popular: (size?: number) => [...meetingKeys.all, "popular", size] as const,
 };
 
 export const reviewKeys = {
