@@ -1,3 +1,8 @@
+import type {
+  MeetingAPIResponse,
+  MeetingFront,
+} from "@/features/meetingDetail/types/meetingDetail";
+
 export interface MeetingHost {
   id: number;
   name: string;
@@ -57,38 +62,6 @@ export interface CreateMeetingFormValues {
 
 //-----------------------------------------
 
-// API 원본 응답
-export interface MeetingsApiResponse {
-  id: number;
-  teamId: string;
-  name: string;
-  type: string;
-  region: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  dateTime: string;
-  registrationEnd: string;
-  capacity: number;
-  participantCount: number;
-  image: string;
-  description: string;
-  canceledAt: string | null;
-  confirmedAt: string | null;
-  hostId: number;
-  createdBy: number;
-  createdAt: string;
-  updatedAt: string;
-  host: {
-    id: number;
-    name: string;
-    image: string | null;
-  };
-  isFavorited: boolean;
-  isJoined: boolean;
-  isCompleted: boolean;
-}
-
 // 모임 목록 조회 파라미터
 export interface GetMeetingsParams {
   id?: number;
@@ -106,7 +79,7 @@ export interface GetMeetingsParams {
 
 // 모임 목록 조회 응답
 export interface MeetingListResponse {
-  data: MeetingsApiResponse[];
+  data: MeetingAPIResponse[];
   nextCursor: string | null;
   hasMore: boolean;
   totalCount: number;
@@ -127,37 +100,6 @@ export interface MeetingCreateRequest {
   capacity: number;
   image: string;
   description: string;
-}
-
-// 가공 후 도메인 타입
-export interface MeetingFront {
-  id: number;
-  title: string;
-  location: string;
-  category: string;
-  date: string;
-  time: string;
-  dateTime: string;
-  registrationEnd: string;
-  capacity: number;
-  participantCount: number;
-  image: string;
-  description: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  createdAt: string;
-  hostId: number;
-  host: {
-    id: number;
-    name: string;
-    image: string | null;
-  };
-  initialIsFavorited: boolean;
-  initialIsParticipating: boolean;
-  isCompleted: boolean;
-  canceledAt: string | null;
-  confirmedAt: string | null;
 }
 
 // 모임 생성 폼

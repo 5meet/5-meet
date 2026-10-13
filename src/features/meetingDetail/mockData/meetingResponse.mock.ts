@@ -1,8 +1,8 @@
 // MSW용 mock 데이터
-import { MeetingDetailResponse } from "@/features/meetingDetail/types/meetingDetail";
+import { MeetingAPIResponse } from "@/features/meetingDetail/types/meetingDetail";
 
 // meetingId: 1 — 로그인한 사용자가 "주최자"인 경우
-export const mockMeetingResponseAsHost: MeetingDetailResponse = {
+export const mockMeetingResponseAsHost: MeetingAPIResponse = {
   id: 1,
   teamId: "dallaem",
   name: "작은 독서 습관 만들기",
@@ -31,7 +31,7 @@ export const mockMeetingResponseAsHost: MeetingDetailResponse = {
 };
 
 // meetingId: 2 — 로그인한 사용자가 "참여자"(예비 참여자 포함)인 경우
-export const mockMeetingResponseAsParticipant: MeetingDetailResponse = {
+export const mockMeetingResponseAsParticipant: MeetingAPIResponse = {
   id: 2,
   teamId: "dallaem",
   name: "퇴근 후 러닝 크루",

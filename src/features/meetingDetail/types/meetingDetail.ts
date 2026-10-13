@@ -18,7 +18,7 @@ export interface MeetingDetailInfoCardProps {
 }
 
 // API 원본 응답
-export interface MeetingDetailResponse {
+export interface MeetingAPIResponse {
   id: number;
   teamId: string;
   name: string;
@@ -50,7 +50,7 @@ export interface MeetingDetailResponse {
 }
 
 // 가공 후 도메인 타입
-export interface MeetingDetail {
+export interface MeetingFront {
   id: number;
   title: string;
   location: string;
@@ -227,7 +227,7 @@ export interface GetReviewsParams extends PaginationParmas {
 
 // 추천 모임 목록
 export interface MeetingListResponse {
-  data: MeetingDetailResponse[];
+  data: MeetingAPIResponse[];
   nextCursor: string | null;
   hasMore: boolean;
   totalCount: number;

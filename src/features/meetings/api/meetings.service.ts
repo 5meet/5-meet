@@ -1,13 +1,15 @@
 import { api } from "@/lib/api/api";
 
 import type {
-  MeetingsApiResponse,
-  MeetingFront,
   GetMeetingsParams,
   MeetingFormValues,
   MeetingCreateRequest,
   MeetingListResponse,
 } from "@/features/meetings/types/meetings";
+import type {
+  MeetingAPIResponse,
+  MeetingFront,
+} from "@/features/meetingDetail/types/meetingDetail";
 
 import { mapToMeeting } from "@/features/meetingDetail/api/meetingDetail.service";
 
@@ -77,7 +79,7 @@ export const createMeeting = async (
 ): Promise<MeetingFront> => {
   const res = await api
     .post("meetings", { json: payload })
-    .json<MeetingsApiResponse>();
+    .json<MeetingAPIResponse>();
 
   return mapToMeeting(res);
 };

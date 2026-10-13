@@ -2,10 +2,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { meetingKeys } from "../queryKeys";
 import { getRecommendedMeetings } from "../api/meetingDetail.service";
-import type { MeetingDetail } from "../types/meetingDetail";
+import type { MeetingFront } from "../types/meetingDetail";
 
 export default function useRecommendedMeetingsQuery(
-  meeting: MeetingDetail | undefined,
+  meeting: MeetingFront | undefined,
 ) {
   return useQuery({
     queryKey: meetingKeys.recommended(meeting?.id ?? 0),
