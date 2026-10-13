@@ -47,8 +47,9 @@ type EditTabValue = (typeof EDIT_TABS)[number]["value"];
 interface EditMeetingFormState {
   name: string;
   type: string;
-  region: string; // 도로명 주소 (AddressSearchField의 address)
-  address: string; // 상세 주소
+  region: string;
+  address: string;
+  detailAddress: string;
   latitude: number;
   longitude: number;
   date: string; // "2027-02-10"
@@ -65,6 +66,7 @@ const INITIAL_FORM: EditMeetingFormState = {
   type: "",
   region: "",
   address: "",
+  detailAddress: "",
   latitude: 0,
   longitude: 0,
   date: "",
@@ -114,6 +116,7 @@ const EditMeetingModal = ({
       type: meeting.category,
       region: meeting.location,
       address: meeting.address,
+      detailAddress: meeting.address,
       latitude: meeting.latitude,
       longitude: meeting.longitude,
       date,
@@ -263,12 +266,18 @@ const EditMeetingModal = ({
 
                 <div className="flex flex-col gap-1">
                   <AddressSearchField
-                    address={form.region}
+                    address={form.address}
                     detailAddress={form.address}
-                    onSelectAddress={({ address, latitude, longitude }) =>
+                    onSelectAddress={({
+                      region,
+                      address,
+                      latitude,
+                      longitude,
+                    }) =>
                       setForm((prev) => ({
                         ...prev,
-                        region: address,
+                        region,
+                        address,
                         latitude: latitude ?? prev.latitude,
                         longitude: longitude ?? prev.longitude,
                       }))

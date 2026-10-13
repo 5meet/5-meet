@@ -52,7 +52,7 @@ export const createMeeting = async (
 
 //------------------------------------------------------------------
 
-// 지금 인기 있는 모임 목록 조회
+// 지금 인기 있는 모임 목록 조회 (참가자 많은 순)
 export const getPopularMeetings = async (
   size = 8,
 ): Promise<PopularMeeting[]> => {
