@@ -90,16 +90,15 @@ export function InfoStep() {
       <AddressSearchField
         address={address}
         detailAddress={detailAddress}
-        onSelectAddress={(result) => {
-          setValue("address", result.address, {
-            shouldValidate: true,
-          });
+        onSelectAddress={({ address, region, latitude, longitude }) => {
+          setValue("address", address, { shouldValidate: true });
+          setValue("region", region, { shouldValidate: true });
+          setValue("latitude", latitude ?? 0, { shouldValidate: true });
+          setValue("longitude", longitude ?? 0, { shouldValidate: true });
         }}
-        onDetailAddressChange={(value) => {
-          setValue("detailAddress", value, {
-            shouldValidate: true,
-          });
-        }}
+        onDetailAddressChange={(value) =>
+          setValue("detailAddress", value, { shouldValidate: true })
+        }
       />
 
       {/* 이미지 */}
