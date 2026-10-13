@@ -11,7 +11,7 @@ import type {
 } from "@/features/meetingDetail/types/meetingDetail";
 
 import {
-  mapMeetingToFormValues,
+  mapToCreateMeeting,
   mapToMeeting,
 } from "@/features/meetings/meetings.mapper";
 

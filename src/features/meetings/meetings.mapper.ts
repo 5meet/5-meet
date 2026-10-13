@@ -1,9 +1,12 @@
-import type { MeetingFormValues } from "@/features/meetings/types/meetings";
+import type {
+  MeetingFormValues,
+  MeetingCreateRequest,
+} from "@/features/meetings/types/meetings";
 import type {
   MeetingFront,
   MeetingAPIResponse,
 } from "@/features/meetingDetail/types/meetingDetail";
-import { splitISOToKSTDateTime } from "@/lib/convertDate/formatMeetingDate";
+import { combineKSTDateTimeToISO } from "@/lib/convertDate/formatMeetingDate";
 import {
   convertDateType1,
   convertDateType4,
@@ -42,27 +45,26 @@ export const mapToMeeting = (res: MeetingAPIResponse): MeetingFront => {
 };
 
 // 요청 매핑
-export const mapMeetingToFormValues = (
-  meeting: MeetingFront,
-): MeetingFormValues => {
-  const { date, time } = splitISOToKSTDateTime(meeting.dateTime);
-  const { date: registrationEndDate, time: registrationEndTime } =
-    splitISOToKSTDateTime(meeting.registrationEnd);
+export const mapToCreateMeeting = (
+  form: MeetingFormValues,
+): MeetingCreateRequest => {
+  const dateTime = combineKSTDateTimeToISO(form.date, form.time);
+  const registrationEnd = combineKSTDateTimeToISO(
+    form.registrationEndDate,
+    form.registrationEndTime,
+  );
 
   return {
-    type: meeting.category,
-    name: meeting.title,
-    region: meeting.location,
-    address: meeting.address, // 서버는 전체 주소를 하나로 저장
-    detailAddress: "", // 서버에 분리 저장되지 않으므로 빈 값
-    latitude: meeting.latitude,
-    longitude: meeting.longitude,
-    image: meeting.image,
-    description: meeting.description,
-    date,
-    time,
-    registrationEndDate,
-    registrationEndTime,
-    capacity: meeting.capacity,
+    name: form.name.trim(),
+    type: form.type,
+    region: form.region,
+    address: `${form.address} ${form.detailAddress}`.trim(),
+    latitude: form.latitude,
+    longitude: form.longitude,
+    dateTime,
+    registrationEnd,
+    capacity: Number(form.capacity),
+    image: form.image,
+    description: form.description.trim(),
   };
 };
