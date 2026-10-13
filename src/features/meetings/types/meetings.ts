@@ -105,3 +105,18 @@ export interface MeetingFormValues {
   registrationEndTime: string;
   capacity: number;
 }
+
+// 지금 인기 있는 모임 목록 조회
+export interface PopularMeeting {
+  id: number;
+  title: string;
+  image: string;
+  location: string;
+  category: string;
+  date: string;
+  time: string;
+  registrationEnd: string;
+  initialIsFavorited: boolean;
+  participantCount: number;
+  capacity: number;
+}

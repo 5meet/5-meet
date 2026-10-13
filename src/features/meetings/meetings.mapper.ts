@@ -1,6 +1,7 @@
 import type {
   MeetingFormValues,
   MeetingCreateRequest,
+  PopularMeeting,
 } from "@/features/meetings/types/meetings";
 import type {
   MeetingFront,
@@ -66,5 +67,25 @@ export const mapToCreateMeeting = (
     capacity: Number(form.capacity),
     image: form.image,
     description: form.description.trim(),
+  };
+};
+
+// 지금 인기 있는 모임 (참가자 많은 수 정렬)
+export const mapToPopularMeeting = (
+  res: MeetingAPIResponse,
+): PopularMeeting => {
+  const { date, time } = convertDateType1(res.dateTime);
+  return {
+    id: res.id,
+    title: res.name,
+    image: res.image,
+    location: res.region,
+    category: res.type,
+    date,
+    time,
+    registrationEnd: res.registrationEnd,
+    initialIsFavorited: res.isFavorited,
+    participantCount: res.participantCount,
+    capacity: res.capacity,
   };
 };

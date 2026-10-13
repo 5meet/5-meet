@@ -4,6 +4,7 @@ import type {
   GetMeetingsParams,
   MeetingCreateRequest,
   MeetingListResponse,
+  PopularMeeting,
 } from "@/features/meetings/types/meetings";
 import type {
   MeetingAPIResponse,
@@ -13,6 +14,7 @@ import type {
 import {
   mapToCreateMeeting,
   mapToMeeting,
+  mapToPopularMeeting,
 } from "@/features/meetings/meetings.mapper";
 
 //------------------------------------------------------------------
@@ -51,3 +53,25 @@ export const createMeeting = async (
 //------------------------------------------------------------------
 
 // 지금 인기 있는 모임 목록 조회
+export const getPopularMeetings = async (
+  size = 8,
+): Promise<PopularMeeting[]> => {
+  const now = new Date().toISOString();
+
+  const res = await getMeetings({
+    dateStart: now,
+    sortBy: "participantCount",
+    sortOrder: "desc",
+    size: size * 3, // 필터링으로 줄어들 것을 감안
+  });
+
+  return res.data
+    .filter(
+      (m) =>
+        m.canceledAt === null &&
+        m.participantCount < m.capacity &&
+        new Date(m.registrationEnd).getTime() > Date.now(),
+    )
+    .slice(0, size)
+    .map(mapToPopularMeeting);
+};
