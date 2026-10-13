@@ -46,20 +46,6 @@ export interface MeetingsResponse {
   nextCursor: string | null;
 }
 
-export interface CreateMeetingFormValues {
-  type: string;
-  name: string;
-  address: string;
-  detailAddress: string;
-  image: string;
-  description: string;
-  date: string;
-  time: string;
-  registrationEndDate: string;
-  registrationEndTime: string;
-  capacity: number;
-}
-
 //-----------------------------------------
 
 // 모임 목록 조회 파라미터

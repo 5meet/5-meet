@@ -6,11 +6,10 @@ import { Input } from "@/components/ui/Form/input/Input";
 import { DateField } from "@/components/ui/Form/input/DateField";
 import { TimeField } from "@/components/ui/Form/input/TimeField";
 
-import type { CreateMeetingFormValues } from "@/features/meetings/types/meetings";
+import type { MeetingFormValues } from "@/features/meetings/types/meetings";
 
 export function ScheduleStep() {
-  const { register, setValue, watch } =
-    useFormContext<CreateMeetingFormValues>();
+  const { register, setValue, watch } = useFormContext<MeetingFormValues>();
 
   const date = watch("date");
   const time = watch("time");

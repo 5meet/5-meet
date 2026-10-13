@@ -5,7 +5,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { CategoryStep, InfoStep, DescriptionStep, ScheduleStep } from "./steps";
-import type { CreateMeetingFormValues } from "@/features/meetings/types/meetings";
+import type { MeetingFormValues } from "@/features/meetings/types/meetings";
 
 const TOTAL_STEPS = 4;
 
@@ -20,7 +20,7 @@ export function CreateMeetingModal({
 }: CreateMeetingModalProps) {
   const [step, setStep] = useState(1);
 
-  const methods = useForm<CreateMeetingFormValues>({
+  const methods = useForm<MeetingFormValues>({
     defaultValues: {
       type: "",
       name: "",
