@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/Form/label/Label";
 import { MapPin } from "lucide-react";
 
 interface AddressSearchResult {
+  region: string;
   address: string;
   latitude: number | null;
   longitude: number | null;
@@ -32,6 +33,7 @@ export const AddressSearchField = ({
 
     new window.daum.Postcode({
       oncomplete: (data) => {
+        const region = `${data.sido} ${data.sigungu}`.trim();
         const roadAddress: string = data.roadAddress || data.jibunAddress;
 
         if (window.kakao?.maps?.services) {
@@ -39,12 +41,14 @@ export const AddressSearchField = ({
           geocoder.addressSearch(roadAddress, (result, status) => {
             if (status === window.kakao.maps.services.Status.OK) {
               onSelectAddress({
+                region: region,
                 address: roadAddress,
                 latitude: Number(result[0].y),
                 longitude: Number(result[0].x),
               });
             } else {
               onSelectAddress({
+                region: region,
                 address: roadAddress,
                 latitude: null,
                 longitude: null,
@@ -53,6 +57,7 @@ export const AddressSearchField = ({
           });
         } else {
           onSelectAddress({
+            region: region,
             address: roadAddress,
             latitude: null,
             longitude: null,
