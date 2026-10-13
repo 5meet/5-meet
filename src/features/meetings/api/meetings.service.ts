@@ -2,7 +2,6 @@ import { api } from "@/lib/api/api";
 
 import type {
   GetMeetingsParams,
-  MeetingFormValues,
   MeetingCreateRequest,
   MeetingListResponse,
 } from "@/features/meetings/types/meetings";
@@ -11,45 +10,10 @@ import type {
   MeetingFront,
 } from "@/features/meetingDetail/types/meetingDetail";
 
-import { mapToMeeting } from "@/features/meetingDetail/api/meetingDetail.service";
-
 import {
-  convertDateType1,
-  convertDateType4,
-} from "@/lib/convertDate/formatMeetingDate";
-import {
-  splitISOToKSTDateTime,
-  combineKSTDateTimeToISO,
-} from "@/lib/convertDate/formatMeetingDate";
-
-// MeetingFront는 기존 MeetingDetail과 필드가 완전히 같고, MeetingsApiResponse도 MeetingDetailResponse와 같음-> 정리 팔요
-// mapper를 meetings.mapper.ts로 분리하기
-
-// 생성/수정 요청 매핑 공통 함수
-export const mapMeetingToFormValues = (
-  meeting: MeetingFront,
-): MeetingFormValues => {
-  const { date, time } = splitISOToKSTDateTime(meeting.dateTime);
-  const { date: registrationEndDate, time: registrationEndTime } =
-    splitISOToKSTDateTime(meeting.registrationEnd);
-
-  return {
-    type: meeting.category,
-    name: meeting.title,
-    region: meeting.location,
-    address: meeting.address, // 서버는 전체 주소를 하나로 저장
-    detailAddress: "", // 서버에 분리 저장되지 않으므로 빈 값
-    latitude: meeting.latitude,
-    longitude: meeting.longitude,
-    image: meeting.image,
-    description: meeting.description,
-    date,
-    time,
-    registrationEndDate,
-    registrationEndTime,
-    capacity: meeting.capacity,
-  };
-};
+  mapMeetingToFormValues,
+  mapToMeeting,
+} from "@/features/meetings/meetings.mapper";
 
 //------------------------------------------------------------------
 

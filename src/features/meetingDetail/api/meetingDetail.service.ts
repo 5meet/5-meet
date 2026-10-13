@@ -12,8 +12,6 @@ import type {
   ReviewResponse,
   ReviewListResponse,
   GetReviewsParams,
-  MeetingListResponse,
-  GetMeetingsParams,
   RecommendedMeeting,
   GetRecommendedMeetingsParams,
 } from "@/features/meetingDetail/types/meetingDetail";
@@ -23,40 +21,9 @@ import {
 } from "@/lib/convertDate/formatMeetingDate";
 
 import { getMeetings } from "@/features/meetings/api/meetings.service";
+import { mapToMeeting } from "@/features/meetings/meetings.mapper";
 
 // const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
-
-// 응답 매핑 공통 함수
-export const mapToMeeting = (res: MeetingAPIResponse): MeetingFront => {
-  const { date, time } = convertDateType1(res.dateTime);
-  const createdAt = convertDateType4(new Date(res.createdAt));
-
-  return {
-    id: res.id,
-    title: res.name,
-    location: res.region,
-    category: res.type,
-    date,
-    time,
-    dateTime: res.dateTime,
-    registrationEnd: res.registrationEnd,
-    capacity: res.capacity,
-    participantCount: res.participantCount,
-    image: res.image,
-    description: res.description,
-    address: res.address,
-    latitude: res.latitude,
-    longitude: res.longitude,
-    createdAt: createdAt,
-    hostId: res.hostId,
-    host: res.host,
-    initialIsFavorited: res.isFavorited,
-    initialIsParticipating: res.isJoined,
-    isCompleted: res.isCompleted,
-    canceledAt: res.canceledAt,
-    confirmedAt: res.confirmedAt,
-  };
-};
 
 //-----------------------------------------------------------------
 
