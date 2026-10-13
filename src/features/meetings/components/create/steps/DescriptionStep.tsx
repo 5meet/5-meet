@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "@/components/ui/Form/label/Label";
 import TextArea from "@/components/ui/Form/input/Textarea";
 
-import type { CreateMeetingFormValues } from "../CreateMeetingModal";
+import type { CreateMeetingFormValues } from "@/features/meetings/types/meetings";
 
 export function DescriptionStep() {
   const { register } = useFormContext<CreateMeetingFormValues>();

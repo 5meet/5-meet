@@ -25,9 +25,7 @@ import {
 // const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
 
 // 응답 매핑 공통 함수
-export const mapToMeetingDetail = (
-  res: MeetingDetailResponse,
-): MeetingDetail => {
+export const mapToMeeting = (res: MeetingDetailResponse): MeetingDetail => {
   const { date, time } = convertDateType1(res.dateTime);
   const createdAt = convertDateType4(new Date(res.createdAt));
 
@@ -68,7 +66,7 @@ export const getMeetingDetail = async (
     .get(`meetings/${meetingId}`)
     .json<MeetingDetailResponse>();
 
-  return mapToMeetingDetail(res);
+  return mapToMeeting(res);
 };
 
 //-----------------------------------------------------------------
@@ -82,7 +80,7 @@ export const updateMeetingDetail = async (
     .patch(`meetings/${meetingId}`, { json: payload })
     .json<MeetingDetailResponse>();
 
-  return mapToMeetingDetail(res);
+  return mapToMeeting(res);
 };
 
 // 모임 삭제 (주최자)
@@ -121,7 +119,7 @@ export const changeMeetingStatus = async (
     })
     .json<MeetingDetailResponse>();
 
-  return mapToMeetingDetail(res);
+  return mapToMeeting(res);
 };
 
 //-----------------------------------------------------------------

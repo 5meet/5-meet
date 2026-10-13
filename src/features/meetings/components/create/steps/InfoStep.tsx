@@ -10,7 +10,7 @@ import { AddressSearchField } from "@/components/ui/Form/input/AddressSearchFiel
 import { ImageUploadField } from "@/components/ui/Form/input/ImageUploadField";
 import { showToast } from "@/components/ui/Sonner";
 
-import type { CreateMeetingFormValues } from "../CreateMeetingModal";
+import type { CreateMeetingFormValues } from "@/features/meetings/types/meetings";
 
 export function InfoStep() {
   const { register, setValue, watch } =

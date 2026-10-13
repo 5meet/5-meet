@@ -17,7 +17,7 @@ import {
   unfavoriteMeeting,
   favoriteMeeting,
 } from "@/features/meetingDetail/api/favorite.service";
-import { mapToMeetingDetail } from "@/features/meetingDetail/api/meetingDetail.service";
+import { mapToMeeting } from "@/features/meetingDetail/api/meetingDetail.service";
 
 function useFavoriteMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
@@ -52,7 +52,7 @@ function useFavoriteMeetingMutation(meetingId: number) {
       if (result.meeting) {
         queryClient.setQueryData<MeetingDetail>(
           meetingKeys.detail(meetingId),
-          mapToMeetingDetail(result.meeting),
+          mapToMeeting(result.meeting),
         );
       }
 

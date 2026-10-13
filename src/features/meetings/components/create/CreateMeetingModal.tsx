@@ -5,26 +5,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 import { CategoryStep, InfoStep, DescriptionStep, ScheduleStep } from "./steps";
+import type { CreateMeetingFormValues } from "@/features/meetings/types/meetings";
 
 const TOTAL_STEPS = 4;
 
 interface CreateMeetingModalProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export interface CreateMeetingFormValues {
-  type: string;
-  name: string;
-  address: string;
-  detailAddress: string;
-  image: string;
-  description: string;
-  date: string;
-  time: string;
-  registrationEndDate: string;
-  registrationEndTime: string;
-  capacity: number;
 }
 
 export function CreateMeetingModal({

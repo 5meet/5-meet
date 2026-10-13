@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/Form/input/Input";
 import { DateField } from "@/components/ui/Form/input/DateField";
 import { TimeField } from "@/components/ui/Form/input/TimeField";
 
-import type { CreateMeetingFormValues } from "../CreateMeetingModal";
+import type { CreateMeetingFormValues } from "@/features/meetings/types/meetings";
 
 export function ScheduleStep() {
   const { register, setValue, watch } =
