@@ -69,7 +69,7 @@ export function ScheduleStep() {
           type="number"
           min={0}
           placeholder="모임 정원을 입력해주세요"
-          {...register("capacity")}
+          {...register("capacity", { valueAsNumber: true })}
           required
         />
       </div>
