@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
@@ -167,6 +167,43 @@ const EditMeetingModal = ({
     editMutation.mutate(payload, { onSuccess: () => handleClose() });
   };
 
+  useEffect(() => {
+    return () => {
+      revokePendingBlob();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
+  const handleImageUpload = (file: File) => {
+    const previousImage = form.image; // 실패 시 되돌릴 원래 값 (서버의 기존 이미지 URL 또는 빈 문자열)
+    revokePendingBlob(); // 이전에 선택했던 blob(아직 업로드 완료 안 된 것)이 있으면 먼저 해제
+    const previewUrl = URL.createObjectURL(file);
+    pendingBlobUrlRef.current = previewUrl;
+    handleField("image", previewUrl); // 즉시 미리보기 반영
+
+    uploadImageMutation.mutate(file, {
+      onSuccess: (publicUrl) => {
+        revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
+        handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
+      },
+      onError: () => {
+        revokePendingBlob();
+        handleField("image", previousImage); // 실패 시 롤백
+        showToast({
+          kind: "error",
+          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+        });
+      },
+    });
+  };
+
+  // 이미지 삭제
+  const handleImageRemove = () => {
+    revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
+    handleField("image", "");
+  };
+
   const handleClose = () => {
     revokePendingBlob();
     setForm(INITIAL_FORM);
@@ -247,33 +284,8 @@ const EditMeetingModal = ({
                   <ImageUploadField
                     value={form.image}
                     alt={meeting?.title}
-                    onFileSelect={(file) => {
-                      const previousImage = form.image; // 실패 시 되돌릴 원래 값 (서버의 기존 이미지 URL 또는 빈 문자열)
-                      revokePendingBlob(); // 이전에 선택했던 blob(아직 업로드 완료 안 된 것)이 있으면 먼저 해제
-                      const previewUrl = URL.createObjectURL(file);
-                      pendingBlobUrlRef.current = previewUrl;
-                      handleField("image", previewUrl); // 즉시 미리보기 반영
-
-                      uploadImageMutation.mutate(file, {
-                        onSuccess: (publicUrl) => {
-                          revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
-                          handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
-                        },
-                        onError: () => {
-                          revokePendingBlob();
-                          handleField("image", previousImage); // 실패 시 롤백
-                          showToast({
-                            kind: "error",
-                            message:
-                              "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
-                          });
-                        },
-                      });
-                    }}
-                    onRemove={() => {
-                      revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
-                      handleField("image", "");
-                    }}
+                    onFileSelect={handleImageUpload}
+                    onRemove={handleImageRemove}
                   />
                 </div>
 

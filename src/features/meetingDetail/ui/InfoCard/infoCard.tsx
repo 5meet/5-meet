@@ -23,6 +23,7 @@ import {
 import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
 import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
+import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
 
 const InfoCard = ({
   id,
@@ -46,7 +47,6 @@ const InfoCard = ({
 
   const favoriteMutation = useFavoriteMeetingMutation(id);
 
-  const [isSharing, setIsSharing] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -54,7 +54,7 @@ const InfoCard = ({
   const isParticipating = initialIsParticipating;
 
   const isFull = participantCount >= capacity;
-  const { isClosed } = formatRegistrationEnd(registrationEnd);
+  const isClosed = useIsPastDeadline(registrationEnd);
   const isConfirmed = confirmedAt !== null;
   const isCanceled = canceledAt !== null;
 
