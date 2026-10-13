@@ -51,6 +51,7 @@ export function CreateMeetingModal({
   const isNextDisabled =
     (step === 1 && !selectedType) ||
     (step === 2 && (!name.trim() || !address.trim() || !image)) ||
+    image.startsWith("blob:") ||
     (step === 3 && !description.trim()) ||
     (step === 4 &&
       (!date ||
