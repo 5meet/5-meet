@@ -8,6 +8,7 @@ export interface MyMeetingSummary {
   dateLabel: string;
   timeLabel: string;
   category: string;
+  imageUrl?: string | null;
   participantCount: number;
   capacity: number;
   isCompleted: boolean;
@@ -87,6 +88,7 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                 id={meeting.id}
                 title={meeting.name}
                 category={meeting.category}
+                imageUrl={meeting.imageUrl}
                 location={meeting.region}
                 date={meeting.dateLabel}
                 time={meeting.timeLabel}
