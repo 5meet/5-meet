@@ -1,9 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export interface DetailCardProps {
   id: number;
   title: string;
   category: string;
+  imageUrl?: string | null;
   location: string;
   date: string;
   time: string;
@@ -24,6 +26,7 @@ export default function DetailCard({
   id,
   title,
   category,
+  imageUrl,
   location,
   date,
   time,
@@ -40,7 +43,12 @@ export default function DetailCard({
     status === "canceled" ? "취소된 모임" : status === "completed" ? "이용 완료" : "이용 예정";
 
   return (
-    <article className="flex min-h-[236px] min-w-0 flex-col gap-4 rounded-[24px] border border-gray-200 bg-white p-5 sm:flex-row sm:gap-6 sm:p-6">
+    <article className="flex min-h-[390px] min-w-0 flex-col gap-4 rounded-[24px] border border-gray-200 bg-white p-4 sm:min-h-[236px] sm:flex-row sm:gap-6 sm:p-6">
+      <div className="relative h-[160px] w-full shrink-0 overflow-hidden rounded-2xl bg-gray-100 sm:h-[188px] sm:w-[188px]">
+        {imageUrl && (
+          <Image src={imageUrl} alt="" fill sizes="(max-width: 639px) 100vw, 188px" className="object-cover" unoptimized />
+        )}
+      </div>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
