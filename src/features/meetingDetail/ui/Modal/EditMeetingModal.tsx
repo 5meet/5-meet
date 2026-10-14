@@ -93,6 +93,7 @@ const EditMeetingModal = ({
   const [initializedMeetingId, setInitializedMeetingId] = useState<
     number | null
   >(null);
+  const [isAddressChanged, setIsAddressChanged] = useState(false);
 
   // 아직 업로드 중/실패한 blob을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
@@ -116,7 +117,7 @@ const EditMeetingModal = ({
       type: meeting.category,
       region: meeting.location,
       address: meeting.address,
-      detailAddress: meeting.address,
+      detailAddress: "",
       latitude: meeting.latitude,
       longitude: meeting.longitude,
       date,
@@ -155,7 +156,9 @@ const EditMeetingModal = ({
       name: form.name,
       type: form.type,
       region: form.region,
-      address: form.address,
+      address: isAddressChanged
+        ? `${form.address} ${form.detailAddress}`.trim()
+        : form.address,
       latitude: form.latitude,
       longitude: form.longitude,
       dateTime: combineKSTDateTimeToISO(form.date, form.time),
@@ -211,6 +214,7 @@ const EditMeetingModal = ({
     revokePendingBlob();
     setForm(INITIAL_FORM);
     setInitializedMeetingId(null);
+    setIsAddressChanged(false);
     setErrors({});
     onClose();
   };
@@ -267,22 +271,27 @@ const EditMeetingModal = ({
                 <div className="flex flex-col gap-1">
                   <AddressSearchField
                     address={form.address}
-                    detailAddress={form.address}
+                    detailAddress={form.detailAddress}
+                    isDetailDisabled={!isAddressChanged}
                     onSelectAddress={({
                       region,
                       address,
                       latitude,
                       longitude,
-                    }) =>
+                    }) => {
+                      setIsAddressChanged(true);
                       setForm((prev) => ({
                         ...prev,
                         region,
                         address,
+                        detailAddress: "",
                         latitude: latitude ?? prev.latitude,
                         longitude: longitude ?? prev.longitude,
-                      }))
+                      }));
+                    }}
+                    onDetailAddressChange={(v) =>
+                      handleField("detailAddress", v)
                     }
-                    onDetailAddressChange={(v) => handleField("address", v)}
                   />
                 </div>
 

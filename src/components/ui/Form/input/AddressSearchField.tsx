@@ -18,6 +18,7 @@ interface AddressSearchFieldProps {
   detailAddress: string;
   onSelectAddress: (result: AddressSearchResult) => void;
   onDetailAddressChange: (value: string) => void;
+  isDetailDisabled?: boolean;
 }
 
 export const AddressSearchField = ({
@@ -25,6 +26,7 @@ export const AddressSearchField = ({
   detailAddress,
   onSelectAddress,
   onDetailAddressChange,
+  isDetailDisabled,
 }: AddressSearchFieldProps) => {
   const [isScriptReady, setIsScriptReady] = useState(false);
 
@@ -86,16 +88,14 @@ export const AddressSearchField = ({
             placeholder="건물, 지번 또는 도로명 검색"
             value={address}
             tabIndex={-1}
-            onClick={handleSearch}
             readOnly
             className="pr-12 cursor-default"
           />
 
           <button
-            type="button"
+            aria-label="주소 검색"
             onClick={handleSearch}
             disabled={!isScriptReady}
-            aria-label="주소 검색"
             className="
               absolute top-1/2 right-4
               -translate-y-1/2
@@ -111,8 +111,10 @@ export const AddressSearchField = ({
         <Input
           id="addressDetail"
           type="text"
-          placeholder="상세주소"
-          required
+          placeholder={
+            isDetailDisabled ? "주소를 먼저 검색해주세요" : "상세주소"
+          }
+          disabled={isDetailDisabled}
           value={detailAddress}
           onChange={(e) => onDetailAddressChange(e.target.value)}
         />
