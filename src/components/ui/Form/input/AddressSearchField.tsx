@@ -93,6 +93,7 @@ export const AddressSearchField = ({
           />
 
           <button
+            type="button"
             aria-label="주소 검색"
             onClick={handleSearch}
             disabled={!isScriptReady}

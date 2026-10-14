@@ -27,7 +27,10 @@ import {
   validateMeetingForm,
   MeetingFormErrors,
 } from "@/lib/validators/meetingFormValidators";
-import type { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
+import type {
+  MeetingUpdateRequest,
+  MeetingFormState,
+} from "@/features/meetingDetail/types/meetingDetail";
 
 interface EditMeetingModalProps {
   meetingId: number;
@@ -43,25 +46,7 @@ const EDIT_TABS = [
 
 type EditTabValue = (typeof EDIT_TABS)[number]["value"];
 
-// 폼 내부에서 쓰는 상태
-interface EditMeetingFormState {
-  name: string;
-  type: string;
-  region: string;
-  address: string;
-  detailAddress: string;
-  latitude: number;
-  longitude: number;
-  date: string; // "2027-02-10"
-  time: string; // "17:30"
-  registrationEndDate: string;
-  registrationEndTime: string;
-  capacity: number;
-  image: string; // 미리보기/업로드된 URL
-  description: string;
-}
-
-const INITIAL_FORM: EditMeetingFormState = {
+const INITIAL_FORM: MeetingFormState = {
   name: "",
   type: "",
   region: "",
@@ -89,7 +74,7 @@ const EditMeetingModal = ({
 
   const [errors, setErrors] = useState<MeetingFormErrors>({});
   const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
-  const [form, setForm] = useState<EditMeetingFormState>(INITIAL_FORM);
+  const [form, setForm] = useState<MeetingFormState>(INITIAL_FORM);
   const [initializedMeetingId, setInitializedMeetingId] = useState<
     number | null
   >(null);
@@ -131,9 +116,9 @@ const EditMeetingModal = ({
     setInitializedMeetingId(meeting.id);
   }
 
-  const handleField = <K extends keyof EditMeetingFormState>(
+  const handleField = <K extends keyof MeetingFormState>(
     field: K,
-    value: EditMeetingFormState[K],
+    value: MeetingFormState[K],
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -209,6 +194,27 @@ const EditMeetingModal = ({
     revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
     handleField("image", "");
   };
+
+  //
+  // const handleSelectAddress = ({ region, address, latitude, longitude }) => {
+  //   if (latitude === null || longitude === null) {
+  //     showToast({
+  //       kind: "error",
+  //       message: "주소의 위치를 확인할 수 없습니다. 다른 주소를 선택해주세요.",
+  //     });
+  //     return;
+  //   }
+
+  //   setIsAddressChanged(true);
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     region,
+  //     address,
+  //     detailAddress: "",
+  //     latitude: latitude ?? prev.latitude,
+  //     longitude: longitude ?? prev.longitude,
+  //   }));
+  // };
 
   const handleClose = () => {
     revokePendingBlob();

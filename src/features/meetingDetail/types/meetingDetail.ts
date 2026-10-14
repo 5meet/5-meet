@@ -148,6 +148,24 @@ export interface MeetingUpdateRequest {
   description: string;
 }
 
+// 폼 내부에서 사용
+export interface MeetingFormState {
+  name: string;
+  type: string;
+  region: string;
+  address: string;
+  detailAddress: string;
+  latitude: number;
+  longitude: number;
+  date: string; // "2027-02-10"
+  time: string; // "17:30"
+  registrationEndDate: string;
+  registrationEndTime: string;
+  capacity: number;
+  image: string;
+  description: string;
+}
+
 //-----------------------------------------------------------------
 
 // 모임 상태
