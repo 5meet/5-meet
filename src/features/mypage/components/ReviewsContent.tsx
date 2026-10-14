@@ -11,7 +11,7 @@ const reviewMeetings = [
   {
     id: 1,
     imageUrl: "/images/meeting-1.jpg",
-    title: "힐링 오피스 스트레칭",
+    title: "주말 스피킹 영어 스터디",
     location: "강남구",
     date: "11월 17일",
     time: "17:30",
@@ -22,7 +22,7 @@ const reviewMeetings = [
   {
     id: 2,
     imageUrl: "/images/meeting-2.jpg",
-    title: "작은 독서 습관 만들기",
+    title: "취업 준비 스터디 만들기",
     location: "중구",
     date: "11월 17일",
     time: "17:30",
@@ -37,55 +37,55 @@ const writtenReviews: Review[] = [
     id: 1,
     imageUrl: "",
     rating: 5,
-    authorName: "럽인조을",
+    authorName: "홍길동",
     createdAt: "2024.01.25",
     content:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    groupName: "힐링 오피스 스트레칭",
+      "편하게 소통하며 다양한 경험을 나눌 수 있어서 좋았습니다. 같이 활동하는 분위기도 너무 좋아요.",
+    groupName: "주말 스피킹 영어 스터디",
     category: "취미/여가",
   },
   {
     id: 2,
     imageUrl: "",
     rating: 5,
-    authorName: "럽인조을",
+    authorName: "홍길동",
     createdAt: "2024.01.25",
     content:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    groupName: "힐링 오피스 스트레칭",
+      "편하게 소통하며 다양한 경험을 나눌 수 있어서 좋았습니다. 같이 활동하는 분위기도 너무 좋아요.",
+    groupName: "주말 스피킹 영어 스터디",
     category: "취미/여가",
   },
   {
     id: 3,
     imageUrl: "",
     rating: 5,
-    authorName: "럽인조을",
+    authorName: "홍길동",
     createdAt: "2024.01.25",
     content:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    groupName: "힐링 오피스 스트레칭",
+      "편하게 소통하며 다양한 경험을 나눌 수 있어서 좋았습니다. 같이 활동하는 분위기도 너무 좋아요.",
+    groupName: "주말 스피킹 영어 스터디",
     category: "취미/여가",
   },
   {
     id: 4,
     imageUrl: "",
     rating: 5,
-    authorName: "럽인조을",
+    authorName: "홍길동",
     createdAt: "2024.01.25",
     content:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    groupName: "힐링 오피스 스트레칭",
+      "편하게 소통하며 다양한 경험을 나눌 수 있어서 좋았습니다. 같이 활동하는 분위기도 너무 좋아요.",
+    groupName: "주말 스피킹 영어 스터디",
     category: "취미/여가",
   },
   {
     id: 5,
     imageUrl: "",
     rating: 4,
-    authorName: "럽인조을",
+    authorName: "홍길동",
     createdAt: "2024.01.25",
     content:
-      "편안하고 따뜻한 분위기라서 즐겁게 참여할 수 있었습니다.",
-    groupName: "힐링 오피스 스트레칭",
+      "친절하고 편안한 분위기라서 즐겁게 참여할 수 있었습니다.",
+    groupName: "주말 스피킹 영어 스터디",
     category: "취미/여가",
   },
 ];
@@ -169,11 +169,8 @@ export default function ReviewsContent() {
                 bg-white
                 px-5
                 py-2
-
                 sm:px-6
-
                 md:px-8
-
                 [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-thumb]:rounded-full
