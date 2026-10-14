@@ -11,6 +11,8 @@ import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import ReviewWriteModal from "./ReviewWriteModal";
 
 export interface ReviewMeetingCardProps {
+  teamId: string;
+  meetingId: number;
   imageUrl: string;
   title: string;
   location: string;
@@ -23,6 +25,8 @@ export interface ReviewMeetingCardProps {
 }
 
 export default function ReviewMeetingCard({
+  teamId,
+  meetingId,
   imageUrl,
   title,
   location,
@@ -33,11 +37,10 @@ export default function ReviewMeetingCard({
   isFavorite = false,
   rating,
 }: ReviewMeetingCardProps) {
-  const [isLiked, setIsLiked] =
-    useState(isFavorite);
+  const [isLiked, setIsLiked] = useState(isFavorite);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  const [isReviewModalOpen, setIsReviewModalOpen] =
-    useState(false);
+  const hasImage = typeof imageUrl === "string" && imageUrl.trim() !== "";
 
   const handleFavoriteClick = () => {
     setIsLiked((prev) => !prev);
@@ -47,101 +50,54 @@ export default function ReviewMeetingCard({
     setIsReviewModalOpen(true);
   };
 
-  const handleReviewSubmit = (
-    reviewRating: number,
-    content: string,
-  ) => {
-    console.log("리뷰 등록", {
-      rating: reviewRating,
-      content,
-    });
-
-    setIsReviewModalOpen(false);
-  };
-
   return (
     <>
       <article
         className="
-          flex
-          w-full
-          min-w-0
-          flex-col
-          overflow-hidden
-          rounded-[24px]
-          border
-          border-[#eeeeee]
-          bg-white
-          p-5
-
-          md:h-[210px]
-          md:flex-row
-          md:gap-6
-          md:p-4
+          flex w-full min-w-0 flex-col overflow-hidden
+          rounded-[24px] border border-[#eeeeee] bg-white p-5
+          md:h-[210px] md:flex-row md:gap-6 md:p-4
         "
       >
         <div
           className="
-            relative
-            h-[220px]
-            w-full
-            shrink-0
-            overflow-hidden
-            rounded-[18px]
-            bg-[#eeeae8]
-
+            relative flex h-[220px] w-full shrink-0 items-center
+            justify-center overflow-hidden rounded-[18px] bg-[#eeeae8]
             sm:h-[250px]
-
-            md:h-[178px]
-            md:w-[178px]
-            md:rounded-[18px]
+            md:h-[178px] md:w-[178px]
           "
         >
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            sizes="
-              (max-width: 767px) 100vw,
-              178px
-            "
-            className="object-cover"
-          />
+          {hasImage ? (
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              sizes="(max-width: 767px) 100vw, 178px"
+              className="object-cover"
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center text-sm text-[#999999]"
+              aria-label="이미지가 없습니다"
+            >
+              이미지 없음
+            </div>
+          )}
         </div>
 
         <div
           className="
-            flex
-            min-w-0
-            flex-1
-            flex-col
-            pt-5
-
-            md:h-full
-            md:pt-0
+            flex min-w-0 flex-1 flex-col pt-5
+            md:h-full md:pt-0
           "
         >
-          <div
-            className="
-              flex
-              min-w-0
-              items-start
-              justify-between
-              gap-4
-            "
-          >
+          <div className="flex min-w-0 items-start justify-between gap-4">
             <div className="min-w-0">
               <h3
                 className="
-                  truncate
-                  text-[18px]
-                  font-bold
-                  tracking-[-0.2px]
+                  truncate text-[18px] font-bold tracking-[-0.2px]
                   text-[#20242d]
-
-                  sm:text-[19px]
-
-                  md:text-[18px]
+                  sm:text-[19px] md:text-[18px]
                 "
               >
                 {title}
@@ -149,10 +105,7 @@ export default function ReviewMeetingCard({
 
               {rating !== undefined && (
                 <div className="mt-2">
-                  <HeartRating
-                    rating={rating}
-                    size="md"
-                  />
+                  <HeartRating rating={rating} size="md" />
                 </div>
               )}
             </div>
@@ -165,31 +118,17 @@ export default function ReviewMeetingCard({
 
           <div
             className="
-              mt-7
-              flex
-              flex-col
-              gap-5
-
-              md:mt-auto
-              md:flex-row
-              md:items-end
-              md:justify-between
-              md:gap-5
+              mt-7 flex flex-col gap-5
+              md:mt-auto md:flex-row md:items-end
+              md:justify-between md:gap-5
             "
           >
             <div className="min-w-0">
               <div
                 className="
-                  flex
-                  items-center
-                  gap-1.5
-                  text-[14px]
-                  font-medium
-                  text-[#20242d]
-
-                  sm:text-[15px]
-
-                  md:text-[14px]
+                  flex items-center gap-1.5 text-[14px]
+                  font-medium text-[#20242d]
+                  sm:text-[15px] md:text-[14px]
                 "
               >
                 <Users
@@ -206,39 +145,16 @@ export default function ReviewMeetingCard({
 
               <div
                 className="
-                  mt-2
-                  flex
-                  flex-wrap
-                  items-center
-                  gap-x-2
-                  gap-y-1
-                  text-[13px]
-                  text-[#888b90]
-
-                  sm:text-[14px]
-
-                  md:text-[13px]
+                  mt-2 flex flex-wrap items-center gap-x-2 gap-y-1
+                  text-[13px] text-[#888b90]
+                  sm:text-[14px] md:text-[13px]
                 "
               >
-                <span>
-                  위치 {location}
-                </span>
-
-                <span className="text-[#d2d2d2]">
-                  |
-                </span>
-
-                <span>
-                  날짜 {date}
-                </span>
-
-                <span className="text-[#d2d2d2]">
-                  |
-                </span>
-
-                <span>
-                  시간 {time}
-                </span>
+                <span>위치 {location}</span>
+                <span className="text-[#d2d2d2]">|</span>
+                <span>날짜 {date}</span>
+                <span className="text-[#d2d2d2]">|</span>
+                <span>시간 {time}</span>
               </div>
             </div>
 
@@ -248,20 +164,10 @@ export default function ReviewMeetingCard({
               variant="primary"
               onClick={handleReviewClick}
               className="
-                h-12
-                w-full
-                shrink-0
-                rounded-[9px]
-                px-7
-                text-[15px]
-                font-semibold
-
-                sm:w-auto
-                sm:px-9
-
-                md:h-[44px]
-                md:px-8
-                md:text-[14px]
+                h-12 w-full shrink-0 rounded-[9px] px-7
+                text-[15px] font-semibold
+                sm:w-auto sm:px-9
+                md:h-[44px] md:px-8 md:text-[14px]
               "
             >
               리뷰 작성하기
@@ -272,10 +178,9 @@ export default function ReviewMeetingCard({
 
       <ReviewWriteModal
         isOpen={isReviewModalOpen}
-        onClose={() =>
-          setIsReviewModalOpen(false)
-        }
-        onSubmit={handleReviewSubmit}
+        onClose={() => setIsReviewModalOpen(false)}
+        teamId={teamId}
+        meetingId={meetingId}
       />
     </>
   );

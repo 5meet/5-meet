@@ -1,174 +1,144 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
-import { ReviewCard } from "@/components/ui/ReviewCard/ReviewCard";
+import ReviewCard from "@/components/ui/ReviewCard/ReviewCard";
 
-import { useMyReviewsQuery } from "@/features/mypage/hooks/useMyReviewsQuery";
-
-const REVIEW_SIZE = 10;
+import { deleteReview } from "@/features/reviews/api/deleteReview";
+import { updateReview } from "@/features/reviews/api/updateReview";
+import type { ReviewApiItem } from "@/features/reviews/types";
 
 export default function WrittenReviews() {
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [reviews, setReviews] = useState<ReviewApiItem[]>([]);
+  const [processingIds, setProcessingIds] = useState<number[]>([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const {
-    data,
-    isLoading,
-    isError,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useMyReviewsQuery({
-    sortBy: "createdAt",
-    sortOrder: "desc",
-    size: REVIEW_SIZE,
-  });
+  const fetchReviews = useCallback(async () => {
+    setIsLoading(true);
+    setErrorMessage("");
 
-  const reviews =
-    data?.pages.flatMap((page) => page.data) ?? [];
+    try {
+      const response = await fetch("/api/mypage/reviews", {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result?.message ?? "작성한 리뷰를 불러오지 못했습니다.",
+        );
+      }
+
+      setReviews(result.data ?? []);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "작성한 리뷰를 불러오지 못했습니다.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const target = loadMoreRef.current;
+    void fetchReviews();
+  }, [fetchReviews]);
 
-    if (
-      !target ||
-      !hasNextPage ||
-      isFetchingNextPage
-    ) {
-      return;
+  const handleEdit = async (review: ReviewApiItem): Promise<void> => {
+    if (processingIds.includes(review.id)) return;
+
+    setErrorMessage("");
+    setProcessingIds((prev) => [...prev, review.id]);
+
+    try {
+      const updatedReview = await updateReview(review.teamId, review.id, {
+        score: review.score,
+        comment: review.comment,
+      });
+
+      setReviews((prev) =>
+        prev.map((item) =>
+          item.id === updatedReview.id ? updatedReview : item,
+        ),
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "리뷰 수정에 실패했습니다.";
+
+      setErrorMessage(message);
+      throw error;
+    } finally {
+      setProcessingIds((prev) => prev.filter((id) => id !== review.id));
     }
+  };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const firstEntry = entries[0];
+  const handleDelete = async (review: ReviewApiItem): Promise<void> => {
+    if (processingIds.includes(review.id)) return;
 
-        if (
-          firstEntry?.isIntersecting &&
-          hasNextPage &&
-          !isFetchingNextPage
-        ) {
-          void fetchNextPage();
-        }
-      },
-      {
-        rootMargin: "200px",
-      },
-    );
+    const confirmed = window.confirm("이 리뷰를 삭제하시겠어요?");
+    if (!confirmed) return;
 
-    observer.observe(target);
+    setErrorMessage("");
+    setProcessingIds((prev) => [...prev, review.id]);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  ]);
+    try {
+      await deleteReview(review.teamId, review.id);
+
+      setReviews((prev) => prev.filter((item) => item.id !== review.id));
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "리뷰 삭제에 실패했습니다.",
+      );
+    } finally {
+      setProcessingIds((prev) => prev.filter((id) => id !== review.id));
+    }
+  };
 
   if (isLoading) {
-    return (
-      <div
-        className="
-          flex
-          h-[780px]
-          w-full
-          items-center
-          justify-center
-          rounded-[24px]
-          bg-white
-        "
-      >
-        <p className="text-sm text-gray-500">
-          작성한 리뷰를 불러오는 중이에요.
-        </p>
-      </div>
-    );
+    return <p className="py-8 text-center text-gray-500">불러오는 중...</p>;
   }
 
-  if (isError) {
+  if (errorMessage && reviews.length === 0) {
     return (
-      <div
-        className="
-          flex
-          h-[780px]
-          w-full
-          items-center
-          justify-center
-          rounded-[24px]
-          bg-white
-        "
-      >
-        <p className="text-sm text-gray-500">
-          작성한 리뷰를 불러오지 못했어요.
-        </p>
-      </div>
+      <p role="alert" className="py-8 text-center text-red-500">
+        {errorMessage}
+      </p>
     );
   }
 
   if (reviews.length === 0) {
-    return (
-      <EmptyState message="작성한 리뷰가 없어요." />
-    );
+    return <EmptyState message="작성한 리뷰가 없어요." />;
   }
 
   return (
-    <div
-      className="
-        h-[780px]
-        w-full
-        overflow-y-auto
-        rounded-[24px]
-        bg-white
-        px-5
-        py-2
+    <div className="h-[780px] w-full overflow-y-auto rounded-[24px] bg-white px-5 py-6 sm:px-6 md:px-8">
+      {errorMessage && (
+        <p role="alert" className="mb-4 text-sm text-red-500">
+          {errorMessage}
+        </p>
+      )}
 
-        sm:px-6
-
-        md:px-8
-
-        [&::-webkit-scrollbar]:w-2
-        [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-thumb]:bg-gray-300
-        [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
-      "
-    >
-      {reviews.map((review) => (
-        <ReviewCard
-          key={review.id}
-          review={{
-            id: review.id,
-            teamId: "5-meet",
-            meetingId: review.meetingId,
-            userId: 0,
-            score: review.score,
-            comment: review.comment,
-            createdAt: review.createdAt,
-            updatedAt: review.createdAt,
-            user: undefined,
-            meeting: {
-              id: review.meeting.id,
-              name: review.meeting.name,
-              type: review.meeting.type,
-              region: "",
-              image: review.meeting.image,
-              dateTime: review.meeting.dateTime,
-            },
-          }}
-        />
-      ))}
-
-      <div
-        ref={loadMoreRef}
-        className="flex min-h-10 items-center justify-center"
-      >
-        {isFetchingNextPage && (
-          <p className="text-sm text-gray-400">
-            리뷰를 더 불러오는 중이에요.
-          </p>
-        )}
+      <div className="flex flex-col gap-6">
+        {reviews.map((review) => (
+          <ReviewCard
+            key={review.id}
+            review={review}
+            showEditButton
+            showDeleteAction
+            isProcessing={processingIds.includes(review.id)}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ))}
       </div>
     </div>
   );
