@@ -79,7 +79,7 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
       )}
 
       {props.status === "success" && props.meetings.length > 0 && (
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul className="grid gap-4">
           {props.meetings.map((meeting) => (
             <li key={meeting.id} className="min-w-0">
               <DetailCard
@@ -95,7 +95,8 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                 isConfirmed={meeting.isConfirmed}
               />
             </li>
-       </ul>
+          ))}
+        </ul>
       )}
     </section>
   );
