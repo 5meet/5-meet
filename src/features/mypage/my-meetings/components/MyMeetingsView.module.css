@@ -1,0 +1,25 @@
+/* The parent mypage layout owns placement and outer spacing. */
+.root {
+  container: joined-meetings / inline-size;
+  min-width: 0;
+  width: 100%;
+}
+.list {
+  display: grid;
+  gap: 16px;
+}
+.skeleton {
+  height: 236px;
+  border-radius: 32px;
+}
+@container joined-meetings (min-width: 900px) {
+  .list {
+    gap: 24px;
+  }
+}
+@container joined-meetings (max-width: 639px) {
+  .skeleton {
+    height: 390px;
+    border-radius: 24px;
+  }
+}

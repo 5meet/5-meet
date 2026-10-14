@@ -286,13 +286,33 @@ try {
             { Large: 958, Medium: 696, Small: 343 }[entry.name],
           );
           assert.equal(box.height, entry.name === "Small" ? 390 : 236);
-          await p
-            .getByRole("article")
-            .screenshot({
-              path: path.join(output, `card-${entry.name.toLowerCase()}.png`),
-            });
+          await p.getByRole("article").screenshot({
+            path: path.join(output, `card-${entry.name.toLowerCase()}.png`),
+          });
           record(
             `Storybook ${entry.name} card render: ${JSON.stringify(await p.getByRole("article").boundingBox())}`,
+          );
+        }
+        if (
+          entry.title === "UI/DetailCard" &&
+          ["NarrowColumn", "ParentPadding"].includes(entry.name.replaceAll(" ", ""))
+        ) {
+          await p.getByRole("article").waitFor();
+          await p.evaluate(() => document.fonts.ready);
+          const article = p.getByRole("article");
+          const image = article.locator("div").first();
+          const box = await article.boundingBox();
+          const imageBox = await image.boundingBox();
+          assert.equal(box.width, 343);
+          assert.equal(box.height, 390);
+          assert.equal(imageBox.x, box.x);
+          assert.equal(imageBox.width, 343);
+          assert.equal(imageBox.height, 156);
+          await article.screenshot({
+            path: path.join(output, `card-${entry.name.toLowerCase()}.png`),
+          });
+          record(
+            `Desktop viewport with ${entry.name}: narrow card follows parent width without duplicate gutters`,
           );
         }
         await p.close();

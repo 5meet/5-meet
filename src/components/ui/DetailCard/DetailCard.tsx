@@ -45,78 +45,80 @@ export default function DetailCard({
         ? "이용 완료"
         : "이용 예정";
   return (
-    <article className={styles.card} aria-label={`${category} 모임`}>
-      <div className={styles.image}>
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt=""
-            fill
-            sizes="(max-width: 639px) 100vw, 188px"
-            className={styles.photo}
-            unoptimized
-          />
-        )}
-      </div>
-      <div className={styles.content}>
-        <div className={styles.heading}>
-          <div className={styles.badges}>
-            <span
-              className={`${styles.badge} ${status === "upcoming" ? styles.upcoming : styles.inactive}`}
-            >
-              {statusText}
-            </span>
-            {status === "upcoming" && (
-              <span
-                className={`${styles.badge} ${isConfirmed ? styles.confirmed : styles.waiting}`}
-              >
-                {isConfirmed ? "개설확정" : "개설대기"}
-              </span>
-            )}
-          </div>
-          <h2 className={styles.title}>
-            <Link href={`/meetings/${encodeURIComponent(String(id))}`}>
-              {title}
-            </Link>
-          </h2>
-        </div>
-        <div className={styles.bottom}>
-          <div className={styles.details}>
-            <p className={styles.participants}>
-              <Image src="/person.svg" width={16} height={16} alt="" />
-              <span>
-                <span className="sr-only">참여 인원 </span>
-                {participantCount}/{capacity}
-              </span>
-            </p>
-            <dl className={styles.metadata}>
-              <div>
-                <dt>위치</dt>
-                <dd>{location}</dd>
-              </div>
-              <div>
-                <dt>날짜</dt>
-                <dd>{date}</dd>
-              </div>
-              <div>
-                <dt>시간</dt>
-                <dd>{time || "미정"}</dd>
-              </div>
-            </dl>
-          </div>
-          {actionLabel && onAction && (
-            <button
-              type="button"
-              onClick={onAction}
-              disabled={actionDisabled || actionPending}
-              aria-busy={actionPending}
-              className={styles.action}
-            >
-              {actionPending ? "처리 중..." : actionLabel}
-            </button>
+    <div className={styles.frame}>
+      <article className={styles.card} aria-label={`${category} 모임`}>
+        <div className={styles.image}>
+          {imageUrl && (
+            <Image
+              src={imageUrl}
+              alt=""
+              fill
+              sizes="(max-width: 639px) 100vw, 188px"
+              className={styles.photo}
+              unoptimized
+            />
           )}
         </div>
-      </div>
-    </article>
+        <div className={styles.content}>
+          <div className={styles.heading}>
+            <div className={styles.badges}>
+              <span
+                className={`${styles.badge} ${status === "upcoming" ? styles.upcoming : styles.inactive}`}
+              >
+                {statusText}
+              </span>
+              {status === "upcoming" && (
+                <span
+                  className={`${styles.badge} ${isConfirmed ? styles.confirmed : styles.waiting}`}
+                >
+                  {isConfirmed ? "개설확정" : "개설대기"}
+                </span>
+              )}
+            </div>
+            <h2 className={styles.title}>
+              <Link href={`/meetings/${encodeURIComponent(String(id))}`}>
+                {title}
+              </Link>
+            </h2>
+          </div>
+          <div className={styles.bottom}>
+            <div className={styles.details}>
+              <p className={styles.participants}>
+                <Image src="/person.svg" width={16} height={16} alt="" />
+                <span>
+                  <span className="sr-only">참여 인원 </span>
+                  {participantCount}/{capacity}
+                </span>
+              </p>
+              <dl className={styles.metadata}>
+                <div>
+                  <dt>위치</dt>
+                  <dd>{location}</dd>
+                </div>
+                <div>
+                  <dt>날짜</dt>
+                  <dd>{date}</dd>
+                </div>
+                <div>
+                  <dt>시간</dt>
+                  <dd>{time || "미정"}</dd>
+                </div>
+              </dl>
+            </div>
+            {actionLabel && onAction && (
+              <button
+                type="button"
+                onClick={onAction}
+                disabled={actionDisabled || actionPending}
+                aria-busy={actionPending}
+                className={styles.action}
+              >
+                {actionPending ? "처리 중..." : actionLabel}
+              </button>
+            )}
+          </div>
+        </div>
+      </article>
+    </div>
   );
 }

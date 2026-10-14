@@ -1,4 +1,5 @@
 import Link from "next/link";
+import styles from "./MyMeetingsView.module.css";
 import DetailCard from "@/components/ui/DetailCard/DetailCard";
 
 export interface MyMeetingSummary {
@@ -29,22 +30,18 @@ type MyMeetingsViewProps =
 
 export default function MyMeetingsView(props: MyMeetingsViewProps) {
   return (
-    <section aria-labelledby="my-meetings-title" className="w-full">
+    <section aria-labelledby="my-meetings-title" className={styles.root}>
       <h1 id="my-meetings-title" className="sr-only">
         나의 모임
       </h1>
 
       {props.status === "loading" && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="grid gap-4 min-[1200px]:gap-6"
-        >
+        <div role="status" aria-live="polite" className={styles.list}>
           {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
               aria-hidden="true"
-              className="h-40 animate-pulse rounded-3xl bg-gray-100"
+              className={`${styles.skeleton} animate-pulse bg-gray-100`}
             />
           ))}
           <span className="sr-only">모임 목록을 불러오는 중입니다.</span>
@@ -92,7 +89,7 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
       )}
 
       {props.status === "success" && props.meetings.length > 0 && (
-        <ul className="grid gap-4 min-[1200px]:gap-6">
+        <ul className={styles.list}>
           {props.meetings.map((meeting) => (
             <li key={meeting.id} className="min-w-0">
               <DetailCard

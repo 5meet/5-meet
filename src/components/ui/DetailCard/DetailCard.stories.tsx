@@ -75,3 +75,22 @@ export const LongTitle: Story = {
       "아주 긴 제목과 다양한 위치를 가진 모임에서도 화면을 넘치지 않도록 검증하는 테스트 모임",
   },
 };
+
+export const NarrowColumn: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ width: 343 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const ParentPadding: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ width: 391, padding: 24 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
