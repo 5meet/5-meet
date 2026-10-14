@@ -29,6 +29,8 @@ function toSummary(meeting: JoinedMeeting): MyMeetingSummary {
     participantCount: meeting.participantCount,
     capacity: meeting.capacity,
     isCompleted: meeting.isCompleted,
+    isConfirmed: Boolean(meeting.confirmedAt),
+    isCanceled: Boolean(meeting.canceledAt),
   };
 }
 
