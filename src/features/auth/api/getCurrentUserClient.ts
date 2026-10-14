@@ -2,7 +2,10 @@ import type { User } from "@/features/auth/type";
 
 // 유저 정보 요청 api
 export async function getCurrentUserClient(): Promise<User | null> {
-  const response = await fetch("/api/auth/me");
+  const response = await fetch("/api/auth/me", {
+    credentials: "same-origin",
+    cache: "no-store",
+  });
 
   // 비로그인 상태
   if (response.status === 401) {
