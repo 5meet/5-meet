@@ -27,6 +27,7 @@ function toSummary(meeting: JoinedMeeting, userId?: number): MyMeetingSummary {
     name: meeting.name,
     region: meeting.region,
     category: meeting.type,
+    imageUrl: meeting.image,
     dateLabel: isValid ? dateFormatter.format(date) : "일정 미정",
     timeLabel: isValid ? timeFormatter.format(date) : "",
     participantCount: meeting.participantCount,
