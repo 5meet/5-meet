@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./DetailCard.module.css";
+import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 
 export interface DetailCardProps {
   id: number;
@@ -18,6 +19,10 @@ export interface DetailCardProps {
   actionDisabled?: boolean;
   actionPending?: boolean;
   onAction?: () => void;
+  actionHref?: string;
+  isFavorited?: boolean;
+  favoritePending?: boolean;
+  onFavorite?: () => void;
 }
 
 /** Presentation only: network requests and permissions belong to the caller. */
@@ -37,6 +42,10 @@ export default function DetailCard({
   actionDisabled = false,
   actionPending = false,
   onAction,
+  actionHref,
+  isFavorited = false,
+  favoritePending = false,
+  onFavorite,
 }: DetailCardProps) {
   const statusText =
     status === "canceled"
@@ -47,6 +56,15 @@ export default function DetailCard({
   return (
     <div className={styles.frame}>
       <article className={styles.card} aria-label={`${category} 모임`}>
+        {onFavorite && (
+          <fieldset
+            className={styles.favorite}
+            disabled={favoritePending}
+            aria-busy={favoritePending}
+          >
+            <LikeButton size="lg" isLiked={isFavorited} onToggle={onFavorite} />
+          </fieldset>
+        )}
         <div className={styles.image}>
           {imageUrl && (
             <Image
@@ -71,6 +89,9 @@ export default function DetailCard({
                 <span
                   className={`${styles.badge} ${isConfirmed ? styles.confirmed : styles.waiting}`}
                 >
+                  {isConfirmed && (
+                    <Image src="/ic_check.svg" width={24} height={24} alt="" />
+                  )}
                   {isConfirmed ? "개설확정" : "개설대기"}
                 </span>
               )}
@@ -115,6 +136,14 @@ export default function DetailCard({
               >
                 {actionPending ? "처리 중..." : actionLabel}
               </button>
+            )}
+            {actionLabel && actionHref && !onAction && (
+              <Link
+                href={actionHref}
+                className={`${styles.action} ${styles.reviewAction}`}
+              >
+                {actionLabel}
+              </Link>
             )}
           </div>
         </div>

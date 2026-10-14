@@ -8,6 +8,19 @@
   display: grid;
   gap: 16px;
 }
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-top: 216px;
+  color: var(--color-gray-500);
+  font-family: "DetailCardPretendard", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+}
 .skeleton {
   height: 236px;
   border-radius: 32px;
@@ -18,6 +31,10 @@
   }
 }
 @container joined-meetings (max-width: 639px) {
+  .empty {
+    padding-top: 120px;
+    gap: 16px;
+  }
   .skeleton {
     height: 390px;
     border-radius: 24px;

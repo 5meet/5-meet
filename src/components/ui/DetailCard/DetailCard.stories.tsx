@@ -26,6 +26,8 @@ const meta = {
     isConfirmed: true,
     actionLabel: "예약 취소하기",
     onAction: fn(),
+    onFavorite: fn(),
+    isFavorited: true,
     imageUrl: "/meetings-hero.jpg",
   },
 } satisfies Meta<typeof DetailCard>;
@@ -61,7 +63,13 @@ export const Small: Story = {
   ],
 };
 export const Completed: Story = {
-  args: { status: "completed", isConfirmed: false, actionLabel: undefined },
+  args: {
+    status: "completed",
+    isConfirmed: false,
+    actionLabel: "리뷰 작성하기",
+    actionHref: "/mypage/reviews",
+    onAction: undefined,
+  },
 };
 export const Canceled: Story = {
   args: { status: "canceled", isConfirmed: false, actionLabel: undefined },

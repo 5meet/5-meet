@@ -28,6 +28,7 @@ export const WithMeetings: Story = {
   args: {
     status: "success",
     onCancel: fn(),
+    onFavorite: fn(),
     meetings: [
       {
         id: 1,
@@ -40,6 +41,8 @@ export const WithMeetings: Story = {
         capacity: 8,
         isCompleted: false,
         canCancel: true,
+        isFavorited: true,
+        isConfirmed: true,
         imageUrl: "/meetings-hero.jpg",
       },
       {
@@ -52,6 +55,7 @@ export const WithMeetings: Story = {
         participantCount: 6,
         capacity: 10,
         isCompleted: true,
+        canReview: true,
       },
     ],
   },

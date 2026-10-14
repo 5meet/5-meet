@@ -1,6 +1,6 @@
-import Link from "next/link";
 import styles from "./MyMeetingsView.module.css";
 import DetailCard from "@/components/ui/DetailCard/DetailCard";
+import Image from "next/image";
 
 export interface MyMeetingSummary {
   id: number;
@@ -16,6 +16,8 @@ export interface MyMeetingSummary {
   isConfirmed?: boolean;
   isCanceled?: boolean;
   canCancel?: boolean;
+  isFavorited?: boolean;
+  canReview?: boolean;
 }
 
 type MyMeetingsViewProps =
@@ -26,6 +28,8 @@ type MyMeetingsViewProps =
       meetings: MyMeetingSummary[];
       onCancel?: (meeting: MyMeetingSummary) => void;
       cancelPendingId?: number | null;
+      onFavorite?: (meeting: MyMeetingSummary) => void;
+      favoritePendingId?: number | null;
     };
 
 export default function MyMeetingsView(props: MyMeetingsViewProps) {
@@ -72,19 +76,9 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
       )}
 
       {props.status === "success" && props.meetings.length === 0 && (
-        <div className="rounded-3xl bg-white px-6 py-12 text-center">
-          <p className="text-base font-semibold text-gray-800">
-            아직 참여한 모임이 없어요.
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            관심 있는 모임을 찾아 참여해 보세요.
-          </p>
-          <Link
-            href="/meetings"
-            className="mt-5 inline-flex rounded-xl bg-primary-500 px-5 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
-          >
-            모임 찾아보기
-          </Link>
+        <div className={styles.empty}>
+          <Image src="/review_empty.svg" width={121} height={72} alt="" />
+          <p>아직 신청한 모임이 없어요</p>
         </div>
       )}
 
@@ -110,11 +104,33 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                       : "upcoming"
                 }
                 isConfirmed={meeting.isConfirmed}
-                actionLabel={meeting.canCancel ? "예약 취소하기" : undefined}
+                actionLabel={
+                  meeting.canCancel
+                    ? "예약 취소하기"
+                    : meeting.canReview
+                      ? "리뷰 작성하기"
+                      : undefined
+                }
+                actionHref={meeting.canReview ? "/mypage/reviews" : undefined}
+                isFavorited={meeting.isFavorited}
+                favoritePending={
+                  props.favoritePendingId != null ||
+                  props.cancelPendingId != null
+                }
+                onFavorite={
+                  props.onFavorite
+                    ? () => props.onFavorite?.(meeting)
+                    : undefined
+                }
                 actionPending={props.cancelPendingId === meeting.id}
-                actionDisabled={props.cancelPendingId != null}
+                actionDisabled={
+                  props.cancelPendingId != null ||
+                  props.favoritePendingId != null
+                }
                 onAction={
-                  props.onCancel ? () => props.onCancel?.(meeting) : undefined
+                  meeting.canCancel && props.onCancel
+                    ? () => props.onCancel?.(meeting)
+                    : undefined
                 }
               />
             </li>

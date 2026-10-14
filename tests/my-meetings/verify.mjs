@@ -100,6 +100,25 @@ try {
       401,
     );
     record("Unauthenticated GET and DELETE return 401");
+    for (const method of ["POST", "DELETE"]) {
+      assert.equal(
+        (
+          await fetch(`${base}/api/mypage/joined-meetings/1/favorite`, {
+            method,
+          })
+        ).status,
+        401,
+      );
+      assert.equal(
+        (
+          await fetch(`${base}/api/mypage/joined-meetings/0/favorite`, {
+            method,
+          })
+        ).status,
+        400,
+      );
+    }
+    record("Favorite BFF enforces authentication and valid meeting IDs");
     for (const size of ["0", "101", "x"])
       assert.equal(
         (await fetch(`${base}/api/mypage/joined-meetings?size=${size}`)).status,
@@ -133,6 +152,40 @@ try {
     record(
       "Authenticated list, cursor pagination and host/completed/canceled permissions",
     );
+    assert.equal(
+      await page
+        .getByRole("link", { name: "리뷰 작성하기" })
+        .getAttribute("href"),
+      "/mypage/reviews",
+    );
+    record("Completed unreviewed meeting links to existing review screen");
+    const like = page
+      .getByRole("button", { name: "좋아요", exact: true })
+      .first();
+    await like.click();
+    await page.locator('fieldset[aria-busy="true"]').first().waitFor();
+    assert(await like.isDisabled());
+    await page
+      .getByRole("button", { name: "좋아요 취소", exact: true })
+      .waitFor();
+    await page.reload();
+    await page
+      .getByRole("button", { name: "좋아요 취소", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "좋아요 취소", exact: true })
+      .waitFor({ state: "detached" });
+    const favoriteRequests = (
+      await (await fetch(`${upstream}/__qa/state`)).json()
+    ).requests.filter((r) => r.path.endsWith("/favorites"));
+    assert.deepEqual(
+      favoriteRequests.map((r) => r.method),
+      ["POST", "DELETE"],
+    );
+    assert(favoriteRequests.every((r) => r.authenticated));
+    record(
+      "Favorite add/removal persists across reload with authenticated requests and pending lock",
+    );
     page.once("dialog", (d) => d.dismiss());
     await page.getByRole("button", { name: "예약 취소하기" }).click();
     assert.equal(
@@ -149,7 +202,7 @@ try {
       .waitFor({ state: "detached" });
     assert.equal(
       (await (await fetch(`${upstream}/__qa/state`)).json()).requests.filter(
-        (r) => r.method === "DELETE",
+        (r) => r.method === "DELETE" && r.path.endsWith("/join"),
       ).length,
       1,
     );
@@ -190,8 +243,45 @@ try {
     record("Next-page failure retains existing list and offers retry");
     await context.close();
     ({ page, context } = await pageFor("empty"));
-    await page.getByText("아직 참여한 모임이 없어요.").waitFor();
+    await page.getByText("아직 신청한 모임이 없어요").waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    await page
+      .locator('section[aria-labelledby="my-meetings-title"]')
+      .screenshot({ path: path.join(output, "empty-state.png") });
     record("Empty state");
+    await context.close();
+    ({ page, context } = await pageFor("favorite-error"));
+    await page
+      .getByRole("button", { name: "좋아요", exact: true })
+      .first()
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "찜 변경 테스트 오류" })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "좋아요 취소", exact: true })
+        .count(),
+      0,
+    );
+    record("Favorite failure retains server state and shows error");
+    await context.close();
+    ({ page, context } = await pageFor("reviewed"));
+    await page.getByRole("article").nth(1).waitFor();
+    assert.equal(
+      await page.getByRole("link", { name: "리뷰 작성하기" }).count(),
+      0,
+    );
+    record("Already reviewed meetings do not offer review action");
+    await context.close();
+    ({ page, context } = await pageFor("success"));
+    await page.getByRole("link", { name: "리뷰 작성하기" }).click();
+    await page.waitForURL((url) => url.pathname === "/mypage/reviews");
+    await page.getByRole("button", { name: "리뷰 작성하기" }).first().waitFor();
+    record(
+      "Review action navigates to the existing review UI without submitting a review",
+    );
     await context.close();
     ({ page, context } = await pageFor("list-error"));
     await page
@@ -293,9 +383,18 @@ try {
             `Storybook ${entry.name} card render: ${JSON.stringify(await p.getByRole("article").boundingBox())}`,
           );
         }
+        if (entry.title === "UI/DetailCard" && entry.name === "Completed") {
+          await p.getByRole("link", { name: "리뷰 작성하기" }).waitFor();
+          await p.evaluate(() => document.fonts.ready);
+          await p
+            .getByRole("article")
+            .screenshot({ path: path.join(output, "card-completed.png") });
+        }
         if (
           entry.title === "UI/DetailCard" &&
-          ["NarrowColumn", "ParentPadding"].includes(entry.name.replaceAll(" ", ""))
+          ["NarrowColumn", "ParentPadding"].includes(
+            entry.name.replaceAll(" ", ""),
+          )
         ) {
           await p.getByRole("article").waitFor();
           await p.evaluate(() => document.fonts.ready);

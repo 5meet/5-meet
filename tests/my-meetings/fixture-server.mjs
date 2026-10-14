@@ -15,6 +15,8 @@ const meeting = (id, overrides = {}) => ({
   confirmedAt: null,
   canceledAt: null,
   isCompleted: false,
+  isReviewed: false,
+  isFavorited: false,
   ...overrides,
 });
 function reset(mode = "success") {
@@ -23,8 +25,8 @@ function reset(mode = "success") {
     deleted: [],
     requests: [],
     meetings: [
-      meeting(1),
-      meeting(2, { isCompleted: true }),
+      meeting(1, { confirmedAt: "2099-11-01" }),
+      meeting(2, { isCompleted: true, isReviewed: mode === "reviewed" }),
       meeting(3, { canceledAt: "2026-10-01" }),
       meeting(4, { hostId: 7 }),
     ],
@@ -64,6 +66,23 @@ http
         companyName: null,
         image: null,
       });
+    if (
+      /^\/meetings\/\d+\/favorites$/.test(url.pathname) &&
+      ["POST", "DELETE"].includes(req.method)
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      if (state.mode === "favorite-error")
+        return send(409, {
+          code: "QA_FAVORITE_ERROR",
+          message: "찜 변경 테스트 오류",
+        });
+      const item = state.meetings.find(
+        (m) => m.id === Number(url.pathname.split("/")[2]),
+      );
+      if (!item) return send(404, { message: "모임 없음" });
+      item.isFavorited = req.method === "POST";
+      return req.method === "DELETE" ? send(204) : send(201, { meeting: item });
+    }
     if (url.pathname === "/meetings/joined") {
       if (
         state.mode === "list-error" ||

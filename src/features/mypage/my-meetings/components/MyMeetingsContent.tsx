@@ -40,6 +40,9 @@ function toSummary(meeting: JoinedMeeting, userId?: number): MyMeetingSummary {
     isCompleted: meeting.isCompleted,
     isConfirmed: Boolean(meeting.confirmedAt),
     isCanceled: Boolean(meeting.canceledAt),
+    isFavorited: Boolean(meeting.isFavorited),
+    canReview:
+      meeting.isCompleted && !meeting.isReviewed && !meeting.canceledAt,
     canCancel:
       userId !== undefined &&
       meeting.hostId !== userId &&
@@ -56,9 +59,64 @@ export default function MyMeetingsContent() {
   const [cancelError, setCancelError] = useState<string | null>(null);
   const currentUser = useCurrentUser();
   const cancelLock = useRef(false);
+  const favoriteLock = useRef(false);
+  const [favoritePendingId, setFavoritePendingId] = useState<number | null>(
+    null,
+  );
+
+  async function toggleFavorite(meeting: MyMeetingSummary) {
+    if (favoriteLock.current || cancelLock.current) return;
+    favoriteLock.current = true;
+    setFavoritePendingId(meeting.id);
+    setCancelError(null);
+    try {
+      const response = await fetch(
+        `/api/mypage/joined-meetings/${meeting.id}/favorite`,
+        {
+          method: meeting.isFavorited ? "DELETE" : "POST",
+        },
+      );
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message ?? "찜 상태를 변경하지 못했습니다.");
+      }
+      await queryClient.cancelQueries({
+        queryKey: joinedMeetingsQueryKeys.list(),
+      });
+      queryClient.setQueryData<InfiniteData<JoinedMeetingsResponse>>(
+        joinedMeetingsQueryKeys.list(),
+        (old) =>
+          old && {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              data: page.data.map((item) =>
+                item.id === meeting.id
+                  ? { ...item, isFavorited: !meeting.isFavorited }
+                  : item,
+              ),
+            })),
+          },
+      );
+      void queryClient.invalidateQueries({ queryKey: meetingKeys.all });
+      void queryClient.invalidateQueries({ queryKey: ["favorites"] });
+    } catch (error) {
+      setCancelError(
+        error instanceof Error
+          ? error.message
+          : "찜 상태를 변경하지 못했습니다.",
+      );
+      // Conflicts may mean another screen changed the server state.
+      void query.refetch();
+    } finally {
+      favoriteLock.current = false;
+      setFavoritePendingId(null);
+    }
+  }
 
   async function cancelMeeting(meeting: MyMeetingSummary) {
-    if (!meeting.canCancel || cancelLock.current) return;
+    if (!meeting.canCancel || cancelLock.current || favoriteLock.current)
+      return;
     if (!window.confirm(`‘${meeting.name}’ 예약을 취소하시겠습니까?`)) return;
 
     cancelLock.current = true;
@@ -128,6 +186,8 @@ export default function MyMeetingsContent() {
         meetings={meetings}
         onCancel={(meeting) => void cancelMeeting(meeting)}
         cancelPendingId={cancelPendingId}
+        onFavorite={(meeting) => void toggleFavorite(meeting)}
+        favoritePendingId={favoritePendingId}
       />
       {query.isRefetchError && !query.isFetchNextPageError && (
         <button
