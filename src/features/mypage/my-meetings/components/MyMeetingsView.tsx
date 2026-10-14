@@ -13,12 +13,13 @@ export interface MyMeetingSummary {
   isCompleted: boolean;
   isConfirmed?: boolean;
   isCanceled?: boolean;
+  canCancel?: boolean;
 }
 
 type MyMeetingsViewProps =
   | { status: "loading" }
   | { status: "error"; onRetry?: () => void }
-  | { status: "success"; meetings: MyMeetingSummary[] };
+  | { status: "success"; meetings: MyMeetingSummary[]; onCancel?: (meeting: MyMeetingSummary) => void; cancelPendingId?: number | null };
 
 export default function MyMeetingsView(props: MyMeetingsViewProps) {
   return (
@@ -93,6 +94,9 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                 capacity={meeting.capacity}
                 status={meeting.isCanceled ? "canceled" : meeting.isCompleted ? "completed" : "upcoming"}
                 isConfirmed={meeting.isConfirmed}
+                actionLabel={meeting.canCancel ? "예약 취소하기" : undefined}
+                actionPending={props.cancelPendingId === meeting.id}
+                onAction={props.onCancel ? () => props.onCancel?.(meeting) : undefined}
               />
             </li>
           ))}
