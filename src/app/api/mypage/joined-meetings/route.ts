@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 import { ApiError } from "@/lib/api/ApiError";
 import type {
-  JoinedMeetingsParams,
   JoinedMeetingsResponse,
 } from "@/features/mypage/my-meetings/types";
 
@@ -42,4 +41,3 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export type { JoinedMeetingsParams };
