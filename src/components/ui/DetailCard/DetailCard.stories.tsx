@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "storybook/test";
 import DetailCard from "./DetailCard";
 
 const meta = {
   title: "UI/DetailCard",
   component: DetailCard,
-  parameters: { layout: "padded" },
+  parameters: { layout: "fullscreen" },
+  decorators: [
+    (Story) => (
+      <div className="bg-gray-50">
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     id: 1,
     title: "힐링 오피스 스트레칭",
@@ -17,14 +25,53 @@ const meta = {
     status: "upcoming",
     isConfirmed: true,
     actionLabel: "예약 취소하기",
-    actionDisabled: true,
+    onAction: fn(),
+    imageUrl: "/meetings-hero.jpg",
   },
 } satisfies Meta<typeof DetailCard>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Large: Story = { decorators: [(Story) => <div style={{ maxWidth: 958 }}><Story /></div>] };
-export const Medium: Story = { decorators: [(Story) => <div style={{ maxWidth: 696 }}><Story /></div>] };
-export const Small: Story = { decorators: [(Story) => <div style={{ maxWidth: 343 }}><Story /></div>] };
-export const Completed: Story = { args: { status: "completed", isConfirmed: false, actionLabel: undefined } };
-export const Canceled: Story = { args: { status: "canceled", isConfirmed: false, actionLabel: undefined } };
+export const Large: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: 958 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const Medium: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: 696 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const Small: Story = {
+  parameters: { viewport: { defaultViewport: "mobile1" } },
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: 343 }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+export const Completed: Story = {
+  args: { status: "completed", isConfirmed: false, actionLabel: undefined },
+};
+export const Canceled: Story = {
+  args: { status: "canceled", isConfirmed: false, actionLabel: undefined },
+};
+
+export const CancelPending: Story = { args: { actionPending: true } };
+export const CancelDisabled: Story = { args: { actionDisabled: true } };
+export const LongTitle: Story = {
+  args: {
+    title:
+      "아주 긴 제목과 다양한 위치를 가진 모임에서도 화면을 넘치지 않도록 검증하는 테스트 모임",
+  },
+};

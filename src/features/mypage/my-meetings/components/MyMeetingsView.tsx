@@ -20,20 +20,26 @@ export interface MyMeetingSummary {
 type MyMeetingsViewProps =
   | { status: "loading" }
   | { status: "error"; onRetry?: () => void }
-  | { status: "success"; meetings: MyMeetingSummary[]; onCancel?: (meeting: MyMeetingSummary) => void; cancelPendingId?: number | null };
+  | {
+      status: "success";
+      meetings: MyMeetingSummary[];
+      onCancel?: (meeting: MyMeetingSummary) => void;
+      cancelPendingId?: number | null;
+    };
 
 export default function MyMeetingsView(props: MyMeetingsViewProps) {
   return (
     <section aria-labelledby="my-meetings-title" className="w-full">
-      <h1
-        id="my-meetings-title"
-        className="mb-6 text-xl font-bold text-gray-900 sm:text-2xl"
-      >
+      <h1 id="my-meetings-title" className="sr-only">
         나의 모임
       </h1>
 
       {props.status === "loading" && (
-        <div role="status" aria-live="polite" className="grid gap-4">
+        <div
+          role="status"
+          aria-live="polite"
+          className="grid gap-4 min-[1200px]:gap-6"
+        >
           {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
@@ -46,11 +52,16 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
       )}
 
       {props.status === "error" && (
-        <div role="alert" className="rounded-3xl bg-white px-6 py-12 text-center">
+        <div
+          role="alert"
+          className="rounded-3xl bg-white px-6 py-12 text-center"
+        >
           <p className="text-base font-semibold text-gray-800">
             모임 목록을 불러오지 못했어요.
           </p>
-          <p className="mt-2 text-sm text-gray-500">잠시 후 다시 시도해 주세요.</p>
+          <p className="mt-2 text-sm text-gray-500">
+            잠시 후 다시 시도해 주세요.
+          </p>
           {props.onRetry && (
             <button
               type="button"
@@ -81,7 +92,7 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
       )}
 
       {props.status === "success" && props.meetings.length > 0 && (
-        <ul className="grid gap-4">
+        <ul className="grid gap-4 min-[1200px]:gap-6">
           {props.meetings.map((meeting) => (
             <li key={meeting.id} className="min-w-0">
               <DetailCard
@@ -94,11 +105,20 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                 time={meeting.timeLabel}
                 participantCount={meeting.participantCount}
                 capacity={meeting.capacity}
-                status={meeting.isCanceled ? "canceled" : meeting.isCompleted ? "completed" : "upcoming"}
+                status={
+                  meeting.isCanceled
+                    ? "canceled"
+                    : meeting.isCompleted
+                      ? "completed"
+                      : "upcoming"
+                }
                 isConfirmed={meeting.isConfirmed}
                 actionLabel={meeting.canCancel ? "예약 취소하기" : undefined}
                 actionPending={props.cancelPendingId === meeting.id}
-                onAction={props.onCancel ? () => props.onCancel?.(meeting) : undefined}
+                actionDisabled={props.cancelPendingId != null}
+                onAction={
+                  props.onCancel ? () => props.onCancel?.(meeting) : undefined
+                }
               />
             </li>
           ))}

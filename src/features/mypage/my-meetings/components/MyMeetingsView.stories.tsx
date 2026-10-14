@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
+import { fn } from "storybook/test";
 import MyMeetingsView from "./MyMeetingsView";
 
 const meta = {
@@ -20,12 +21,13 @@ export const Empty: Story = {
 };
 
 export const Error: Story = {
-  args: { status: "error" },
+  args: { status: "error", onRetry: fn() },
 };
 
 export const WithMeetings: Story = {
   args: {
     status: "success",
+    onCancel: fn(),
     meetings: [
       {
         id: 1,
@@ -37,6 +39,8 @@ export const WithMeetings: Story = {
         participantCount: 4,
         capacity: 8,
         isCompleted: false,
+        canCancel: true,
+        imageUrl: "/meetings-hero.jpg",
       },
       {
         id: 2,
