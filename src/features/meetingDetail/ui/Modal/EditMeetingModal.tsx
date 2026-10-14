@@ -196,25 +196,35 @@ const EditMeetingModal = ({
   };
 
   //
-  // const handleSelectAddress = ({ region, address, latitude, longitude }) => {
-  //   if (latitude === null || longitude === null) {
-  //     showToast({
-  //       kind: "error",
-  //       message: "주소의 위치를 확인할 수 없습니다. 다른 주소를 선택해주세요.",
-  //     });
-  //     return;
-  //   }
+  const handleSelectAddress = ({
+    region,
+    address,
+    latitude,
+    longitude,
+  }: {
+    region: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+  }) => {
+    if (latitude === null || longitude === null) {
+      showToast({
+        kind: "error",
+        message: "주소의 위치를 확인할 수 없습니다. 다른 주소를 선택해주세요.",
+      });
+      return;
+    }
 
-  //   setIsAddressChanged(true);
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     region,
-  //     address,
-  //     detailAddress: "",
-  //     latitude: latitude ?? prev.latitude,
-  //     longitude: longitude ?? prev.longitude,
-  //   }));
-  // };
+    setIsAddressChanged(true);
+    setForm((prev) => ({
+      ...prev,
+      region,
+      address,
+      detailAddress: "",
+      latitude: latitude,
+      longitude: longitude,
+    }));
+  };
 
   const handleClose = () => {
     revokePendingBlob();
@@ -279,22 +289,7 @@ const EditMeetingModal = ({
                     address={form.address}
                     detailAddress={form.detailAddress}
                     isDetailDisabled={!isAddressChanged}
-                    onSelectAddress={({
-                      region,
-                      address,
-                      latitude,
-                      longitude,
-                    }) => {
-                      setIsAddressChanged(true);
-                      setForm((prev) => ({
-                        ...prev,
-                        region,
-                        address,
-                        detailAddress: "",
-                        latitude: latitude ?? prev.latitude,
-                        longitude: longitude ?? prev.longitude,
-                      }));
-                    }}
+                    onSelectAddress={handleSelectAddress}
                     onDetailAddressChange={(v) =>
                       handleField("detailAddress", v)
                     }
