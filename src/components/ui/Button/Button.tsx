@@ -30,9 +30,9 @@ const variantStyles: Record<ButtonVariant, string> = {
 
 // width는 내부에서 고정하지 않고 외부 props(className 등)로 전달받아 처리
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-xs font-semibold rounded-lg",
-  md: "h-11 px-5 text-sm font-semibold rounded-xl",
-  lg: "h-[52px] px-7 text-base font-bold rounded-2xl",
+  sm: "h-10 px-3 text-xs font-semibold rounded-lg",
+  md: "h-12 px-5 text-sm font-semibold rounded-xl",
+  lg: "h-15 px-7 text-base font-bold rounded-2xl",
 };
 
 /**
