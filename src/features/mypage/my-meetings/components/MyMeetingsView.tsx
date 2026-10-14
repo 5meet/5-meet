@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DetailCard from "@/components/ui/DetailCard/DetailCard";
 
 export interface MyMeetingSummary {
   id: number;
@@ -10,6 +11,8 @@ export interface MyMeetingSummary {
   participantCount: number;
   capacity: number;
   isCompleted: boolean;
+  isConfirmed?: boolean;
+  isCanceled?: boolean;
 }
 
 type MyMeetingsViewProps =
@@ -28,7 +31,7 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
       </h1>
 
       {props.status === "loading" && (
-        <div role="status" aria-live="polite" className="grid gap-4 md:grid-cols-2">
+        <div role="status" aria-live="polite" className="grid gap-4">
           {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
@@ -79,47 +82,20 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
         <ul className="grid gap-4 md:grid-cols-2">
           {props.meetings.map((meeting) => (
             <li key={meeting.id} className="min-w-0">
-              <article className="h-full rounded-3xl bg-white p-5">
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <span className="text-xs font-medium text-gray-500">
-                    {meeting.category}
-                  </span>
-                  <span
-                    className={
-                      meeting.isCompleted
-                        ? "rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"
-                        : "rounded-full bg-primary-100 px-3 py-1 text-xs text-primary-700"
-                    }
-                  >
-                    {meeting.isCompleted ? "지난 모임" : "예정된 모임"}
-                  </span>
-                </div>
-                <h2 className="break-keep text-lg font-bold text-gray-900">
-                  <Link
-                    href={`/meetings/${encodeURIComponent(String(meeting.id))}`}
-                    className="hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
-                  >
-                    {meeting.name}
-                  </Link>
-                </h2>
-                <dl className="mt-4 grid gap-2 text-sm text-gray-600">
-                  <div className="flex gap-2">
-                    <dt className="w-12 shrink-0 font-medium">장소</dt>
-                    <dd className="min-w-0 break-words">{meeting.region}</dd>
-                  </div>
-                  <div className="flex gap-2">
-                    <dt className="w-12 shrink-0 font-medium">일정</dt>
-                    <dd>{meeting.dateLabel} {meeting.timeLabel}</dd>
-                  </div>
-                  <div className="flex gap-2">
-                    <dt className="w-12 shrink-0 font-medium">인원</dt>
-                    <dd>{meeting.participantCount} / {meeting.capacity}명</dd>
-                  </div>
-                </dl>
-              </article>
+              <DetailCard
+                id={meeting.id}
+                title={meeting.name}
+                category={meeting.category}
+                location={meeting.region}
+                date={meeting.dateLabel}
+                time={meeting.timeLabel}
+                participantCount={meeting.participantCount}
+                capacity={meeting.capacity}
+                status={meeting.isCanceled ? "canceled" : meeting.isCompleted ? "completed" : "upcoming"}
+                isConfirmed={meeting.isConfirmed}
+              />
             </li>
-          ))}
-        </ul>
+       </ul>
       )}
     </section>
   );
