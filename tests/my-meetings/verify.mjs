@@ -13,7 +13,7 @@ const processes = [];
 const start = (args, env = {}) => {
   const child = spawn(process.execPath, args, {
     env: { ...process.env, ...env },
-    stdio: ["ignore", "pipe", "pipe"],
+    stdio: ["pipe", "pipe", "pipe"],
   });
   const log = createWriteStream(
     path.join(output, `server-${processes.length}.log`),

@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { meetingKeys } from "@/features/meetingDetail/queryKeys";
 
 import MyMeetingsView, { type MyMeetingSummary } from "./MyMeetingsView";
 import {
@@ -87,6 +88,8 @@ export default function MyMeetingsContent() {
             })),
           },
       );
+      // Revisit detail/participants with fresh membership and participant counts.
+      void queryClient.invalidateQueries({ queryKey: meetingKeys.all });
       const refreshed = await query.refetch();
       if (refreshed.isError) {
         setCancelError(
