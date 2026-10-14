@@ -13,7 +13,13 @@ function toStartOfDay(date: string) {
     return undefined;
   }
 
-  return new Date(`${date}T00:00:00`).toISOString();
+  const parsedDate = new Date(`${date}T00:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return undefined;
+  }
+
+  return parsedDate.toISOString();
 }
 
 function toEndOfDay(date: string) {
@@ -21,17 +27,20 @@ function toEndOfDay(date: string) {
     return undefined;
   }
 
-  return new Date(`${date}T23:59:59.999`).toISOString();
+  const parsedDate = new Date(`${date}T23:59:59.999`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return undefined;
+  }
+
+  return parsedDate.toISOString();
 }
 
 export function FavoritesPage() {
   const [selectedCategory, setSelectedCategory] = useState("전체");
-
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
-
   const [selectedRegion, setSelectedRegion] = useState("all");
-
   const [isUrgent, setIsUrgent] = useState(false);
 
   const deleteFavoriteMutation = useDeleteFavoriteMutation();
@@ -40,30 +49,22 @@ export function FavoritesPage() {
     ...(selectedCategory !== "전체" && {
       type: selectedCategory,
     }),
-
     ...(selectedRegion !== "all" && {
       region: selectedRegion,
     }),
-
     ...(dateStart && {
       dateStart: toStartOfDay(dateStart),
     }),
-
     ...(dateEnd && {
       dateEnd: toEndOfDay(dateEnd),
     }),
-
     ...(isUrgent && {
       sortBy: "registrationEnd" as const,
       sortOrder: "asc" as const,
     }),
   };
 
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useFavoritesQuery(queryParams);
+  const { data, isLoading, isError } = useFavoritesQuery(queryParams);
 
   const handleDateChange = (
     nextDateStart: string,
@@ -95,14 +96,7 @@ export function FavoritesPage() {
           md:pt-14
         "
       >
-        <header
-          className="
-            mb-10
-            flex
-            items-center
-            gap-5
-          "
-        >
+        <header className="mb-10 flex items-center gap-5">
           <div className="relative h-[66px] w-[80px] shrink-0">
             <Image
               src="/favorites.svg"
@@ -132,9 +126,7 @@ export function FavoritesPage() {
           selectedRegion={selectedRegion}
           onRegionChange={setSelectedRegion}
           isUrgent={isUrgent}
-          onUrgentChange={() =>
-            setIsUrgent((prev) => !prev)
-          }
+          onUrgentChange={() => setIsUrgent((prev) => !prev)}
         />
 
         {isLoading && (
