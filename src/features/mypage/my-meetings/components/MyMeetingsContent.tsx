@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { meetingKeys } from "@/features/meetingDetail/queryKeys";
+import Button from "@/components/ui/Button/Button";
 
 import MyMeetingsView, { type MyMeetingSummary } from "./MyMeetingsView";
 import {
@@ -58,6 +59,10 @@ export default function MyMeetingsContent() {
   const [cancelPendingId, setCancelPendingId] = useState<number | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
   const currentUser = useCurrentUser();
+  const refetchCurrentUser = currentUser.refetch;
+  useEffect(() => {
+    void refetchCurrentUser();
+  }, [refetchCurrentUser]);
   const cancelLock = useRef(false);
   const favoriteLock = useRef(false);
   const [favoritePendingId, setFavoritePendingId] = useState<number | null>(
@@ -173,7 +178,14 @@ export default function MyMeetingsContent() {
 
   const meetings = query.data.pages
     .flatMap((page) => page.data)
-    .map((meeting) => toSummary(meeting, currentUser.data?.id));
+    .map((meeting) =>
+      toSummary(
+        meeting,
+        !currentUser.isFetching && !currentUser.isError
+          ? currentUser.data?.id
+          : undefined,
+      ),
+    );
   return (
     <>
       {cancelError && (
@@ -190,13 +202,14 @@ export default function MyMeetingsContent() {
         favoritePendingId={favoritePendingId}
       />
       {query.isRefetchError && !query.isFetchNextPageError && (
-        <button
+        <Button
           type="button"
-          className="mt-4 rounded-xl border border-gray-300 px-4 py-2 text-sm"
+          variant="secondary"
+          className="mt-4 h-auto w-auto rounded-xl border border-gray-300 px-4 py-2 text-sm font-normal"
           onClick={() => void query.refetch()}
         >
           목록 다시 불러오기
-        </button>
+        </Button>
       )}
       {query.isFetchNextPageError && (
         <p role="alert" className="mt-4 text-sm text-red-600">
@@ -205,14 +218,15 @@ export default function MyMeetingsContent() {
       )}
       {query.hasNextPage && (
         <div className="mt-6 flex justify-center">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => void query.fetchNextPage()}
             disabled={query.isFetchingNextPage}
-            className="rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-800 disabled:opacity-50"
+            className="h-auto w-auto rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-800 disabled:opacity-50"
           >
             {query.isFetchingNextPage ? "불러오는 중..." : "더 보기"}
-          </button>
+          </Button>
         </div>
       )}
     </>

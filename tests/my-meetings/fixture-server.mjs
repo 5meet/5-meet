@@ -89,6 +89,10 @@ http
         (state.mode === "refetch-error" && state.deleted.length)
       )
         return send(500, { code: "QA_ERROR", message: "목록 조회 실패" });
+      if (state.mode === "empty-delayed") {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return send(200, { data: [], hasMore: false, nextCursor: null });
+      }
       if (state.mode === "empty")
         return send(200, { data: [], hasMore: false, nextCursor: null });
       const cursor = url.searchParams.get("cursor");

@@ -1,6 +1,7 @@
 import styles from "./MyMeetingsView.module.css";
 import DetailCard from "@/components/ui/DetailCard/DetailCard";
 import Image from "next/image";
+import Button from "@/components/ui/Button/Button";
 
 export interface MyMeetingSummary {
   id: number;
@@ -64,13 +65,14 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
             잠시 후 다시 시도해 주세요.
           </p>
           {props.onRetry && (
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={props.onRetry}
-              className="mt-5 rounded-xl border border-primary-500 px-5 py-2 text-sm font-semibold text-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
+              className="mt-5 h-auto w-auto rounded-xl border border-primary-500 px-5 py-2 text-sm font-semibold text-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500"
             >
               다시 시도
-            </button>
+            </Button>
           )}
         </div>
       )}

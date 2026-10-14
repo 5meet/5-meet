@@ -282,6 +282,14 @@ try {
     record(
       "Review action navigates to the existing review UI without submitting a review",
     );
+    await fetch(`${upstream}/__qa/reset?mode=empty-delayed`);
+    await page.getByRole("link", { name: "나의 모임", exact: true }).click();
+    await page.waitForURL((url) => url.pathname === "/mypage/meetings");
+    assert.equal(await page.getByRole("article").count(), 0);
+    await page.getByText("아직 신청한 모임이 없어요").waitFor();
+    record(
+      "Returning through client navigation refetches private list without previous cached meetings",
+    );
     await context.close();
     ({ page, context } = await pageFor("list-error"));
     await page
