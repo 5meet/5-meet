@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./DetailCard.module.css";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
+import Button from "@/components/ui/Button/Button";
 
 export interface DetailCardProps {
   id: number;
@@ -127,15 +128,17 @@ export default function DetailCard({
               </dl>
             </div>
             {actionLabel && onAction && (
-              <button
+              <Button
                 type="button"
+                variant="secondary"
+                size="md"
                 onClick={onAction}
                 disabled={actionDisabled || actionPending}
                 aria-busy={actionPending}
                 className={styles.action}
               >
                 {actionPending ? "처리 중..." : actionLabel}
-              </button>
+              </Button>
             )}
             {actionLabel && actionHref && !onAction && (
               <Link
