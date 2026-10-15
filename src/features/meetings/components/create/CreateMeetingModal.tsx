@@ -50,6 +50,8 @@ export function CreateMeetingModal({
     type,
     name,
     address,
+    latitude,
+    longitude,
     image,
     description,
     date,
@@ -61,6 +63,8 @@ export function CreateMeetingModal({
     "type",
     "name",
     "address",
+    "latitude",
+    "longitude",
     "image",
     "description",
     "date",
@@ -76,6 +80,8 @@ export function CreateMeetingModal({
     (step === 2 &&
       (!name.trim() ||
         !address.trim() ||
+        latitude === 0 ||
+        longitude === 0 ||
         !image ||
         image.startsWith("blob:"))) ||
     (step === 3 && !description.trim()) ||

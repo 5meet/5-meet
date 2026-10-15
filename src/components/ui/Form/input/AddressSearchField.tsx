@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/Form/input/Input";
 import { Label } from "@/components/ui/Form/label/Label";
 import { MapPin } from "lucide-react";
+import { KakaoMapScript } from "@/features/meetingDetail/ui/KakaoMap/KakaoMapScript";
 
 interface AddressSearchResult {
   region: string;
@@ -18,7 +19,7 @@ interface AddressSearchFieldProps {
   detailAddress: string;
   onSelectAddress: (result: AddressSearchResult) => void;
   onDetailAddressChange: (value: string) => void;
-  isDetailDisabled?: boolean;
+  isDetailDisabled: boolean;
 }
 
 export const AddressSearchField = ({
@@ -29,6 +30,34 @@ export const AddressSearchField = ({
   isDetailDisabled,
 }: AddressSearchFieldProps) => {
   const [isScriptReady, setIsScriptReady] = useState(false);
+  const [isKakaoReady, setIsKakaoReady] = useState(false);
+
+  // 지오코드(좌표 조회 실패 시 주소 선택 막기)
+  const geocode = (region: string, roadAddress: string) => {
+    const fail = () =>
+      onSelectAddress({
+        region,
+        address: roadAddress,
+        latitude: null,
+        longitude: null,
+      });
+
+    if (!window.kakao?.maps?.services) return fail();
+
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    geocoder.addressSearch(roadAddress, (result, status) => {
+      const first = result?.[0];
+      if (status !== window.kakao.maps.services.Status.OK || !first)
+        return fail();
+
+      const latitude = Number(first.y);
+      const longitude = Number(first.x);
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude))
+        return fail();
+
+      onSelectAddress({ region, address: roadAddress, latitude, longitude });
+    });
+  };
 
   const handleSearch = () => {
     if (!window.daum?.Postcode) return;
@@ -71,6 +100,7 @@ export const AddressSearchField = ({
 
   return (
     <>
+      <KakaoMapScript onReady={() => setIsKakaoReady(true)} />
       <Script
         src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
         strategy="afterInteractive"
@@ -89,6 +119,7 @@ export const AddressSearchField = ({
             value={address}
             tabIndex={-1}
             onClick={handleSearch}
+            disabled={!isScriptReady || !isKakaoReady}
             readOnly
             className="pr-12 cursor-default"
           />
@@ -97,7 +128,7 @@ export const AddressSearchField = ({
             type="button"
             aria-label="주소 검색"
             onClick={handleSearch}
-            disabled={!isScriptReady}
+            disabled={!isScriptReady || !isKakaoReady}
             className="
               absolute top-1/2 right-4
               -translate-y-1/2

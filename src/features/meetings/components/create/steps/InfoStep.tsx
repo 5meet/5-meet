@@ -39,6 +39,32 @@ export function InfoStep() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 주소 검색
+  const handleSelectAddress = ({
+    region,
+    address,
+    latitude,
+    longitude,
+  }: {
+    region: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+  }) => {
+    if (latitude === null || longitude === null) {
+      showToast({
+        kind: "error",
+        message: "주소의 위치를 확인할 수 없어요. 다른 주소를 선택해주세요.",
+      });
+      return;
+    }
+
+    setValue("address", address, { shouldValidate: true });
+    setValue("region", region, { shouldValidate: true });
+    setValue("latitude", latitude, { shouldValidate: true });
+    setValue("longitude", longitude, { shouldValidate: true });
+  };
+
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
     const previousImage = image;
@@ -95,12 +121,8 @@ export function InfoStep() {
       <AddressSearchField
         address={address}
         detailAddress={detailAddress}
-        onSelectAddress={({ address, region, latitude, longitude }) => {
-          setValue("address", address, { shouldValidate: true });
-          setValue("region", region, { shouldValidate: true });
-          setValue("latitude", latitude ?? 0, { shouldValidate: true });
-          setValue("longitude", longitude ?? 0, { shouldValidate: true });
-        }}
+        isDetailDisabled={!address}
+        onSelectAddress={handleSelectAddress}
         onDetailAddressChange={(value) =>
           setValue("detailAddress", value, { shouldValidate: true })
         }
