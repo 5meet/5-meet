@@ -1,6 +1,6 @@
 // 추천 모임 목록 조회
 import { useQuery } from "@tanstack/react-query";
-import { meetingKeys } from "../queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 import { getRecommendedMeetings } from "../api/meetingDetail.service";
 import type { MeetingFront } from "../types/meetingDetail";
 

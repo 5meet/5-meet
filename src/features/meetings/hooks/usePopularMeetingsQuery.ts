@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getPopularMeetings } from "../api/meetings.service";
-import { meetingKeys } from "@/features/meetingDetail/queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 
 export function usePopularMeetingsQuery(size = 8) {
   return useQuery({

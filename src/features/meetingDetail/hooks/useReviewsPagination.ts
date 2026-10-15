@@ -1,7 +1,7 @@
 // 리뷰 목록 + 페이지네이션
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { reviewKeys } from "../queryKeys";
+import { reviewKeys } from "@/lib/queryKeys";
 import { getReviews } from "../api/meetingDetail.service";
 import { Review } from "../types/meetingDetail";
 

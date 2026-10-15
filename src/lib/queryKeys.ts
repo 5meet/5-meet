@@ -1,4 +1,7 @@
-import { GetMeetingsParams, PaginationParmas } from "./types/meetingDetail";
+import {
+  GetMeetingsParams,
+  PaginationParmas,
+} from "@/features/meetingDetail/types/meetingDetail";
 
 export const meetingKeys = {
   all: ["meetings"] as const,

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { HTTPError } from "ky";
 import { createMeeting } from "../api/meetings.service";
-import { meetingKeys } from "@/features/meetingDetail/queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 import { showToast } from "@/components/ui/Sonner";
 import type { AppError } from "@/lib/api/type";
 import type { MeetingCreateRequest } from "../types/meetings";
