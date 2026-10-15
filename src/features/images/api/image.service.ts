@@ -14,7 +14,7 @@ export const uploadFileToPresignedUrl = async (
   file: File,
 ): Promise<void> => {
   const res = await fetch(presignedUrl, {
-    method: "PUT",
+    method: "POST",
     headers: { "Content-Type": file.type },
     body: file,
   });
