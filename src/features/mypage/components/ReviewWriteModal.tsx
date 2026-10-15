@@ -1,7 +1,7 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/Button/Button";
 import { Modal } from "@/components/ui/Modal/Modal";
@@ -22,41 +22,34 @@ interface ReviewWriteModalProps {
   title?: string;
 }
 
-export default function ReviewWriteModal({
-  isOpen,
+interface ReviewWriteFormProps {
+  onClose: () => void;
+  teamId?: string;
+  meetingId?: number;
+  reviewId?: number;
+  mode: "create" | "edit";
+  initialRating: number;
+  initialContent: string;
+  onSuccess?: () => void | Promise<void>;
+  onSubmit?: (rating: number, content: string) => void | Promise<void>;
+  title?: string;
+}
+
+function ReviewWriteForm({
   onClose,
   teamId,
   meetingId,
   reviewId,
-  mode = "create",
-  initialRating = 0,
-  initialContent = "",
+  mode,
+  initialRating,
+  initialContent,
   onSuccess,
   onSubmit,
   title,
-}: ReviewWriteModalProps) {
+}: ReviewWriteFormProps) {
   const [rating, setRating] = useState(initialRating);
   const [content, setContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    setRating(initialRating);
-    setContent(initialContent);
-  }, [isOpen, initialRating, initialContent]);
-
-  const resetForm = () => {
-    setRating(mode === "edit" ? initialRating : 0);
-    setContent(mode === "edit" ? initialContent : "");
-  };
-
-  const handleClose = () => {
-    if (isSubmitting) return;
-
-    resetForm();
-    onClose();
-  };
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
@@ -73,44 +66,44 @@ export default function ReviewWriteModal({
       return;
     }
 
-    if (onSubmit) {
-      try {
-        setIsSubmitting(true);
-        await onSubmit(rating, trimmedContent);
-        resetForm();
-      } finally {
-        setIsSubmitting(false);
-      }
-      return;
-    }
-
     if (
-      !teamId ||
-      !Number.isFinite(meetingId) ||
-      (mode === "edit" && reviewId === undefined)
+      !onSubmit &&
+      (!teamId ||
+        !Number.isFinite(meetingId) ||
+        (mode === "edit" && reviewId === undefined))
     ) {
       alert("팀, 모임 또는 리뷰 정보가 올바르지 않습니다.");
       return;
     }
 
-    try {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      if (mode === "edit") {
-        await updateReview(teamId, reviewId!, {
-          score: rating,
-          comment: trimmedContent,
-        });
-        alert("리뷰 수정이 완료되었습니다.");
-      } else {
-        await createReview(teamId, meetingId!, {
-          score: rating,
-          comment: trimmedContent,
-        });
-        alert("리뷰 작성이 완료되었습니다.");
+    try {
+      // 부모 컴포넌트에서 제출 처리를 담당하는 경우
+      if (onSubmit) {
+        await onSubmit(rating, trimmedContent);
+        return;
       }
 
-      resetForm();
+      // 모달에서 직접 리뷰를 생성하거나 수정하는 경우
+      if (mode === "edit") {
+        await updateReview(teamId!, reviewId!, {
+          score: rating,
+          comment: trimmedContent,
+        });
+      } else {
+        await createReview(teamId!, meetingId!, {
+          score: rating,
+          comment: trimmedContent,
+        });
+      }
+
+      alert(
+        mode === "edit"
+          ? "리뷰 수정이 완료되었습니다."
+          : "리뷰 작성이 완료되었습니다.",
+      );
+
       onClose();
 
       try {
@@ -120,6 +113,7 @@ export default function ReviewWriteModal({
       }
     } catch (error) {
       console.error("[리뷰] 저장 실패:", error);
+
       alert(
         error instanceof Error
           ? error.message
@@ -130,8 +124,13 @@ export default function ReviewWriteModal({
     }
   };
 
+  const handleClose = () => {
+    if (isSubmitting) return;
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
+    <Modal isOpen onClose={handleClose} size="xl">
       <Modal.Header onClose={handleClose}>
         <Modal.Title>
           {title ?? (mode === "edit" ? "리뷰 수정하기" : "리뷰 쓰기")}
@@ -188,15 +187,9 @@ export default function ReviewWriteModal({
               id="review-content"
               value={content}
               onChange={(event) => setContent(event.target.value)}
-              placeholder="남겨주신 리뷰는 프로그램 운영 및 다른 회원 분들께 큰 도움이 됩니다."
+              placeholder="남겨주신 리뷰는 프로그램 운영 및 다른 회원분들께 큰 도움이 됩니다."
               disabled={isSubmitting}
-              className="
-                mt-3 h-48 w-full resize-none rounded-2xl
-                border-0 bg-gray-100 px-5 py-4 text-sm
-                text-gray-800 outline-none placeholder:text-gray-400
-                focus:ring-2 focus:ring-primary-500
-                disabled:cursor-not-allowed disabled:opacity-60
-              "
+              className="mt-3 h-48 w-full resize-none rounded-2xl border-0 bg-gray-100 px-5 py-4 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60"
             />
           </section>
         </div>
@@ -232,5 +225,39 @@ export default function ReviewWriteModal({
         </Button>
       </Modal.Footer>
     </Modal>
+  );
+}
+
+export default function ReviewWriteModal(props: ReviewWriteModalProps) {
+  const {
+    isOpen,
+    onClose,
+    teamId,
+    meetingId,
+    reviewId,
+    mode = "create",
+    initialRating = 0,
+    initialContent = "",
+    onSuccess,
+    onSubmit,
+    title,
+  } = props;
+
+  if (!isOpen) return null;
+
+  return (
+    <ReviewWriteForm
+      key={`${mode}-${reviewId ?? "new"}-${meetingId ?? "none"}`}
+      onClose={onClose}
+      teamId={teamId}
+      meetingId={meetingId}
+      reviewId={reviewId}
+      mode={mode}
+      initialRating={initialRating}
+      initialContent={initialContent}
+      onSuccess={onSuccess}
+      onSubmit={onSubmit}
+      title={title}
+    />
   );
 }

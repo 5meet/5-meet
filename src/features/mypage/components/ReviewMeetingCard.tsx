@@ -22,6 +22,7 @@ export interface ReviewMeetingCardProps {
   capacity: number;
   isFavorite?: boolean;
   rating?: number;
+  onReviewSuccess?: (meetingId: number) => void | Promise<void>;
 }
 
 export default function ReviewMeetingCard({
@@ -36,11 +37,13 @@ export default function ReviewMeetingCard({
   capacity,
   isFavorite = false,
   rating,
+  onReviewSuccess,
 }: ReviewMeetingCardProps) {
   const [isLiked, setIsLiked] = useState(isFavorite);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
-  const hasImage = typeof imageUrl === "string" && imageUrl.trim() !== "";
+  const hasImage =
+    typeof imageUrl === "string" && imageUrl.trim() !== "";
 
   const handleFavoriteClick = () => {
     setIsLiked((prev) => !prev);
@@ -48,6 +51,11 @@ export default function ReviewMeetingCard({
 
   const handleReviewClick = () => {
     setIsReviewModalOpen(true);
+  };
+
+  const handleReviewSuccess = async () => {
+    await onReviewSuccess?.(meetingId);
+    setIsReviewModalOpen(false);
   };
 
   return (
@@ -181,6 +189,7 @@ export default function ReviewMeetingCard({
         onClose={() => setIsReviewModalOpen(false)}
         teamId={teamId}
         meetingId={meetingId}
+        onSuccess={handleReviewSuccess}
       />
     </>
   );

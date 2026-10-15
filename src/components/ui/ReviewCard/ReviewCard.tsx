@@ -40,30 +40,34 @@ export function ReviewCard({
       })
     : "";
 
-  const handleSubmitEdit = async (
-    rating: number,
-    content: string,
-  ) => {
-    if (!onEdit || isProcessing) return;
 
-    setEditError("");
+const handleSubmitEdit = async (
+  rating: number,
+  content: string,
+) => {
+  if (!onEdit || isProcessing) return;
 
-    try {
-      await onEdit({
-        ...review,
-        score: rating,
-        comment: content.trim(),
-      });
+  setEditError("");
 
-      setIsEditModalOpen(false);
-    } catch (error) {
-      setEditError(
-        error instanceof Error
-          ? error.message
-          : "리뷰 수정에 실패했습니다.",
-      );
-    }
-  };
+  try {
+    await onEdit({
+      ...review,
+      score: rating,
+      comment: content.trim(),
+    });
+
+    setIsEditModalOpen(false);
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "리뷰 수정에 실패했습니다.";
+
+    setEditError(message);
+
+    throw error;
+  }
+};
 
   return (
     <>
