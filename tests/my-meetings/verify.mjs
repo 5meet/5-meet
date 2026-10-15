@@ -71,6 +71,7 @@ try {
       [
         "node_modules/next/dist/bin/next",
         "dev",
+        ...(process.env.QA_WEBPACK === "1" ? ["--webpack"] : []),
         "--port",
         "3002",
         "--hostname",
@@ -186,15 +187,15 @@ try {
     record(
       "Favorite add/removal persists across reload with authenticated requests and pending lock",
     );
-    page.once("dialog", (d) => d.dismiss());
     await page.getByRole("button", { name: "예약 취소하기" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "돌아가기" }).click();
     assert.equal(
       (await (await fetch(`${upstream}/__qa/state`)).json()).deleted.length,
       0,
     );
     record("Cancel confirmation dismissal does not send DELETE");
-    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "예약 취소하기" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "예약 취소하기" }).click();
     await page.getByRole("button", { name: "처리 중..." }).waitFor();
     assert(await page.getByRole("button", { name: "처리 중..." }).isDisabled());
     await page
@@ -210,21 +211,22 @@ try {
     await context.close();
     ({ page, context } = await pageFor("cancel-error"));
     await page.getByRole("button", { name: "예약 취소하기" }).waitFor();
-    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "예약 취소하기" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "예약 취소하기" }).click();
     await page
-      .getByRole("alert")
+      .getByRole("dialog")
       .filter({ hasText: "예약 취소 테스트 오류" })
       .waitFor();
     assert.equal(await page.getByRole("article").count(), 2);
+    await page.screenshot({ path: path.join(output, "cancel-error-mobile.png") });
     record("Cancellation failure retains list and shows upstream message");
     await context.close();
     ({ page, context } = await pageFor("refetch-error"));
     await page.getByRole("button", { name: "예약 취소하기" }).waitFor();
-    page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "예약 취소하기" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "예약 취소하기" }).click();
     await page
-      .getByRole("alert")
+      .getByRole("dialog")
       .filter({ hasText: "예약은 취소되었지만" })
       .waitFor({ timeout: 20000 });
     assert.equal(
@@ -256,7 +258,7 @@ try {
       .first()
       .click();
     await page
-      .getByRole("alert")
+      .getByRole("dialog")
       .filter({ hasText: "찜 변경 테스트 오류" })
       .waitFor();
     assert.equal(
@@ -312,6 +314,10 @@ try {
         path: path.join(output, `page-${label}.png`),
         fullPage: true,
       });
+      await page.getByRole("button", { name: "예약 취소하기", exact: true }).click();
+      await page.getByRole("dialog").waitFor();
+      await page.screenshot({ path: path.join(output, `confirm-${label}.png`) });
+      await page.getByRole("dialog").getByRole("button", { name: "돌아가기" }).click();
       const geometry = await page.evaluate(() => ({
         viewport: innerWidth,
         scrollWidth: document.documentElement.scrollWidth,
