@@ -27,10 +27,12 @@ import {
   validateMeetingForm,
   MeetingFormErrors,
 } from "@/lib/validators/meetingFormValidators";
+
 import type {
   MeetingUpdateRequest,
   MeetingFormState,
 } from "@/features/meetingDetail/types/meetingDetail";
+import type { AppError } from "@/lib/api/type";
 
 interface EditMeetingModalProps {
   meetingId: number;
@@ -178,12 +180,16 @@ const EditMeetingModal = ({
         revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
         handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
       },
-      onError: () => {
+      onError: (error) => {
         revokePendingBlob();
         handleField("image", previousImage); // 실패 시 롤백
         showToast({
           kind: "error",
-          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+          message:
+            (error as AppError).code === "INVALID_FILE_TYPE"
+              ? "지원하지 않는 파일 형식입니다."
+              : error.message ||
+                "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
         });
       },
     });
