@@ -18,6 +18,7 @@ import { showToast } from "@/components/ui/Sonner";
 import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
+import { getUploadErrorMessage } from "@/features/images/utils/getUploadErrorMessage";
 import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
 import {
   splitISOToKSTDateTime,
@@ -82,6 +83,7 @@ const EditMeetingModal = ({
   >(null);
   const [isAddressChanged, setIsAddressChanged] = useState(false);
 
+  const uploadRequestIdRef = useRef(0);
   // 아직 업로드 중/실패한 blob을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
   const revokePendingBlob = () => {
@@ -170,6 +172,8 @@ const EditMeetingModal = ({
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
     const previousImage = form.image; // 실패 시 되돌릴 원래 값 (서버의 기존 이미지 URL 또는 빈 문자열)
+    const requestId = ++uploadRequestIdRef.current;
+
     revokePendingBlob(); // 이전에 선택했던 blob(아직 업로드 완료 안 된 것)이 있으면 먼저 해제
     const previewUrl = URL.createObjectURL(file);
     pendingBlobUrlRef.current = previewUrl;
@@ -177,19 +181,17 @@ const EditMeetingModal = ({
 
     uploadImageMutation.mutate(file, {
       onSuccess: (publicUrl) => {
+        if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
         revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
         handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
       },
       onError: (error) => {
+        if (requestId !== uploadRequestIdRef.current) return;
         revokePendingBlob();
         handleField("image", previousImage); // 실패 시 롤백
         showToast({
           kind: "error",
-          message:
-            (error as AppError).code === "INVALID_FILE_TYPE"
-              ? "지원하지 않는 파일 형식입니다."
-              : error.message ||
-                "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+          message: getUploadErrorMessage(error),
         });
       },
     });
@@ -197,6 +199,7 @@ const EditMeetingModal = ({
 
   // 이미지 삭제
   const handleImageRemove = () => {
+    uploadRequestIdRef.current++; // 진행 중이던 요청을 무효화
     revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
     handleField("image", "");
   };

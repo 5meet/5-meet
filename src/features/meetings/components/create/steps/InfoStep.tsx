@@ -4,6 +4,7 @@
 import { useRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
+import { getUploadErrorMessage } from "@/features/images/utils/getUploadErrorMessage";
 
 import { Label } from "@/components/ui/Form/label/Label";
 import { Input } from "@/components/ui/Form/input/Input";
@@ -22,6 +23,7 @@ export function InfoStep() {
   const image = watch("image");
 
   const uploadImageMutation = useUploadImageMutation();
+  const uploadRequestIdRef = useRef(0);
 
   // 아직 업로드가 끝나지 않은(또는 실패한) blob URL을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
@@ -68,6 +70,8 @@ export function InfoStep() {
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
     const previousImage = image;
+    const requestId = ++uploadRequestIdRef.current;
+
     revokePendingBlob();
 
     const previewUrl = URL.createObjectURL(file);
@@ -76,19 +80,17 @@ export function InfoStep() {
 
     uploadImageMutation.mutate(file, {
       onSuccess: (publicUrl) => {
+        if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
         revokePendingBlob();
         setValue("image", publicUrl, { shouldValidate: true });
       },
       onError: (error) => {
+        if (requestId !== uploadRequestIdRef.current) return;
         revokePendingBlob();
         setValue("image", previousImage, { shouldValidate: true });
         showToast({
           kind: "error",
-          message:
-            (error as AppError).code === "INVALID_FILE_TYPE"
-              ? "지원하지 않는 파일 형식입니다."
-              : error.message ||
-                "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+          message: getUploadErrorMessage(error),
         });
       },
     });
@@ -96,6 +98,7 @@ export function InfoStep() {
 
   // 이미지 삭제
   const handleImageRemove = () => {
+    uploadRequestIdRef.current++; // 진행 중이던 요청을 무효화
     revokePendingBlob();
     setValue("image", "", { shouldValidate: true });
   };
