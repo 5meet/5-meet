@@ -10,7 +10,6 @@ export async function GET() {
 
   try {
     const user = await serverFetchWithTokenRefresh<User>("/users/me");
-    console.log("유저 정보 router handler", user);
     return NextResponse.json(user);
   } catch (error) {
     if (error instanceof ApiError) {
