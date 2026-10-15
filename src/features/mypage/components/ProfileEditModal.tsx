@@ -4,6 +4,12 @@ import Image from "next/image";
 import { Pencil, X } from "lucide-react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
+import Button from "@/components/ui/Button/Button";
+import { IconButton } from "@/components/ui/IconButton/IconButton";
+import Label from "@/components/ui/Form/label/Label";
+import { useProfileDialog } from "../hooks/useProfileDialog";
+import styles from "./ProfileActions.module.css";
+
 import ProfileImageCropper from "./ProfileImageCropper";
 
 interface ProfileEditModalProps {
@@ -31,6 +37,10 @@ function ProfileEditModalContent({
   const [previewImageSrc, setPreviewImageSrc] = useState(imageSrc);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+
+  const [imageError, setImageError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLElement>(null);
+  useProfileDialog(dialogRef, !cropImageSrc);
 
   const pendingObjectUrlRef = useRef<string | null>(null);
   const previewObjectUrlRef = useRef<string | null>(null);
@@ -85,13 +95,21 @@ function ProfileEditModalContent({
 
     if (!file) return;
 
+    event.target.value = "";
+    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
+      setImageError("JPEG, PNG, WebP, GIF 이미지만 선택할 수 있습니다.");
+      return;
+    }
+    if (file.size === 0) {
+      setImageError("비어 있는 파일입니다. 다른 이미지를 선택해주세요.");
+      return;
+    }
+    setImageError(null);
     clearPendingImage();
 
     const nextImageSrc = URL.createObjectURL(file);
     pendingObjectUrlRef.current = nextImageSrc;
     setCropImageSrc(nextImageSrc);
-
-    event.target.value = "";
   };
 
   const handleCropApply = (croppedFile: File) => {
@@ -102,6 +120,7 @@ function ProfileEditModalContent({
     const nextPreviewUrl = URL.createObjectURL(croppedFile);
     previewObjectUrlRef.current = nextPreviewUrl;
 
+    setImageError(null);
     setSelectedImageFile(croppedFile);
     setPreviewImageSrc(nextPreviewUrl);
     clearPendingImage();
@@ -117,7 +136,7 @@ function ProfileEditModalContent({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-4" inert={cropImageSrc ? true : undefined}>
         <button
           type="button"
           aria-label="프로필 수정 닫기"
@@ -126,11 +145,13 @@ function ProfileEditModalContent({
         />
 
         <section
+          ref={dialogRef}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           aria-labelledby="profile-edit-title"
           className="
-            relative z-10 w-full max-w-[343px]
+            relative z-10 max-h-[calc(100dvh-32px)] w-full max-w-[343px] overflow-y-auto
             rounded-3xl bg-white px-6 pb-6 pt-8
             shadow-[0_0_50px_rgba(0,0,0,0.08)]
             sm:max-w-[544px] sm:rounded-[40px] sm:p-12
@@ -148,18 +169,14 @@ function ProfileEditModalContent({
                 프로필 수정하기
               </h2>
 
-              <button
-                type="button"
+              <IconButton
+                size="sm"
                 onClick={onClose}
                 aria-label="프로필 수정 닫기"
-                className="
-                  flex h-6 w-6 cursor-pointer items-center justify-center
-                  text-gray-700
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-                "
+                className={`${styles.icon} ${styles.close} cursor-pointer text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500`}
               >
                 <X size={24} aria-hidden="true" />
-              </button>
+              </IconButton>
             </div>
 
             <div className="flex flex-col gap-8 sm:gap-12">
@@ -176,7 +193,7 @@ function ProfileEditModalContent({
                     />
                   </div>
 
-                  <label
+                  <Label
                     htmlFor="profile-image"
                     aria-label="프로필 이미지 변경"
                     className="
@@ -194,18 +211,20 @@ function ProfileEditModalContent({
                       onChange={handleImageChange}
                       className="sr-only"
                     />
-                  </label>
+                  </Label>
                 </div>
               </div>
 
+              {imageError && <p role="alert" className="text-sm text-red-600">{imageError}</p>}
+
               <div className="flex flex-col gap-4 sm:gap-6">
                 <div className="flex flex-col gap-1">
-                  <label
+                  <Label
                     htmlFor="profile-name"
                     className="px-1 text-sm font-medium leading-5 tracking-[-0.28px] text-gray-800"
                   >
                     이름
-                  </label>
+                  </Label>
 
                   <input
                     id="profile-name"
@@ -240,38 +259,15 @@ function ProfileEditModalContent({
               </div>
             </div>
 
-            <div className="flex gap-3 sm:gap-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="
-                  flex h-12 flex-1 items-center justify-center
-                  rounded-xl border border-gray-200 bg-white
-                  px-6 text-base font-semibold leading-6 tracking-[-0.32px] text-gray-600
-                  transition-colors hover:border-gray-300
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-                  sm:h-[60px] sm:rounded-2xl sm:px-[30px] sm:text-xl sm:leading-[30px] sm:tracking-[-0.4px]
-                "
-              >
+            <div className={`${styles.actions} ${styles.responsive}`}>
+              <Button type="button" variant="secondary" onClick={onClose}
+                className={`${styles.button} ${styles.secondary}`}>
                 취소
-              </button>
-
-              <button
-                type="button"
-                disabled={!editedName.trim()}
-                onClick={handleSubmit}
-                className="
-                  flex h-12 flex-1 items-center justify-center
-                  rounded-xl bg-primary-500
-                  px-6 text-base font-semibold leading-6 tracking-[-0.32px] text-white
-                  transition-colors hover:bg-primary-600
-                  disabled:cursor-not-allowed disabled:opacity-40
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2
-                  sm:h-[60px] sm:rounded-2xl sm:px-[30px] sm:text-xl sm:leading-[30px] sm:tracking-[-0.4px]
-                "
-              >
+              </Button>
+              <Button type="button" disabled={!editedName.trim()} onClick={handleSubmit}
+                className={`${styles.button} ${styles.primary}`}>
                 수정하기
-              </button>
+              </Button>
             </div>
           </div>
         </section>

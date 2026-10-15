@@ -4,6 +4,9 @@ import Image from "next/image";
 import { Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { IconButton } from "@/components/ui/IconButton/IconButton";
+import styles from "./ProfileActions.module.css";
+
 import ProfileEditModal from "./ProfileEditModal";
 
 interface ProfileCardProps {
@@ -96,19 +99,14 @@ export default function ProfileCard({
                 {displayName}
               </p>
 
-              <button
-                type="button"
+              <IconButton
+                size="sm"
                 onClick={() => setIsEditOpen(true)}
                 aria-label="프로필 수정"
-                className="
-                  flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center
-                  rounded-full text-gray-700
-                  transition-colors hover:bg-white/60
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-                "
+                className={`${styles.icon} shrink-0 cursor-pointer text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500`}
               >
                 <Pencil size={18} aria-hidden="true" />
-              </button>
+              </IconButton>
             </div>
 
             <p

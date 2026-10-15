@@ -1,8 +1,14 @@
 "use client";
 
 import { X, ZoomIn } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
+
+import Button from "@/components/ui/Button/Button";
+import { IconButton } from "@/components/ui/IconButton/IconButton";
+import Label from "@/components/ui/Form/label/Label";
+import { useProfileDialog } from "../hooks/useProfileDialog";
+import styles from "./ProfileActions.module.css";
 
 import { createCroppedImageFile } from "../utils/cropImage";
 
@@ -17,6 +23,14 @@ export default function ProfileImageCropper({
   onCancel,
   onApply,
 }: ProfileImageCropperProps) {
+  const dialogRef = useRef<HTMLElement>(null);
+  useProfileDialog(dialogRef, true, false);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+  const [error, setError] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -34,18 +48,23 @@ export default function ProfileImageCropper({
 
     try {
       setIsApplying(true);
+      setError(null);
       const croppedFile = await createCroppedImageFile(
         imageSrc,
         croppedAreaPixels,
       );
-      onApply(croppedFile);
+      if (mountedRef.current) onApply(croppedFile);
+    } catch {
+      if (mountedRef.current) {
+        setError("이미지를 처리하지 못했습니다. 다시 시도하거나 다른 사진을 선택해주세요.");
+      }
     } finally {
-      setIsApplying(false);
+      if (mountedRef.current) setIsApplying(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto px-4 py-4">
       <button
         type="button"
         aria-label="이미지 편집 닫기"
@@ -54,11 +73,13 @@ export default function ProfileImageCropper({
       />
 
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="profile-crop-title"
         className="
-          relative z-10 w-full max-w-[520px]
+          relative z-10 max-h-[calc(100dvh-32px)] w-full max-w-[520px] overflow-y-auto
           rounded-3xl bg-white p-5 shadow-[0_0_50px_rgba(0,0,0,0.12)]
           sm:p-8
         "
@@ -76,23 +97,20 @@ export default function ProfileImageCropper({
             </p>
           </div>
 
-          <button
-            type="button"
+          <IconButton
+            size="sm"
             onClick={onCancel}
             aria-label="이미지 편집 닫기"
-            className="
-              flex h-9 w-9 items-center justify-center rounded-full text-gray-700
-              hover:bg-gray-100
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-            "
+            className={`${styles.icon} cursor-pointer text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500`}
           >
             <X size={22} aria-hidden="true" />
-          </button>
+          </IconButton>
         </div>
 
         <div className="relative h-[300px] overflow-hidden rounded-2xl bg-gray-900 sm:h-[360px]">
           <Cropper
             image={imageSrc}
+            mediaProps={{ onError: () => setError("이미지를 읽지 못했습니다. 다른 사진을 선택해주세요.") }}
             crop={crop}
             zoom={zoom}
             aspect={1}
@@ -112,9 +130,9 @@ export default function ProfileImageCropper({
             className="shrink-0 text-gray-600"
             aria-hidden="true"
           />
-          <label htmlFor="profile-image-zoom" className="sr-only">
+          <Label htmlFor="profile-image-zoom" className="sr-only">
             이미지 확대 비율
-          </label>
+          </Label>
           <input
             id="profile-image-zoom"
             type="range"
@@ -127,34 +145,17 @@ export default function ProfileImageCropper({
           />
         </div>
 
-        <div className="mt-6 flex gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="
-              h-12 flex-1 rounded-xl border border-gray-200 bg-white
-              text-base font-semibold text-gray-600
-              hover:border-gray-300
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-            "
-          >
+        {error && <p role="alert" className="mt-4 text-sm text-red-600">{error}</p>}
+        <div className={`${styles.actions} mt-6`}>
+          <Button type="button" variant="secondary" onClick={onCancel}
+            className={`${styles.button} ${styles.secondary}`}>
             취소
-          </button>
-          <button
-            type="button"
-            onClick={handleApply}
+          </Button>
+          <Button type="button" onClick={handleApply}
             disabled={!croppedAreaPixels || isApplying}
-            className="
-              h-12 flex-1 rounded-xl bg-primary-500
-              text-base font-semibold text-white
-              hover:bg-primary-600
-              disabled:cursor-not-allowed disabled:opacity-40
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500
-              focus-visible:ring-offset-2
-            "
-          >
+            className={`${styles.button} ${styles.primary}`}>
             {isApplying ? "적용 중..." : "적용"}
-          </button>
+          </Button>
         </div>
       </section>
     </div>
