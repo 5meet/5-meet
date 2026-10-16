@@ -1,0 +1,243 @@
+@font-face {
+  font-family: "DetailCardPretendard";
+  src: url("/fonts/detail-card/PretendardVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+.frame {
+  container: detail-card / inline-size;
+  min-width: 0;
+  width: 100%;
+}
+.card {
+  position: relative;
+  font-family: "DetailCardPretendard", sans-serif;
+  display: flex;
+  gap: 24px;
+  min-width: 0;
+  min-height: 236px;
+  padding: 24px;
+  border-radius: 32px;
+  background: white;
+}
+.favorite {
+  position: absolute;
+  top: 32px;
+  right: 36px;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.favorite:disabled {
+  opacity: 0.5;
+}
+.favorite :global(button) {
+  box-shadow: none;
+}
+.image {
+  position: relative;
+  width: 188px;
+  height: 188px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--color-gray-100);
+}
+.photo {
+  object-fit: cover;
+}
+.content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 60px;
+}
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border-radius: 24px;
+  padding: 5px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+.upcoming {
+  background: var(--color-primary-200);
+  color: var(--color-primary-600);
+  font-weight: 600;
+}
+.inactive {
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+.waiting {
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+.confirmed {
+  border: 1px solid #17da71;
+  color: var(--color-primary-600);
+  gap: 2px;
+  padding: 3px 12px 3px 8px;
+  font-weight: 500;
+}
+.title {
+  margin-left: 4px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  letter-spacing: -0.4px;
+  overflow-wrap: anywhere;
+}
+.title a:hover {
+  text-decoration: underline;
+}
+.title a:focus-visible,
+.action:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 4px;
+}
+.bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.details {
+  min-width: 0;
+}
+.participants {
+  padding-left: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+.metadata {
+  padding-left: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+.metadata div {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+.metadata div + div {
+  border-left: 1px solid var(--color-gray-300);
+  padding-left: 10px;
+}
+.metadata dt {
+  color: var(--color-gray-500);
+}
+.metadata dd {
+  color: var(--color-gray-600);
+  overflow-wrap: anywhere;
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 48px;
+  height: 48px;
+  border: 1px solid var(--color-primary-500);
+  border-radius: 10px;
+  padding: 10px 24px;
+  color: #54c591;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 132px;
+  padding-inline: 20px;
+  letter-spacing: -0.32px;
+  white-space: nowrap;
+}
+.reviewAction {
+  background: var(--color-primary-500);
+  color: white;
+}
+.action:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+@container detail-card (min-width: 900px) {
+  .action {
+    width: 156px;
+    padding-inline: 24px;
+  }
+}
+@container detail-card (max-width: 639px) {
+  .title {
+    margin-left: 0;
+  }
+  .participants {
+    padding-left: 0;
+  }
+  .favorite {
+    top: 16px;
+    right: 16px;
+  }
+  .heading {
+    padding-right: 0;
+  }
+  .card {
+    flex-direction: column;
+    gap: 16px;
+    min-height: 390px;
+    padding: 0 0 20px;
+    border-radius: 24px;
+    overflow: hidden;
+  }
+  .image {
+    width: 100%;
+    height: 156px;
+    border-radius: 24px 24px 0 0;
+  }
+  .content {
+    padding: 0 16px;
+  }
+  .bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+    margin-top: 12px;
+  }
+  .metadata {
+    margin-top: 6px;
+  }
+  .action {
+    padding: 9px 20px;
+    height: 44px;
+    width: 133px;
+    align-self: flex-end;
+    min-height: 44px;
+  }
+}
