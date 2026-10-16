@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { userEvent, within, expect } from "storybook/test";
 
 import ProfileEditModal from "./ProfileEditModal";
 
@@ -73,5 +74,30 @@ export const Desktop: Story = {
       value: "desktop",
       isRotated: false,
     },
+  },
+};
+
+export const NameOnly: Story = { args: { allowImageEdit: false } };
+
+export const Saving: Story = {
+  args: { allowImageEdit: false, onSubmit: () => new Promise<void>(() => {}) },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.clear(canvas.getByLabelText("이름", { exact: true }));
+    await userEvent.type(canvas.getByLabelText("이름", { exact: true }), "변경한 이름");
+    await userEvent.click(canvas.getByRole("button", { name: "수정하기" }));
+    await expect(canvas.getByRole("button", { name: /수정하기/ })).toBeDisabled();
+  },
+};
+
+export const SaveError: Story = {
+  args: { allowImageEdit: false, onSubmit: async () => { throw new Error("이름을 저장하지 못했어요. 잠시 후 다시 시도해주세요."); } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.clear(canvas.getByLabelText("이름", { exact: true }));
+    await userEvent.type(canvas.getByLabelText("이름", { exact: true }), "변경한 이름");
+    await userEvent.click(canvas.getByRole("button", { name: "수정하기" }));
+    await expect(canvas.getByRole("alert")).toBeVisible();
+    await expect(canvas.getByLabelText("이름", { exact: true })).toHaveValue("변경한 이름");
   },
 };
