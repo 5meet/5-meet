@@ -9,6 +9,7 @@ import { CategoryStep, InfoStep, DescriptionStep, ScheduleStep } from "./steps";
 import { useCreateMeetingMutation } from "@/features/meetings/hooks/useCreateMeetingMutation";
 import { mapToCreateMeeting } from "@/features/meetings/meetings.mapper";
 import {
+  CAPACITY_MIN,
   validateMeetingCapacity,
   validateDateTimeIsFuture,
   validateRegistrationEndBeforeDateTime,
@@ -31,7 +32,7 @@ const DEFAULT_VALUES: MeetingFormValues = {
   time: "",
   registrationEndDate: "",
   registrationEndTime: "",
-  capacity: 0,
+  capacity: CAPACITY_MIN,
 };
 
 interface CreateMeetingModalProps {

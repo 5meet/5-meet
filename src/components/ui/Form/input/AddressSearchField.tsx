@@ -67,33 +67,7 @@ export const AddressSearchField = ({
         const region = `${data.sido} ${data.sigungu}`.trim();
         const roadAddress: string = data.roadAddress || data.jibunAddress;
 
-        if (window.kakao?.maps?.services) {
-          const geocoder = new window.kakao.maps.services.Geocoder();
-          geocoder.addressSearch(roadAddress, (result, status) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-              onSelectAddress({
-                region: region,
-                address: roadAddress,
-                latitude: Number(result[0].y),
-                longitude: Number(result[0].x),
-              });
-            } else {
-              onSelectAddress({
-                region: region,
-                address: roadAddress,
-                latitude: null,
-                longitude: null,
-              });
-            }
-          });
-        } else {
-          onSelectAddress({
-            region: region,
-            address: roadAddress,
-            latitude: null,
-            longitude: null,
-          });
-        }
+        geocode(region, roadAddress);
       },
     }).open();
   };
