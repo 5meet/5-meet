@@ -40,7 +40,41 @@ export async function bffFetch(
     );
   }
 
-  const url = `${apiBase.replace(/\/$/, "")}/${path}`;
+  // 1. 백엔드 기본 URL
+  const baseUrl = new URL(`${apiBase.replace(/\/+$/, "")}/`);
+
+  // 2. 실제 요청할 URL 생성
+  const targetUrl = new URL(path, baseUrl);
+
+  // 3. 백엔드 기본 경로
+  const basePath = baseUrl.pathname.replace(/\/$/, "");
+
+  // 4. 공통 BFF에서 허용할 API 그룹
+  const allowedPrefixes = [
+    `${basePath}/users`,
+    `${basePath}/meetings`,
+    `${basePath}/images`,
+    `${basePath}/reviews`,
+  ];
+
+  // 5. 최종 URL이 허용된 경로에 속하는지 검사
+  const isAllowed = allowedPrefixes.some(
+    (prefix) =>
+      targetUrl.pathname === prefix ||
+      targetUrl.pathname.startsWith(`${prefix}/`),
+  );
+
+  if (targetUrl.origin !== baseUrl.origin || !isAllowed) {
+    return Response.json(
+      {
+        code: "NOT_FOUND",
+        message: "허용되지 않은 API 요청입니다.",
+      },
+      { status: 404 },
+    );
+  }
+
+  const url = targetUrl.toString();
 
   // AT를 전달해 백엔드에 요청하는 함수
   const requestWithToken = (token: string) => {
@@ -57,6 +91,7 @@ export async function bffFetch(
       headers,
       body: options.body,
       cache: "no-store",
+      redirect: "manual",
       signal: AbortSignal.timeout(10000),
     });
   };

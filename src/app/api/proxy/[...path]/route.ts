@@ -11,21 +11,36 @@ type RouteContext = {
 type HttpMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
 // BFF를 통해 접근할 수 있는 백엔드 API 그룹
-const ALLOWED_PATHS = new Set(["users", "meetings"]);
+const ALLOWED_PATHS = new Set(["users", "meetings", "images", "reviews"]);
 
-async function handleRequest(
-  request: NextRequest,
-  context: RouteContext,
-) {
+// 경로 우회를 방지하기 위한 검증
+function isAllowedPath(path: string[]): boolean {
+  if (path.length === 0 || !ALLOWED_PATHS.has(path[0])) {
+    return false;
+  }
+
+  return path.every((segment) => {
+    if (
+      !segment ||
+      segment.includes("%") ||
+      segment.includes("/") ||
+      segment.includes("\\") ||
+      segment === "." ||
+      segment === ".."
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+async function handleRequest(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
   const method = request.method as HttpMethod;
 
-  // 1. 허용된 API 그룹인지 검증
-  if (
-    path.length === 0 ||
-    !ALLOWED_PATHS.has(path[0]) ||
-    path.some((segment) => segment === "." || segment === "..")
-  ) {
+  // 1. 허용된 API 경로인지 검증
+  if (!isAllowedPath(path)) {
     return NextResponse.json(
       {
         code: "NOT_FOUND",
@@ -37,9 +52,7 @@ async function handleRequest(
 
   // 2. GET, DELETE를 제외한 요청 본문 읽기
   const body =
-    method === "GET" || method === "DELETE"
-      ? undefined
-      : await request.text();
+    method === "GET" || method === "DELETE" ? undefined : await request.text();
 
   // 3. 쿼리 파라미터 포함
   const query = request.nextUrl.search;
@@ -53,19 +66,19 @@ async function handleRequest(
     });
 
     // 5. 백엔드 응답 전달
-    return new NextResponse(
-      response.status === 204 ? null : response.body,
-      {
-        status: response.status,
-        headers: {
-          "Content-Type":
-            response.headers.get("Content-Type") ?? "application/json",
-        },
+    return new NextResponse(response.status === 204 ? null : response.body, {
+      status: response.status,
+      headers: {
+        "Content-Type":
+          response.headers.get("Content-Type") ?? "application/json",
       },
-    );
+    });
   } catch (error) {
     // 6. 요청 시간 초과
-    if (error instanceof Error && error.name === "TimeoutError") {
+    if (
+      error instanceof Error &&
+      (error.name === "TimeoutError" || error.name === "AbortError")
+    ) {
       return NextResponse.json(
         {
           code: "TIMEOUT_ERROR",
