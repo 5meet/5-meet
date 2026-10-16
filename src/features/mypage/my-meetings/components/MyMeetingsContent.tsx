@@ -11,6 +11,8 @@ import {
   useJoinedMeetingsQuery,
 } from "../hooks/useJoinedMeetingsQuery";
 import type { JoinedMeeting } from "../types";
+import { useJoinedMeetingsInfiniteScroll } from "../hooks/useJoinedMeetingsInfiniteScroll";
+import MeetingListContinuation from "./MeetingListContinuation";
 import { useMyMeetingActionLock } from "../hooks/useMyMeetingActionLock";
 import { useCancelJoinedMeeting } from "../hooks/useCancelJoinedMeeting";
 import { useToggleJoinedMeetingFavorite } from "../hooks/useToggleJoinedMeetingFavorite";
@@ -129,6 +131,14 @@ export default function MyMeetingsContent() {
     onError: reportError,
   });
 
+  const continuationRef = useJoinedMeetingsInfiniteScroll({
+    enabled: Boolean(query.hasNextPage) && !query.isFetching &&
+      !query.isFetchNextPageError && !query.isRefetchError &&
+      cancelPendingId === null && favoritePendingId === null &&
+      cancelSelection === null,
+    fetchNextPage: query.fetchNextPage,
+  });
+
   if (query.isPending) return <MyMeetingsView status="loading" />;
   if (query.isError && !query.data) {
     return (
@@ -175,22 +185,13 @@ export default function MyMeetingsContent() {
           목록 다시 불러오기
         </Button>
       )}
-      {query.isFetchNextPageError && (
-        <p role="alert" className="mt-4 text-sm text-red-600">
-          추가 목록을 불러오지 못했습니다. 더 보기를 눌러 다시 시도해 주세요.
-        </p>
-      )}
       {query.hasNextPage && (
-        <div className="mt-6 flex justify-center">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => void query.fetchNextPage()}
-            disabled={query.isFetchingNextPage}
-            className="h-auto w-auto rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-800 disabled:opacity-50"
-          >
-            {query.isFetchingNextPage ? "불러오는 중..." : "더 보기"}
-          </Button>
+        <div ref={continuationRef}>
+          <MeetingListContinuation
+            isLoading={query.isFetchingNextPage}
+            isError={query.isFetchNextPageError}
+            onRetry={() => void query.fetchNextPage({ cancelRefetch: false })}
+          />
         </div>
       )}
     </>

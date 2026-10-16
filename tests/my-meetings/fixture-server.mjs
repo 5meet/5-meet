@@ -44,6 +44,7 @@ http
       reset(url.searchParams.get("mode") || "success");
       return send(200, { ok: true });
     }
+    if (url.pathname === "/__qa/recover") { state.mode = "success"; return send(200, { ok: true }); }
     if (url.pathname === "/__qa/state") return send(200, state);
     state.requests.push({
       path: req.url,
@@ -96,6 +97,8 @@ http
       if (state.mode === "empty")
         return send(200, { data: [], hasMore: false, nextCursor: null });
       const cursor = url.searchParams.get("cursor");
+      if (cursor && state.mode === "slow-next")
+        await new Promise((resolve) => setTimeout(resolve, 700));
       if (cursor && state.mode === "next-error")
         return send(500, { code: "QA_ERROR", message: "추가 조회 실패" });
       const available = state.meetings.filter(

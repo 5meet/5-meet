@@ -134,16 +134,20 @@ try {
       400,
     );
     record("Invalid page sizes and meeting IDs return 400");
-    let { page, context } = await pageFor();
+    let { page, context } = await pageFor("success", { width: 375, height: 400 });
     await page.getByRole("button", { name: "예약 취소하기" }).waitFor();
     assert.equal(await page.getByRole("article").count(), 2);
-    await page.getByRole("button", { name: "더 보기" }).click();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.getByRole("article").nth(3).waitFor();
     assert.equal(
       await page.getByRole("button", { name: "예약 취소하기" }).count(),
       1,
     );
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(700);
     const state = await (await fetch(`${upstream}/__qa/state`)).json();
+    assert.equal(state.requests.filter((r) => r.path.includes("cursor=next")).length, 1);
+    assert.equal(await page.getByRole("button", { name: "더 보기", exact: true }).count(), 0);
     assert(state.requests.some((r) => r.path.includes("cursor=next")));
     assert(
       state.requests
@@ -220,7 +224,8 @@ try {
       .getByRole("dialog")
       .filter({ hasText: "예약 취소 테스트 오류" })
       .waitFor();
-    assert.equal(await page.getByRole("article").count(), 2);
+    await page.getByRole("link", { name: "작은 독서 습관 만들기" }).waitFor();
+    assert((await page.getByRole("article").count()) >= 2);
     await page.screenshot({ path: path.join(output, "cancel-error-mobile.png") });
     record("Cancellation failure retains list and shows upstream message");
     await context.close();
@@ -238,14 +243,33 @@ try {
     );
     record("Successful cancellation remains removed if refetch fails");
     await context.close();
+    ({ page, context } = await pageFor("slow-next", { width: 375, height: 400 }));
+    await page.getByRole("article").nth(1).waitFor();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.getByRole("status").filter({ hasText: "더 불러오는" }).waitFor();
+    await page.screenshot({ path: path.join(output, "infinite-scroll-loading-mobile.png") });
+    for (let i = 0; i < 4; i++) await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.getByRole("article").nth(3).waitFor();
+    assert.equal((await (await fetch(`${upstream}/__qa/state`)).json()).requests.filter((r) => r.path.includes("cursor=next")).length, 1);
+    record("Infinite scroll issues one request while pending and stops at the last page");
+    await context.close();
     ({ page, context } = await pageFor("next-error"));
-    await page.getByRole("button", { name: "더 보기" }).click();
+    await page.getByRole("article").nth(1).waitFor();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page
       .getByRole("alert")
       .filter({ hasText: "추가 목록" })
       .waitFor({ timeout: 20000 });
     assert.equal(await page.getByRole("article").count(), 2);
-    record("Next-page failure retains existing list and offers retry");
+    const failedCount = (await (await fetch(`${upstream}/__qa/state`)).json()).requests.filter((r) => r.path.includes("cursor=next")).length;
+    await page.waitForTimeout(1500);
+    assert.equal((await (await fetch(`${upstream}/__qa/state`)).json()).requests.filter((r) => r.path.includes("cursor=next")).length, failedCount);
+    await page.screenshot({ path: path.join(output, "infinite-scroll-error-mobile.png") });
+    await fetch(`${upstream}/__qa/recover`);
+    await page.getByRole("button", { name: "추가 목록 다시 시도" }).click();
+    await page.getByRole("article").nth(3).waitFor();
+    assert.equal(await page.getByRole("button", { name: "더 보기", exact: true }).count(), 0);
+    record("Next-page failure retains list, stops automatic retries, and manual retry recovers");
     await context.close();
     ({ page, context } = await pageFor("empty"));
     await page.getByText("아직 신청한 모임이 없어요").waitFor();
