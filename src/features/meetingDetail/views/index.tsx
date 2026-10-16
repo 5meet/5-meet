@@ -7,6 +7,7 @@ import KakaoMap from "@/features/meetingDetail/ui/KakaoMap";
 import { ReviewCardList } from "@/features/meetingDetail/ui/ReviewCard";
 import Pagination from "@/components/ui/Pagination/Pagination";
 import CompactCard from "@/components/ui/CompactCard/CompactCard";
+import FallbackImage from "@/components/ui/FallbackImage/FallbackImage";
 import { showToast } from "@/components/ui/Sonner";
 import { Spinner } from "@/components/ui/Spinner/Spinner";
 import {
@@ -100,14 +101,13 @@ const MeetingDetailPageClient = ({
         <section className="w-full">
           <div className="flex gap-4 justify-center flex-wrap md:flex-nowrap">
             <div className="relative w-[343px] h-[241px] bg-[#EDEDED] rounded-4xl shadow-sm overflow-hidden md:w-[333px] md:h-[362px] lg:w-[630px] lg:h-[443px]">
-              {meeting.image && (
-                <Image
-                  src={meeting.image || "/meetings-hero.jpg"}
-                  alt={meeting.title}
-                  fill
-                  className="object-cover"
-                />
-              )}
+              <FallbackImage
+                key={meeting.image || "/meetings-hero.jpg"}
+                src={meeting.image}
+                alt={meeting.title}
+                fill
+                className="object-cover"
+              />
             </div>
 
             <div className="flex flex-col gap-4">

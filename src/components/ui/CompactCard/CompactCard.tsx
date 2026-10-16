@@ -5,6 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Tags from "@/components/ui/Tags/Tags";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
+import FallbackImage from "@/components/ui/FallbackImage/FallbackImage";
 import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
 
 interface BaseCompactCardProps {
@@ -73,14 +74,13 @@ const CompactCard = (props: CompactCardProps) => {
       </Link>
 
       <div className="relative z-1 pointer-events-none overflow-hidden w-full h-[162px] bg-[#E3E3E3] rounded-2xl md:rounded-3xl md:h-[180px]">
-        {props.image && (
-          <Image
-            src={props.image}
-            alt={props.title}
-            fill
-            className="object-cover"
-          />
-        )}
+        <FallbackImage
+          key={props.image || "/meetings-hero.jpg"}
+          src={props.image}
+          alt={props.title}
+          fill
+          className="object-cover"
+        />
 
         {props.variant === "meeting" && (
           // 링크(z-0)보다 위, 버튼만 pointer-events 활성화
