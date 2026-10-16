@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
 
   const redirect = getSafeRedirect(
     request.nextUrl.searchParams.get("redirect"),
+    "/meetings", //redirect가 없다면 이동할 기본 주소
+    request.nextUrl.origin
   );
   if (!restApiKey) {
     throw new Error("KAKAO_REST_API_KEY가 설정되지 않았습니다.");

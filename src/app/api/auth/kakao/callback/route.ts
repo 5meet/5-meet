@@ -10,6 +10,19 @@ import { getSafeRedirect } from "@/lib/utils/getSafeRedirect";
 
 const KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 
+function createLoginErrorUrl(
+  request: NextRequest,
+  error: string,
+  redirect: string,
+) {
+  const url = new URL("/login", request.url);
+
+  url.searchParams.set("error", error);
+  url.searchParams.set("redirect", redirect);
+
+  return url;
+}
+
 interface KakaoTokenResponse {
   access_token: string;
   token_type: string;
@@ -64,48 +77,65 @@ async function exchangeKakaoToken(code: string) {
   return data.access_token;
 }
 
+
 export async function GET(request: NextRequest) {
   const queryState = request.nextUrl.searchParams.get("state");
   const cookieState = request.cookies.get(KAKAO_STATE_COOKIE)?.value;
 
-  // 추가: 로그인 성공 후 이동할 경로 복원
+  // 로그인 후 이동할 경로 복원 및 검증
   const redirect = getSafeRedirect(
     request.cookies.get(KAKAO_REDIRECT_COOKIE)?.value,
+    "/meetings",
+    request.nextUrl.origin,
   );
 
-  // 임시 OAuth 쿠키 삭제를 공통 처리
+  // 임시 OAuth 쿠키 삭제
   const clearOAuthCookies = (response: NextResponse) => {
     response.cookies.delete(KAKAO_STATE_COOKIE);
     response.cookies.delete(KAKAO_REDIRECT_COOKIE);
     return response;
   };
 
-  // state 검증 실패
-  if (!queryState || !cookieState || queryState !== cookieState) {
+  // 실패 시 오류 정보와 원래 목적지를 유지
+  const redirectToLoginError = (error: string) => {
     const response = NextResponse.redirect(
-      new URL("/login?error=kakao_state", request.url),
+      createLoginErrorUrl(request, error, redirect),
     );
 
     return clearOAuthCookies(response);
+  };
+
+  // 1. OAuth state 검증
+  if (!queryState || !cookieState || queryState !== cookieState) {
+    return redirectToLoginError("kakao_state");
   }
 
+  // 2. 카카오 로그인 취소 및 인증 오류 확인
+  const kakaoError = request.nextUrl.searchParams.get("error");
+
+  if (kakaoError) {
+    if (kakaoError === "access_denied") {
+      return redirectToLoginError("kakao_cancel");
+    }
+
+    return redirectToLoginError("kakao_login");
+  }
+
+  // 3. Authorization Code 검증
   const code = request.nextUrl.searchParams.get("code");
 
-  // Authorization Code가 없는 경우
   if (!code) {
-    const response = NextResponse.redirect(
-      new URL("/login?error=kakao_code", request.url),
-    );
-
-    return clearOAuthCookies(response);
+    return redirectToLoginError("kakao_code");
   }
 
   try {
+    // 4. 카카오 Access Token 발급
     const kakaoAccessToken = await exchangeKakaoToken(code);
 
+    // 5. 백엔드 소셜 로그인
     const result = await socialLogin("kakao", kakaoAccessToken);
 
-    // 변경: 고정 경로가 아닌 저장된 경로로 이동
+    // 6. 로그인 성공 후 원래 목적지로 이동
     const response = NextResponse.redirect(
       new URL(redirect, request.url),
     );
@@ -116,10 +146,6 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("카카오 로그인 실패", error);
 
-    const response = NextResponse.redirect(
-      new URL("/login?error=kakao_login", request.url),
-    );
-
-    return clearOAuthCookies(response);
+    return redirectToLoginError("kakao_login");
   }
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MobileMenu } from "./MobileMenu";
 import { logoutAction } from "@/features/auth/logout/actions/logoutAction";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
   {
@@ -27,6 +28,14 @@ const NAV_ITEMS = [
 
 export default function GNB() {
   const { data: user, isPending, isError } = useCurrentUser();
+  const pathname = usePathname();
+
+  // 다른 페이지에서 로그인 버튼을 누를 경우 이전 페이지로 이동하도록 수정
+  const redirect = pathname === "/" ? "/meetings" : pathname;
+
+  const loginHref = `/login?${new URLSearchParams({
+    redirect,
+  }).toString()}`;
 
   return (
     <header className="relative w-full bg-[#f5f7f8]">
@@ -59,14 +68,10 @@ export default function GNB() {
         <div className="ml-auto flex items-center gap-3">
           {isPending ? (
             // 사용자 정보 조회 중
-            <span className="text-sm text-gray-400">
-              확인 중...
-            </span>
+            <span className="text-sm text-gray-400">확인 중...</span>
           ) : isError ? (
             // API 오류 발생
-            <span className="text-sm text-red-500">
-              사용자 정보 오류
-            </span>
+            <span className="text-sm text-red-500">사용자 정보 오류</span>
           ) : user ? (
             // 로그인 상태
             <div className="hidden items-center gap-3 md:flex">
@@ -86,7 +91,7 @@ export default function GNB() {
           ) : (
             // 비로그인 상태
             <Link
-              href="/login"
+              href={loginHref}
               className="inline-flex h-8 items-center justify-center rounded-lg bg-emerald-500 px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-600 md:h-9 md:px-5 md:text-sm"
             >
               로그인
