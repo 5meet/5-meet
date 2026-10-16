@@ -27,13 +27,14 @@ import {
 import {
   validateMeetingForm,
   MeetingFormErrors,
+  CAPACITY_MIN,
+  CAPACITY_MAX,
 } from "@/lib/validators/meetingFormValidators";
 
 import type {
   MeetingUpdateRequest,
   MeetingFormState,
 } from "@/features/meetingDetail/types/meetingDetail";
-import type { AppError } from "@/lib/api/type";
 
 interface EditMeetingModalProps {
   meetingId: number;
@@ -235,6 +236,7 @@ const EditMeetingModal = ({
     }));
   };
 
+  // 모달 닫기
   const handleClose = () => {
     revokePendingBlob();
     setForm(INITIAL_FORM);
@@ -373,7 +375,8 @@ const EditMeetingModal = ({
                   <Input
                     id="capacity"
                     type="number"
-                    min={0}
+                    min={CAPACITY_MIN}
+                    max={CAPACITY_MAX}
                     value={form.capacity}
                     onChange={(e) =>
                       handleField("capacity", Number(e.target.value))

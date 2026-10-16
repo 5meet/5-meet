@@ -9,6 +9,7 @@ import { CategoryStep, InfoStep, DescriptionStep, ScheduleStep } from "./steps";
 import { useCreateMeetingMutation } from "@/features/meetings/hooks/useCreateMeetingMutation";
 import { mapToCreateMeeting } from "@/features/meetings/meetings.mapper";
 import {
+  validateMeetingCapacity,
   validateDateTimeIsFuture,
   validateRegistrationEndBeforeDateTime,
 } from "@/lib/validators/meetingFormValidators";
@@ -74,6 +75,8 @@ export function CreateMeetingModal({
     "capacity",
   ]);
 
+  const capacityError = validateMeetingCapacity(capacity);
+
   // 다음 버튼 비활성화 조건
   const isNextDisabled =
     (step === 1 && !type) ||
@@ -86,7 +89,7 @@ export function CreateMeetingModal({
         image.startsWith("blob:"))) ||
     (step === 3 && !description.trim()) ||
     (step === 4 &&
-      (!date || !time || !regEndDate || !regEndTime || !(capacity > 0)));
+      (!date || !time || !regEndDate || !regEndTime || capacityError !== null));
 
   // 모달 닫기
   const handleClose = () => {
@@ -100,6 +103,7 @@ export function CreateMeetingModal({
     const form = methods.getValues();
 
     const error =
+      validateMeetingCapacity(form.capacity) ??
       validateDateTimeIsFuture(form.date, form.time) ??
       validateRegistrationEndBeforeDateTime(form);
 

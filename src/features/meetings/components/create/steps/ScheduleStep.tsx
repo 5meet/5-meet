@@ -6,6 +6,12 @@ import { Input } from "@/components/ui/Form/input/Input";
 import { DateField } from "@/components/ui/Form/input/DateField";
 import { TimeField } from "@/components/ui/Form/input/TimeField";
 
+import {
+  CAPACITY_MIN,
+  CAPACITY_MAX,
+  validateMeetingCapacity,
+} from "@/lib/validators/meetingFormValidators";
+
 import type { MeetingFormValues } from "@/features/meetings/types/meetings";
 
 export function ScheduleStep() {
@@ -15,6 +21,9 @@ export function ScheduleStep() {
   const time = watch("time");
   const registrationEndDate = watch("registrationEndDate");
   const registrationEndTime = watch("registrationEndTime");
+
+  const capacity = watch("capacity");
+  const capacityError = capacity ? validateMeetingCapacity(capacity) : null;
 
   return (
     <div className="space-y-6">
@@ -67,7 +76,10 @@ export function ScheduleStep() {
         <Input
           id="meeting-capacity"
           type="number"
-          min={0}
+          min={CAPACITY_MIN}
+          max={CAPACITY_MAX}
+          step={1}
+          isError={!!capacityError}
           placeholder="모임 정원을 입력해주세요"
           {...register("capacity", { valueAsNumber: true })}
           required

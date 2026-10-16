@@ -3,8 +3,6 @@
 // 모임 만들기 2단계 기본 정보(name, address, imageUrl) 정하기
 import { useRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
-import { getUploadErrorMessage } from "@/features/images/utils/getUploadErrorMessage";
 
 import { Label } from "@/components/ui/Form/label/Label";
 import { Input } from "@/components/ui/Form/input/Input";
@@ -12,8 +10,10 @@ import { AddressSearchField } from "@/components/ui/Form/input/AddressSearchFiel
 import { ImageUploadField } from "@/components/ui/Form/input/ImageUploadField";
 import { showToast } from "@/components/ui/Sonner";
 
+import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
+import { getUploadErrorMessage } from "@/features/images/utils/getUploadErrorMessage";
+
 import type { MeetingFormValues } from "@/features/meetings/types/meetings";
-import type { AppError } from "@/lib/api/type";
 
 export function InfoStep() {
   const { register, setValue, watch } = useFormContext<MeetingFormValues>();
