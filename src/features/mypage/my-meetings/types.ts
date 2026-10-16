@@ -1,13 +1,4 @@
-import type { Meeting } from "@/features/meetings/types/meeting";
-
-// Reuse only fields whose meaning and nullability match the list response.
-type BaseMeeting = Pick<
-  Meeting,
-  | "id" | "teamId" | "name" | "type" | "region"
-  | "capacity" | "participantCount" | "image"
-  | "canceledAt" | "confirmedAt" | "hostId" | "createdBy" | "host"
-  | "isCompleted"
->;
+import type { BaseMeeting } from "@/lib/types/meeting";
 
 /** Swagger: GET /{teamId}/meetings/joined */
 export interface JoinedMeeting extends BaseMeeting {
