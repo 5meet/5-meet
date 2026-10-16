@@ -18,6 +18,7 @@ import { showToast } from "@/components/ui/Sonner";
 import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
+import { getUploadErrorMessage } from "@/features/images/utils/getUploadErrorMessage";
 import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
 import {
   splitISOToKSTDateTime,
@@ -26,8 +27,14 @@ import {
 import {
   validateMeetingForm,
   MeetingFormErrors,
+  CAPACITY_MIN,
+  CAPACITY_MAX,
 } from "@/lib/validators/meetingFormValidators";
-import type { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
+
+import type {
+  MeetingUpdateRequest,
+  MeetingFormState,
+} from "@/features/meetingDetail/types/meetingDetail";
 
 interface EditMeetingModalProps {
   meetingId: number;
@@ -43,28 +50,12 @@ const EDIT_TABS = [
 
 type EditTabValue = (typeof EDIT_TABS)[number]["value"];
 
-// 폼 내부에서 쓰는 상태
-interface EditMeetingFormState {
-  name: string;
-  type: string;
-  region: string; // 도로명 주소 (AddressSearchField의 address)
-  address: string; // 상세 주소
-  latitude: number;
-  longitude: number;
-  date: string; // "2027-02-10"
-  time: string; // "17:30"
-  registrationEndDate: string;
-  registrationEndTime: string;
-  capacity: number;
-  image: string; // 미리보기/업로드된 URL
-  description: string;
-}
-
-const INITIAL_FORM: EditMeetingFormState = {
+const INITIAL_FORM: MeetingFormState = {
   name: "",
   type: "",
   region: "",
   address: "",
+  detailAddress: "",
   latitude: 0,
   longitude: 0,
   date: "",
@@ -87,11 +78,13 @@ const EditMeetingModal = ({
 
   const [errors, setErrors] = useState<MeetingFormErrors>({});
   const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
-  const [form, setForm] = useState<EditMeetingFormState>(INITIAL_FORM);
+  const [form, setForm] = useState<MeetingFormState>(INITIAL_FORM);
   const [initializedMeetingId, setInitializedMeetingId] = useState<
     number | null
   >(null);
+  const [isAddressChanged, setIsAddressChanged] = useState(false);
 
+  const uploadRequestIdRef = useRef(0);
   // 아직 업로드 중/실패한 blob을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
   const revokePendingBlob = () => {
@@ -114,6 +107,7 @@ const EditMeetingModal = ({
       type: meeting.category,
       region: meeting.location,
       address: meeting.address,
+      detailAddress: "",
       latitude: meeting.latitude,
       longitude: meeting.longitude,
       date,
@@ -127,9 +121,9 @@ const EditMeetingModal = ({
     setInitializedMeetingId(meeting.id);
   }
 
-  const handleField = <K extends keyof EditMeetingFormState>(
+  const handleField = <K extends keyof MeetingFormState>(
     field: K,
-    value: EditMeetingFormState[K],
+    value: MeetingFormState[K],
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -152,7 +146,9 @@ const EditMeetingModal = ({
       name: form.name,
       type: form.type,
       region: form.region,
-      address: form.address,
+      address: isAddressChanged
+        ? `${form.address} ${form.detailAddress}`.trim()
+        : form.address,
       latitude: form.latitude,
       longitude: form.longitude,
       dateTime: combineKSTDateTimeToISO(form.date, form.time),
@@ -177,6 +173,8 @@ const EditMeetingModal = ({
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
     const previousImage = form.image; // 실패 시 되돌릴 원래 값 (서버의 기존 이미지 URL 또는 빈 문자열)
+    const requestId = ++uploadRequestIdRef.current;
+
     revokePendingBlob(); // 이전에 선택했던 blob(아직 업로드 완료 안 된 것)이 있으면 먼저 해제
     const previewUrl = URL.createObjectURL(file);
     pendingBlobUrlRef.current = previewUrl;
@@ -184,15 +182,17 @@ const EditMeetingModal = ({
 
     uploadImageMutation.mutate(file, {
       onSuccess: (publicUrl) => {
+        if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
         revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
         handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
       },
-      onError: () => {
+      onError: (error) => {
+        if (requestId !== uploadRequestIdRef.current) return;
         revokePendingBlob();
         handleField("image", previousImage); // 실패 시 롤백
         showToast({
           kind: "error",
-          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+          message: getUploadErrorMessage(error),
         });
       },
     });
@@ -200,14 +200,48 @@ const EditMeetingModal = ({
 
   // 이미지 삭제
   const handleImageRemove = () => {
+    uploadRequestIdRef.current++; // 진행 중이던 요청을 무효화
     revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
     handleField("image", "");
   };
 
+  // 주소 검색
+  const handleSelectAddress = ({
+    region,
+    address,
+    latitude,
+    longitude,
+  }: {
+    region: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+  }) => {
+    if (latitude === null || longitude === null) {
+      showToast({
+        kind: "error",
+        message: "주소의 위치를 확인할 수 없습니다. 다른 주소를 선택해주세요.",
+      });
+      return;
+    }
+
+    setIsAddressChanged(true);
+    setForm((prev) => ({
+      ...prev,
+      region,
+      address,
+      detailAddress: "",
+      latitude: latitude,
+      longitude: longitude,
+    }));
+  };
+
+  // 모달 닫기
   const handleClose = () => {
     revokePendingBlob();
     setForm(INITIAL_FORM);
     setInitializedMeetingId(null);
+    setIsAddressChanged(false);
     setErrors({});
     onClose();
   };
@@ -263,17 +297,13 @@ const EditMeetingModal = ({
 
                 <div className="flex flex-col gap-1">
                   <AddressSearchField
-                    address={form.region}
-                    detailAddress={form.address}
-                    onSelectAddress={({ address, latitude, longitude }) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        region: address,
-                        latitude: latitude ?? prev.latitude,
-                        longitude: longitude ?? prev.longitude,
-                      }))
+                    address={form.address}
+                    detailAddress={form.detailAddress}
+                    isDetailDisabled={!isAddressChanged}
+                    onSelectAddress={handleSelectAddress}
+                    onDetailAddressChange={(v) =>
+                      handleField("detailAddress", v)
                     }
-                    onDetailAddressChange={(v) => handleField("address", v)}
                   />
                 </div>
 
@@ -345,7 +375,8 @@ const EditMeetingModal = ({
                   <Input
                     id="capacity"
                     type="number"
-                    min={0}
+                    min={CAPACITY_MIN}
+                    max={CAPACITY_MAX}
                     value={form.capacity}
                     onChange={(e) =>
                       handleField("capacity", Number(e.target.value))

@@ -4,7 +4,7 @@
 import { HTTPError } from "ky";
 import { AppError } from "@/lib/api/type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { meetingKeys } from "../queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 
 import { showToast } from "@/components/ui/Sonner";
 
@@ -12,12 +12,12 @@ import type {
   FavoriteToggleResult,
   FavoriteMutationContext,
 } from "@/features/meetingDetail/types/favorite";
-import type { MeetingDetail } from "@/features/meetingDetail/types/meetingDetail";
+import type { MeetingFront } from "@/features/meetingDetail/types/meetingDetail";
 import {
   unfavoriteMeeting,
   favoriteMeeting,
 } from "@/features/meetingDetail/api/favorite.service";
-import { mapToMeetingDetail } from "@/features/meetingDetail/api/meetingDetail.service";
+import { mapToMeeting } from "@/features/meetings/meetings.mapper";
 
 function useFavoriteMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
@@ -36,11 +36,11 @@ function useFavoriteMeetingMutation(meetingId: number) {
         queryKey: meetingKeys.detail(meetingId),
       });
 
-      const previousMeeting = queryClient.getQueryData<MeetingDetail>(
+      const previousMeeting = queryClient.getQueryData<MeetingFront>(
         meetingKeys.detail(meetingId),
       );
 
-      queryClient.setQueryData<MeetingDetail>(
+      queryClient.setQueryData<MeetingFront>(
         meetingKeys.detail(meetingId),
         (old) => (old ? { ...old, initialIsFavorited: !isFavorited } : old),
       );
@@ -50,9 +50,9 @@ function useFavoriteMeetingMutation(meetingId: number) {
 
     onSuccess: (result, isFavorited) => {
       if (result.meeting) {
-        queryClient.setQueryData<MeetingDetail>(
+        queryClient.setQueryData<MeetingFront>(
           meetingKeys.detail(meetingId),
-          mapToMeetingDetail(result.meeting),
+          mapToMeeting(result.meeting),
         );
       }
 
@@ -62,7 +62,7 @@ function useFavoriteMeetingMutation(meetingId: number) {
     onError: (error, isFavorited, context) => {
       // 실패 시 onMutate 이전 상태로 롤백
       if (context?.previousMeeting) {
-        queryClient.setQueryData<MeetingDetail>(
+        queryClient.setQueryData<MeetingFront>(
           meetingKeys.detail(meetingId),
           context.previousMeeting,
         );

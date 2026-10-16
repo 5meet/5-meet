@@ -1,14 +1,10 @@
 import { api } from "@/lib/api/api";
 import { ImageUploadRequest, ImageUploadResponse } from "../types";
 
-const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
-
 export const getImageUploadUrl = async (
   payload: ImageUploadRequest,
 ): Promise<ImageUploadResponse> => {
-  return api
-    .post(`${TEAM_ID}/images`, { json: payload })
-    .json<ImageUploadResponse>();
+  return api.post(`images`, { json: payload }).json<ImageUploadResponse>();
 };
 
 // presignedUrl은 우리 백엔드가 아니라 스토리지(S3 등)로 직접 요청해야 하므로
