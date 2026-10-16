@@ -42,7 +42,7 @@ export default function CreatedMeetingsView(props: Props) {
             const validDate = date && !Number.isNaN(date.getTime());
             return (
               <li key={meeting.id} className="min-w-0">
-                <DetailCard id={meeting.id} title={meeting.name} category={meeting.type}
+                <DetailCard showStatus={false} id={meeting.id} title={meeting.name} category={meeting.type}
                   imageUrl={meeting.image} location={meeting.region}
                   date={validDate ? dateFormatter.format(date) : "일정 미정"}
                   time={validDate ? timeFormatter.format(date) : ""}
