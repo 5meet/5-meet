@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
 import { PersonnelCard } from "@/features/meetingDetail/ui/PersonnelCard";
@@ -67,6 +68,14 @@ const MeetingDetailPageClient = ({
   //   });
   // };
 
+  // 대체 이미지 콜백
+  const handleMeetingImageFallback = useCallback(() => {
+    showToast({
+      kind: "error",
+      message: "모임 이미지를 불러오지 못했습니다.",
+    });
+  }, []);
+
   if (isError) {
     console.error("모임 상세 조회 실패:", error);
 
@@ -108,6 +117,7 @@ const MeetingDetailPageClient = ({
                 fill
                 className="object-cover"
                 fallbackClassName="object-cover object-right"
+                onFallback={handleMeetingImageFallback}
               />
             </div>
 
