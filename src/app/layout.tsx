@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./provider";
 import { AppToaster } from "@/components/ui/Sonner";
 import GNB from "@/components/layout/GNB/GNB";
+import { hasSession } from "@/lib/auth/hasSession";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,16 +21,17 @@ export const metadata: Metadata = {
   description: "5:MEET",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const session = await hasSession();
   return (
     <html
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full ">
+      <body className="min-h-full bg-gray-50">
         <Providers>
           <div className="flex min-h-screen flex-col">
-            <GNB />
+            <GNB hasSession={session} />
 
             <div className="flex flex-1 flex-col">{children}</div>
           </div>
