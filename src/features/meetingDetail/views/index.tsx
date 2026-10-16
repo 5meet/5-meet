@@ -102,11 +102,12 @@ const MeetingDetailPageClient = ({
           <div className="flex gap-4 justify-center flex-wrap md:flex-nowrap">
             <div className="relative w-[343px] h-[241px] bg-[#EDEDED] rounded-4xl shadow-sm overflow-hidden md:w-[333px] md:h-[362px] lg:w-[630px] lg:h-[443px]">
               <FallbackImage
-                key={meeting.image || "/meetings-hero.jpg"}
+                key={meeting.image || "/banner.svg"}
                 src={meeting.image}
                 alt={meeting.title}
                 fill
                 className="object-cover"
+                fallbackClassName="object-cover object-right"
               />
             </div>
 

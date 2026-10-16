@@ -75,11 +75,12 @@ const CompactCard = (props: CompactCardProps) => {
 
       <div className="relative z-1 pointer-events-none overflow-hidden w-full h-[162px] bg-[#E3E3E3] rounded-2xl md:rounded-3xl md:h-[180px]">
         <FallbackImage
-          key={props.image || "/meetings-hero.jpg"}
+          key={props.image || "/banner.svg"}
           src={props.image}
           alt={props.title}
           fill
           className="object-cover"
+          fallbackClassName="object-cover object-right"
         />
 
         {props.variant === "meeting" && (
