@@ -85,8 +85,9 @@ export const Saving: Story = {
     const canvas = within(canvasElement);
     await userEvent.clear(canvas.getByLabelText("이름", { exact: true }));
     await userEvent.type(canvas.getByLabelText("이름", { exact: true }), "변경한 이름");
-    await userEvent.click(canvas.getByRole("button", { name: "수정하기" }));
-    await expect(canvas.getByRole("button", { name: /수정하기/ })).toBeDisabled();
+    const saveButton = canvas.getByRole("button", { name: "수정하기" });
+    await userEvent.click(saveButton);
+    await expect(saveButton).toBeDisabled();
   },
 };
 
