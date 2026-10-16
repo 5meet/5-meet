@@ -133,11 +133,11 @@ export default function DetailCard({
                 variant="secondary"
                 size="md"
                 onClick={onAction}
-                disabled={actionDisabled || actionPending}
-                aria-busy={actionPending}
+                disabled={actionDisabled}
+                isLoading={actionPending}
                 className={styles.action}
               >
-                {actionPending ? "처리 중..." : actionLabel}
+                {actionLabel}
               </Button>
             )}
             {actionLabel && actionHref && !onAction && (

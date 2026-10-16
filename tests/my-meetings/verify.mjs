@@ -166,6 +166,7 @@ try {
     await like.click();
     await page.locator('fieldset[aria-busy="true"]').first().waitFor();
     assert(await like.isDisabled());
+    assert(await page.getByRole("button", { name: "예약 취소하기", exact: true }).isDisabled());
     await page
       .getByRole("button", { name: "좋아요 취소", exact: true })
       .waitFor();
@@ -196,8 +197,10 @@ try {
     record("Cancel confirmation dismissal does not send DELETE");
     await page.getByRole("button", { name: "예약 취소하기" }).click();
     await page.getByRole("dialog").getByRole("button", { name: "예약 취소하기" }).click();
-    await page.getByRole("button", { name: "처리 중..." }).waitFor();
-    assert(await page.getByRole("button", { name: "처리 중..." }).isDisabled());
+    await page.locator('button[aria-busy="true"]').waitFor();
+    assert(await page.getByRole("button", { name: "좋아요", exact: true }).first().isDisabled());
+    await page.screenshot({ path: path.join(output, "cancel-loading-mobile.png") });
+    assert(await page.locator('button[aria-busy="true"]').isDisabled());
     await page
       .getByRole("link", { name: "작은 독서 습관 만들기" })
       .waitFor({ state: "detached" });
@@ -207,7 +210,7 @@ try {
       ).length,
       1,
     );
-    record("204 cancellation, pending disabled state and list refetch");
+    record("204 cancellation, shared action lock, spinner and list refetch");
     await context.close();
     ({ page, context } = await pageFor("cancel-error"));
     await page.getByRole("button", { name: "예약 취소하기" }).waitFor();

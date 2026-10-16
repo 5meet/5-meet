@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { meetingKeys } from "@/features/meetingDetail/queryKeys";
 import Button from "@/components/ui/Button/Button";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { useModal } from "@/contexts/ModalContext";
 
 import MyMeetingsView, { type MyMeetingSummary } from "./MyMeetingsView";
 import {
-  joinedMeetingsQueryKeys,
   useJoinedMeetingsQuery,
 } from "../hooks/useJoinedMeetingsQuery";
-import type { JoinedMeeting, JoinedMeetingsResponse } from "../types";
+import type { JoinedMeeting } from "../types";
+import { useMyMeetingActionLock } from "../hooks/useMyMeetingActionLock";
+import { useCancelJoinedMeeting } from "../hooks/useCancelJoinedMeeting";
+import { useToggleJoinedMeetingFavorite } from "../hooks/useToggleJoinedMeetingFavorite";
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   timeZone: "Asia/Seoul",
@@ -108,8 +108,6 @@ function CancelMeetingDialog({ meeting, onClose, onConfirm }: {
 
 export default function MyMeetingsContent() {
   const query = useJoinedMeetingsQuery();
-  const queryClient = useQueryClient();
-  const [cancelPendingId, setCancelPendingId] = useState<number | null>(null);
   const { openAlert } = useModal();
   const [cancelSelection, setCancelSelection] = useState<MyMeetingSummary | null>(null);
   const currentUser = useCurrentUser();
@@ -117,101 +115,19 @@ export default function MyMeetingsContent() {
   useEffect(() => {
     void refetchCurrentUser();
   }, [refetchCurrentUser]);
-  const cancelLock = useRef(false);
-  const favoriteLock = useRef(false);
-  const [favoritePendingId, setFavoritePendingId] = useState<number | null>(
-    null,
-  );
-
-  async function toggleFavorite(meeting: MyMeetingSummary) {
-    if (favoriteLock.current || cancelLock.current) return;
-    favoriteLock.current = true;
-    setFavoritePendingId(meeting.id);
-    try {
-      const response = await fetch(
-        `/api/mypage/joined-meetings/${meeting.id}/favorite`,
-        {
-          method: meeting.isFavorited ? "DELETE" : "POST",
-        },
-      );
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message ?? "찜 상태를 변경하지 못했습니다.");
-      }
-      await queryClient.cancelQueries({
-        queryKey: joinedMeetingsQueryKeys.list(),
-      });
-      queryClient.setQueryData<InfiniteData<JoinedMeetingsResponse>>(
-        joinedMeetingsQueryKeys.list(),
-        (old) =>
-          old && {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              data: page.data.map((item) =>
-                item.id === meeting.id
-                  ? { ...item, isFavorited: !meeting.isFavorited }
-                  : item,
-              ),
-            })),
-          },
-      );
-      void queryClient.invalidateQueries({ queryKey: meetingKeys.all });
-      void queryClient.invalidateQueries({ queryKey: ["favorites"] });
-    } catch (error) {
-      openAlert({ message: error instanceof Error ? error.message : "찜 상태를 변경하지 못했습니다." });
-      // Conflicts may mean another screen changed the server state.
-      void query.refetch();
-    } finally {
-      favoriteLock.current = false;
-      setFavoritePendingId(null);
-    }
-  }
-
-  async function cancelMeeting(meeting: MyMeetingSummary) {
-    if (!meeting.canCancel || cancelLock.current || favoriteLock.current)
-      return;
-    setCancelSelection(null);
-
-    cancelLock.current = true;
-    setCancelPendingId(meeting.id);
-    try {
-      const response = await fetch(
-        `/api/mypage/joined-meetings/${meeting.id}`,
-        {
-          method: "DELETE",
-        },
-      );
-      if (!response.ok) {
-        const error = (await response.json().catch(() => ({}))) as {
-          message?: string;
-        };
-        throw new Error(error.message ?? "예약을 취소하지 못했습니다.");
-      }
-      queryClient.setQueryData<InfiniteData<JoinedMeetingsResponse>>(
-        joinedMeetingsQueryKeys.list(),
-        (old) =>
-          old && {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              data: page.data.filter((item) => item.id !== meeting.id),
-            })),
-          },
-      );
-      // Revisit detail/participants with fresh membership and participant counts.
-      void queryClient.invalidateQueries({ queryKey: meetingKeys.all });
-      const refreshed = await query.refetch();
-      if (refreshed.isError) {
-        openAlert({ message: "예약은 취소되었지만 목록 갱신에 실패했습니다. 목록 다시 불러오기를 눌러주세요." });
-      }
-    } catch (error) {
-      openAlert({ message: error instanceof Error ? error.message : "예약 취소에 실패했습니다." });
-    } finally {
-      cancelLock.current = false;
-      setCancelPendingId(null);
-    }
-  }
+  const actionLockRef = useMyMeetingActionLock();
+  const reportError = (message: string) => openAlert({ message });
+  const { cancelMeeting, cancelPendingId } = useCancelJoinedMeeting({
+    actionLockRef,
+    refetch: query.refetch,
+    onError: reportError,
+    onStarted: () => setCancelSelection(null),
+  });
+  const { toggleFavorite, favoritePendingId } = useToggleJoinedMeetingFavorite({
+    actionLockRef,
+    refetch: query.refetch,
+    onError: reportError,
+  });
 
   if (query.isPending) return <MyMeetingsView status="loading" />;
   if (query.isError && !query.data) {
@@ -241,7 +157,7 @@ export default function MyMeetingsContent() {
         status="success"
         meetings={meetings}
         onCancel={(meeting) => {
-          if (meeting.canCancel && !cancelLock.current && !favoriteLock.current) {
+          if (meeting.canCancel && actionLockRef.current === null) {
             setCancelSelection(meeting);
           }
         }}

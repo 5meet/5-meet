@@ -1,27 +1,24 @@
+import type { Meeting } from "@/features/meetings/types/meeting";
+
+// Reuse only fields whose meaning and nullability match the list response.
+type BaseMeeting = Pick<
+  Meeting,
+  | "id" | "teamId" | "name" | "type" | "region"
+  | "capacity" | "participantCount" | "image"
+  | "canceledAt" | "confirmedAt" | "hostId" | "createdBy" | "host"
+  | "isCompleted"
+>;
+
 /** Swagger: GET /{teamId}/meetings/joined */
-export interface JoinedMeeting {
-  id: number;
-  teamId: string;
-  name: string;
-  type: string;
-  region: string;
+export interface JoinedMeeting extends BaseMeeting {
   address: string | null;
   dateTime: string | null;
   registrationEnd: string | null;
-  capacity: number;
-  participantCount: number;
-  image: string | null;
   description: string | null;
-  canceledAt: string | null;
-  confirmedAt: string | null;
-  hostId: number;
-  createdBy: number;
   createdAt: string | null;
   updatedAt: string | null;
-  host: { id: number; name: string; image: string | null };
   isFavorited?: boolean;
   isJoined?: boolean;
-  isCompleted: boolean;
   joinedAt: string | null;
   isReviewed: boolean;
 }
