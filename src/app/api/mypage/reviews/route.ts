@@ -1,7 +1,7 @@
-
 import { NextRequest, NextResponse } from "next/server";
 
 import { getMyReviews } from "@/features/mypage/api/getMyReviews";
+import { ApiError } from "@/lib/api/ApiError";
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,20 +49,36 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "알 수 없는 서버 오류가 발생했습니다.";
+    if (error instanceof SyntaxError) {
+      console.error("[리뷰 API JSON 파싱 오류]", error);
 
-    console.error("[나의 리뷰 Route Handler 오류]", message);
+      return NextResponse.json(
+        { message: "백엔드 응답을 JSON으로 읽지 못했습니다." },
+        { status: 500 },
+      );
+    }
 
-    const status = message.includes("accessToken")
-      ? 401
-      : 500;
+    if (error instanceof ApiError) {
+      console.error("[나의 리뷰 API 오류]", {
+        message: error.message,
+        status: error.status,
+        code: error.code,
+      });
+
+      return NextResponse.json(
+        {
+          message: error.message,
+          code: error.code,
+        },
+        { status: error.status ?? 500 },
+      );
+    }
+
+    console.error("[나의 리뷰 API 서버 오류]", error);
 
     return NextResponse.json(
-      { message },
-      { status },
+      { message: "알 수 없는 서버 오류가 발생했습니다." },
+      { status: 500 },
     );
   }
 }
