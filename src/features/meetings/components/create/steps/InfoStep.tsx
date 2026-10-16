@@ -24,6 +24,7 @@ export function InfoStep() {
 
   const uploadImageMutation = useUploadImageMutation();
   const uploadRequestIdRef = useRef(0);
+  const committedImageRef = useRef(""); // 서버에 확정된 마지막 이미지 URL (blob 아님)
 
   // 아직 업로드가 끝나지 않은(또는 실패한) blob URL을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
@@ -69,7 +70,6 @@ export function InfoStep() {
 
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
-    const previousImage = image;
     const requestId = ++uploadRequestIdRef.current;
 
     revokePendingBlob();
@@ -81,13 +81,15 @@ export function InfoStep() {
     uploadImageMutation.mutate(file, {
       onSuccess: (publicUrl) => {
         if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
+        committedImageRef.current = publicUrl;
         revokePendingBlob();
         setValue("image", publicUrl, { shouldValidate: true });
       },
       onError: (error) => {
         if (requestId !== uploadRequestIdRef.current) return;
         revokePendingBlob();
-        setValue("image", previousImage, { shouldValidate: true });
+        // 폐기된 blob이 아니라 확정된 URL로 복원
+        setValue("image", committedImageRef.current, { shouldValidate: true });
         showToast({
           kind: "error",
           message: getUploadErrorMessage(error),
@@ -99,6 +101,7 @@ export function InfoStep() {
   // 이미지 삭제
   const handleImageRemove = () => {
     uploadRequestIdRef.current++; // 진행 중이던 요청을 무효화
+    committedImageRef.current = "";
     revokePendingBlob();
     setValue("image", "", { shouldValidate: true });
   };
