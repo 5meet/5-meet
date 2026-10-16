@@ -167,7 +167,6 @@ export default function LoginForm({ redirect }: LoginFormProps) {
           redirect={redirect}
           className="sm:flex-1"
         />
-
         <SocialLoginButton
           provider="kakao"
           redirect={redirect}
