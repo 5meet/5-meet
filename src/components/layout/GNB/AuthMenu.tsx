@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { logoutAction } from "@/features/auth/logout/actions/logoutAction";
+
+import { useLogout } from "@/features/auth/logout/hooks/useLogout";
 
 type AuthMenuProps = {
   user: { name: string } | null | undefined;
@@ -8,6 +11,8 @@ type AuthMenuProps = {
 };
 
 export function AuthMenu({ user, isPending, isError }: AuthMenuProps) {
+  const { logout } = useLogout();
+
   if (isPending) {
     return <span className="text-sm text-gray-400">확인 중...</span>;
   }
@@ -18,11 +23,15 @@ export function AuthMenu({ user, isPending, isError }: AuthMenuProps) {
 
   if (user) {
     return (
-      <div className="hidden items-center gap-3 md:flex">
-        <span className="text-sm font-semibold text-gray-700">
+      <div className="hidden items-center gap-3 min-[744px]:flex">
+        <Link
+          href="/mypage/meetings"
+          className="text-sm font-semibold text-gray-700"
+        >
           {user.name}님
-        </span>
-        <form action={logoutAction}>
+        </Link>
+
+        <form action={logout}>
           <button
             type="submit"
             className="text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
