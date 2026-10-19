@@ -11,6 +11,8 @@ import { loginAction } from "../actions/loginActions";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";
 import { useModal } from "@/contexts/ModalContext";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 interface LoginFormProps {
   redirect: string;
@@ -31,6 +33,7 @@ export default function LoginForm({ redirect }: LoginFormProps) {
   } = useForm<LoginFormValue>({ mode: "onBlur" });
   const { openAlert } = useModal();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const emailValue = watch("email");
   const passwordValue = watch("password");
@@ -44,7 +47,9 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       return;
     }
     // 로그인 성공
+    await queryClient.resetQueries({ queryKey: CURRENT_USER_QUERY_KEY, exact: true });
     router.replace(redirect);
+    router.refresh();
   };
 
   useDebouncedTrigger({

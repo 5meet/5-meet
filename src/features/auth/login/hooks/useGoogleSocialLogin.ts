@@ -10,7 +10,7 @@ import { useModal } from "@/contexts/ModalContext";
 import { socialLoginAction } from "../actions/socialLoginAction";
 import { useQueryClient } from "@tanstack/react-query";
 
-export const CURRENT_USER_QUERY_KEY = ["auth", "me"] as const;
+import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 export function useGoogleSocialLogin(redirect: string) {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +33,9 @@ export function useGoogleSocialLogin(redirect: string) {
           });
           return;
         }
-        await queryClient.invalidateQueries({
+        await queryClient.resetQueries({
           queryKey: CURRENT_USER_QUERY_KEY,
+          exact: true,
         });
 
         router.replace(redirect);
