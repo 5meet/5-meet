@@ -78,24 +78,29 @@ export function InfoStep() {
     pendingBlobUrlRef.current = previewUrl;
     setValue("image", previewUrl, { shouldValidate: true });
 
-    uploadImageMutation.mutate(file, {
-      onSuccess: (publicUrl) => {
-        if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
-        committedImageRef.current = publicUrl;
-        revokePendingBlob();
-        setValue("image", publicUrl, { shouldValidate: true });
+    uploadImageMutation.mutate(
+      { file },
+      {
+        onSuccess: (publicUrl) => {
+          if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
+          committedImageRef.current = publicUrl;
+          revokePendingBlob();
+          setValue("image", publicUrl, { shouldValidate: true });
+        },
+        onError: (error) => {
+          if (requestId !== uploadRequestIdRef.current) return;
+          revokePendingBlob();
+          // 폐기된 blob이 아니라 확정된 URL로 복원
+          setValue("image", committedImageRef.current, {
+            shouldValidate: true,
+          });
+          showToast({
+            kind: "error",
+            message: getUploadErrorMessage(error),
+          });
+        },
       },
-      onError: (error) => {
-        if (requestId !== uploadRequestIdRef.current) return;
-        revokePendingBlob();
-        // 폐기된 blob이 아니라 확정된 URL로 복원
-        setValue("image", committedImageRef.current, { shouldValidate: true });
-        showToast({
-          kind: "error",
-          message: getUploadErrorMessage(error),
-        });
-      },
-    });
+    );
   };
 
   // 이미지 삭제

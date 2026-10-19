@@ -180,23 +180,26 @@ const EditMeetingModal = ({
     pendingBlobUrlRef.current = previewUrl;
     handleField("image", previewUrl); // 즉시 미리보기 반영
 
-    uploadImageMutation.mutate(file, {
-      onSuccess: (publicUrl) => {
-        if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
-        committedImageRef.current = publicUrl;
-        revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
-        handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
+    uploadImageMutation.mutate(
+      { file },
+      {
+        onSuccess: (publicUrl) => {
+          if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
+          committedImageRef.current = publicUrl;
+          revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
+          handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
+        },
+        onError: (error) => {
+          if (requestId !== uploadRequestIdRef.current) return;
+          revokePendingBlob();
+          handleField("image", committedImageRef.current); // 폐기된 blob이 아니라 확정된 URL로 복원
+          showToast({
+            kind: "error",
+            message: getUploadErrorMessage(error),
+          });
+        },
       },
-      onError: (error) => {
-        if (requestId !== uploadRequestIdRef.current) return;
-        revokePendingBlob();
-        handleField("image", committedImageRef.current); // 폐기된 blob이 아니라 확정된 URL로 복원
-        showToast({
-          kind: "error",
-          message: getUploadErrorMessage(error),
-        });
-      },
-    });
+    );
   };
 
   // 이미지 삭제
