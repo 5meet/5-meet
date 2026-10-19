@@ -34,7 +34,7 @@ const MeetingDetailPageClient = ({
     isLoading,
     isError,
     error,
-  } = useMeetingDetailQuery(meetingId);
+  } = useMeetingDetailQuery(meetingId, isLoggedIn);
   const { data: participantsData } = useParticipantsQuery(meetingId);
   const { reviews, currentPage, totalPages, onPageChange } =
     useReviewsPagination(meetingId);
