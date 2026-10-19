@@ -34,10 +34,14 @@ export default function GNB({ hasSession }: GNBProps) {
 
         <div className="ml-auto flex items-center gap-3">
           {/* 사용자 정보 */}
-          <AuthMenu user={user} isPending={isLoading} isError={isError} />
+          <AuthMenu
+            user={hasSession ? user : null}
+            isPending={hasSession && isLoading}
+            isError={hasSession && isError}
+          />
 
           {/* 모바일 메뉴 */}
-          <MobileMenu user={user ?? null} />
+          <MobileMenu user={hasSession ? (user ?? null) : null}  />
         </div>
       </div>
     </header>
