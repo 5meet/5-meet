@@ -8,7 +8,7 @@ export type MyPageProfileViewProps =
   | { status: "loading" }
   | { status: "error"; onRetry: () => void }
   | { status: "signed-out" }
-  | { status: "success"; user: User };
+  | { status: "success"; user: User; onSaveName?: (name: string) => Promise<void> };
 
 export default function MyPageProfileView(props: MyPageProfileViewProps) {
   if (props.status === "loading") {
@@ -34,6 +34,7 @@ export default function MyPageProfileView(props: MyPageProfileViewProps) {
   return (
     <ProfileCard
       key={JSON.stringify([user.id, user.name, user.email, user.image])}
+      onSaveName={props.onSaveName}
       name={user.name}
       email={user.email}
       imageSrc={user.image || "/profile/profile_female1.svg"}
