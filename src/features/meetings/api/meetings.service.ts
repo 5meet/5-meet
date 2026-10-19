@@ -1,4 +1,5 @@
 import { api } from "@/lib/api/api";
+import { authApi } from "@/lib/api/authApi";
 
 import type {
   GetMeetingsParams,
@@ -12,7 +13,6 @@ import type {
 } from "@/features/meetingDetail/types/meetingDetail";
 
 import {
-  mapToCreateMeeting,
   mapToMeeting,
   mapToPopularMeeting,
 } from "@/features/meetings/meetings.mapper";
@@ -43,7 +43,7 @@ export const getMeetings = async (
 export const createMeeting = async (
   payload: MeetingCreateRequest,
 ): Promise<MeetingFront> => {
-  const res = await api
+  const res = await authApi
     .post("meetings", { json: payload })
     .json<MeetingAPIResponse>();
 

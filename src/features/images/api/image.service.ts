@@ -1,10 +1,10 @@
-import { api } from "@/lib/api/api";
+import { authApi } from "@/lib/api/authApi";
 import { ImageUploadRequest, ImageUploadResponse } from "../types";
 
 export const getImageUploadUrl = async (
   payload: ImageUploadRequest,
 ): Promise<ImageUploadResponse> => {
-  return api.post(`images`, { json: payload }).json<ImageUploadResponse>();
+  return authApi.post(`images`, { json: payload }).json<ImageUploadResponse>();
 };
 
 // presignedUrl은 우리 백엔드가 아니라 스토리지(S3 등)로 직접 요청해야 하므로
