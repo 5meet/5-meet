@@ -38,6 +38,7 @@ import type {
 
 interface EditMeetingModalProps {
   meetingId: number;
+  isLoggedIn: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -69,10 +70,11 @@ const INITIAL_FORM: MeetingFormState = {
 
 const EditMeetingModal = ({
   meetingId,
+  isLoggedIn,
   isOpen,
   onClose,
 }: EditMeetingModalProps) => {
-  const { data: meeting } = useMeetingDetailQuery(meetingId);
+  const { data: meeting } = useMeetingDetailQuery(meetingId, isLoggedIn);
   const editMutation = useUpdateMeetingMutation(meetingId);
   const uploadImageMutation = useUploadImageMutation();
 

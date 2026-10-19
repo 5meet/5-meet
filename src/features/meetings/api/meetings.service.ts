@@ -22,7 +22,10 @@ import {
 // 모임 목록 조회
 export const getMeetings = async (
   params: GetMeetingsParams = {},
+  options: { auth?: boolean } = {},
 ): Promise<MeetingListResponse> => {
+  const client = options.auth ? authApi : api;
+
   // undefined / null / 빈 문자열은 쿼리스트링에서 제외
   const searchParams = Object.fromEntries(
     Object.entries(params).filter(
@@ -30,7 +33,7 @@ export const getMeetings = async (
     ),
   ) as Record<string, string | number>;
 
-  const res = await api
+  const res = await client
     .get("meetings", { searchParams })
     .json<MeetingListResponse>();
 

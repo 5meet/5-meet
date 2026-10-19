@@ -1,4 +1,5 @@
 import { api } from "@/lib/api/api";
+import { authApi } from "@/lib/api/authApi";
 
 import type {
   ResponseMessage,
@@ -30,8 +31,13 @@ import { mapToMeeting } from "@/features/meetings/meetings.mapper";
 // 모임 상세 조회
 export const getMeetingDetail = async (
   meetingId: number,
+  isLoggedIn: boolean,
 ): Promise<MeetingFront> => {
-  const res = await api.get(`meetings/${meetingId}`).json<MeetingAPIResponse>();
+  const client = isLoggedIn ? authApi : api;
+
+  const res = await client
+    .get(`meetings/${meetingId}`)
+    .json<MeetingAPIResponse>();
 
   return mapToMeeting(res);
 };
@@ -43,7 +49,7 @@ export const updateMeetingDetail = async (
   meetingId: number,
   payload: MeetingUpdateRequest,
 ): Promise<MeetingFront> => {
-  const res = await api
+  const res = await authApi
     .patch(`meetings/${meetingId}`, { json: payload })
     .json<MeetingAPIResponse>();
 
@@ -54,7 +60,7 @@ export const updateMeetingDetail = async (
 export const deleteMeetingDetail = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.delete(`meetings/${meetingId}`).json<ResponseMessage>();
+  return authApi.delete(`meetings/${meetingId}`).json<ResponseMessage>();
 };
 
 //-----------------------------------------------------------------
@@ -63,14 +69,14 @@ export const deleteMeetingDetail = async (
 export const joinMeeting = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.post(`meetings/${meetingId}/join`).json<ResponseMessage>();
+  return authApi.post(`meetings/${meetingId}/join`).json<ResponseMessage>();
 };
 
 // 모임 참여 취소 (참여자)
 export const cancelMeeting = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.delete(`meetings/${meetingId}/join`).json<ResponseMessage>();
+  return authApi.delete(`meetings/${meetingId}/join`).json<ResponseMessage>();
 };
 
 //-----------------------------------------------------------------
@@ -80,7 +86,7 @@ export const changeMeetingStatus = async (
   meetingId: number,
   status: MeetingStatus,
 ): Promise<MeetingFront> => {
-  const res = await api
+  const res = await authApi
     .patch(`meetings/${meetingId}/status`, {
       json: { status },
     })
