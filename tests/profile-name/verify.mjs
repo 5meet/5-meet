@@ -100,6 +100,74 @@ try {
   await dialog.getByRole("button", { name: "수정하기", exact: true }).click(); await dialog.waitFor({ state: "detached" });
   record("Network failure retains input and allows explicit retry without duplicate writes"); await context.close();
 
+  ({ context, page, dialog, input } = await open());
+  await input.fill("취소할 이름");
+  await dialog.getByRole("button", { name: "취소", exact: true }).click();
+  await page.getByRole("button", { name: "프로필 수정", exact: true }).click();
+  assert.equal(await input.inputValue(), "기존 이름");
+  assert.equal((await state()).patches.length, 0);
+  record("Canceling an edited name sends no PATCH and reopening uses the saved name"); await context.close();
+
+  const refocusAfterStale = async (page) => {
+    await page.clock.fastForward(61000);
+    for (const value of ["hidden", "visible"]) {
+      await page.evaluate((visibility) => {
+        Object.defineProperty(document, "visibilityState", { configurable: true, value: visibility });
+        window.dispatchEvent(new Event("visibilitychange"));
+      }, value);
+    }
+  };
+
+  ({ context, page, dialog, input } = await open());
+  await page.clock.install();
+  const originalUser = (await state()).user;
+  let pendingGet, pendingSave, signalGet, signalSave;
+  const getStarted = new Promise((resolve) => { signalGet = resolve; });
+  const saveStarted = new Promise((resolve) => { signalSave = resolve; });
+  await page.route("**/api/proxy/users/me", (route) => { pendingGet = route; signalGet(); });
+  await page.route("**/api/mypage/profile", (route) => { pendingSave = route; signalSave(); });
+  await input.fill("새 응답 이름");
+  await dialog.getByRole("button", { name: "수정하기", exact: true }).click();
+  await saveStarted;
+  await refocusAfterStale(page); await getStarted;
+  await pendingSave.fulfill({ json: { ...originalUser, name: "새 응답 이름" } });
+  await page.locator('section[aria-label="내 프로필"]').getByText("새 응답 이름", { exact: true }).waitFor();
+  const oldGetFinished = page.waitForResponse((response) => response.url().endsWith("/api/proxy/users/me"));
+  await pendingGet.fulfill({ json: originalUser }); await oldGetFinished;
+  await page.waitForTimeout(150);
+  assert.equal(await page.locator('section[aria-label="내 프로필"]').getByText("새 응답 이름", { exact: true }).count(), 1);
+  assert.equal(await page.getByText("새 응답 이름님", { exact: true }).count(), 1);
+  record("An older user GET arriving after PATCH does not overwrite the saved profile or GNB name"); await context.close();
+
+  ({ context, page, dialog, input } = await open());
+  await page.clock.install();
+  const accountA = (await state()).user;
+  let activeUser = accountA, oldAccountSave, firstSaveStarted;
+  const firstStarted = new Promise((resolve) => { firstSaveStarted = resolve; });
+  const sentNames = [];
+  await page.route("**/api/proxy/users/me", (route) => route.fulfill({ json: activeUser }));
+  await page.route("**/api/mypage/profile", (route) => {
+    sentNames.push(route.request().postDataJSON().name);
+    if (sentNames.length === 1) { oldAccountSave = route; firstSaveStarted(); return; }
+    activeUser = { ...activeUser, name: sentNames.at(-1) };
+    return route.fulfill({ json: activeUser });
+  });
+  await input.fill("A의 변경한 이름");
+  await dialog.getByRole("button", { name: "수정하기", exact: true }).click(); await firstStarted;
+  activeUser = { ...accountA, id: 8, name: "다른 계정", email: "other@example.invalid" };
+  await refocusAfterStale(page);
+  await page.locator('section[aria-label="내 프로필"]').getByText("다른 계정", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "프로필 수정", exact: true }).click();
+  await input.fill("B의 변경한 이름");
+  await dialog.getByRole("button", { name: "수정하기", exact: true }).click();
+  await page.locator('section[aria-label="내 프로필"]').getByText("B의 변경한 이름", { exact: true }).waitFor();
+  assert.deepEqual(sentNames, ["A의 변경한 이름", "B의 변경한 이름"]);
+  await oldAccountSave.fulfill({ json: { ...accountA, name: "A의 변경한 이름" } });
+  await page.waitForTimeout(150);
+  assert.equal(await page.getByText("A의 변경한 이름", { exact: true }).count(), 0);
+  assert.equal(await page.locator('section[aria-label="내 프로필"]').getByText("B의 변경한 이름", { exact: true }).count(), 1);
+  record("Account A's pending save does not block account B or overwrite B with its late response"); await context.close();
+
   for (const width of [1920, 744, 375]) {
     ({ context, page, dialog, input } = await open(width));
     assert((await page.evaluate(() => document.documentElement.scrollWidth)) <= width);
