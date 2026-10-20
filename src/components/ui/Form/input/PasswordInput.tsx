@@ -5,9 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 import Input, { type InputProps } from "@/components/ui/Form/input/Input";
 
-interface PasswordInputProps extends InputProps {}
-
-const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
+const PasswordInput = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       isError = false,
