@@ -19,6 +19,7 @@ export default function WrittenReviews() {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
+    refetch,
   } = useMyReviewsQuery({
     sortBy: "createdAt",
     sortOrder: "desc",
@@ -27,10 +28,19 @@ export default function WrittenReviews() {
 
   const reviews = data?.pages.flatMap((page) => page.data) ?? [];
 
+  // 최초 조회 실패와 추가 조회 실패를 구분한다.
+  const isInitialError = isError && !data;
+  const isNextPageError = isError && !!data && reviews.length > 0;
+
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !hasNextPage || isFetchingNextPage) {
+    if (
+      !target ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      isNextPageError
+    ) {
       return;
     }
 
@@ -56,9 +66,14 @@ export default function WrittenReviews() {
     return () => {
       observer.disconnect();
     };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isNextPageError,
+  ]);
 
-  if (isLoading) {
+  if (isLoading && !data) {
     return (
       <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
@@ -68,12 +83,19 @@ export default function WrittenReviews() {
     );
   }
 
-  if (isError) {
+  if (isInitialError) {
     return (
       <div className="flex h-[780px] w-full flex-col items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
           작성한 리뷰를 불러오지 못했어요.
         </p>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          className="mt-3 text-sm text-blue-600 underline"
+        >
+          다시 시도
+        </button>
       </div>
     );
   }
@@ -108,12 +130,12 @@ export default function WrittenReviews() {
             id: review.id,
             teamId: "5-meet",
             meetingId: review.meetingId,
-            userId: 0,
+            userId: review.userId,
             score: review.score,
             comment: review.comment,
             createdAt: review.createdAt,
-            updatedAt: review.createdAt,
-            user: undefined,
+            updatedAt: review.updatedAt,
+            user: review.user,
             meeting: {
               id: review.meeting.id,
               name: review.meeting.name,
@@ -128,12 +150,28 @@ export default function WrittenReviews() {
 
       <div
         ref={loadMoreRef}
-        className="flex min-h-10 items-center justify-center"
+        className="flex min-h-10 flex-col items-center justify-center gap-2 py-2"
       >
         {isFetchingNextPage && (
           <p className="text-sm text-gray-400">
             리뷰를 더 불러오는 중이에요.
           </p>
+        )}
+
+        {isNextPageError && (
+          <div className="flex flex-col items-center gap-2 py-3">
+            <p className="text-center text-sm text-gray-500">
+              리뷰를 더 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
+            </p>
+            <button
+              type="button"
+              onClick={() => void fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="text-sm text-blue-600 underline disabled:opacity-50"
+            >
+              다시 시도
+            </button>
+          </div>
         )}
       </div>
     </div>
