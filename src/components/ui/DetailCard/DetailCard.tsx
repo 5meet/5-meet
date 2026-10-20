@@ -24,6 +24,7 @@ export interface DetailCardProps {
   actionHref?: string;
   isFavorited?: boolean;
   favoritePending?: boolean;
+  favoriteDisabled?: boolean;
   onFavorite?: () => void;
 }
 
@@ -48,6 +49,7 @@ export default function DetailCard({
   actionHref,
   isFavorited = false,
   favoritePending = false,
+  favoriteDisabled = false,
   onFavorite,
 }: DetailCardProps) {
   const statusText =
@@ -62,7 +64,7 @@ export default function DetailCard({
         {onFavorite && (
           <fieldset
             className={styles.favorite}
-            disabled={favoritePending}
+            disabled={favoritePending || favoriteDisabled}
             aria-busy={favoritePending}
           >
             <LikeButton size="lg" isLiked={isFavorited} onToggle={onFavorite} />

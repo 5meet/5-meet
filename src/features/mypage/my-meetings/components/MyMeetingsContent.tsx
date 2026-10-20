@@ -117,16 +117,15 @@ export default function MyMeetingsContent() {
     onError: reportError,
     onStarted: () => setCancelSelection(null),
   });
-  const { toggleFavorite, favoritePendingId } = useToggleJoinedMeetingFavorite({
+  const { toggleFavorite, favoritePendingIds } = useToggleJoinedMeetingFavorite({
     actionLockRef,
-    refetch: query.refetch,
     onError: reportError,
   });
 
   const continuationRef = useInfiniteScrollTrigger({
     enabled: Boolean(query.hasNextPage) && !query.isFetching &&
       !query.isFetchNextPageError && !query.isRefetchError &&
-      cancelPendingId === null && favoritePendingId === null &&
+      cancelPendingId === null && favoritePendingIds.size === 0 &&
       cancelSelection === null,
     fetchNextPage: query.fetchNextPage,
   });
@@ -159,13 +158,16 @@ export default function MyMeetingsContent() {
         status="success"
         meetings={meetings}
         onCancel={(meeting) => {
-          if (meeting.canCancel && actionLockRef.current === null) {
+          if (
+            meeting.canCancel && !actionLockRef.current.cancelPending &&
+            actionLockRef.current.favoriteIds.size === 0
+          ) {
             setCancelSelection(meeting);
           }
         }}
         cancelPendingId={cancelPendingId}
         onFavorite={(meeting) => void toggleFavorite(meeting)}
-        favoritePendingId={favoritePendingId}
+        favoritePendingIds={favoritePendingIds}
       />
       {query.isRefetchError && !query.isFetchNextPageError && (
         <Button

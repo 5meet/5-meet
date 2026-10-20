@@ -18,6 +18,7 @@ export function useCreatedMeetingFavorite(onError: (message: string) => void) {
     pendingIdsRef.current.add(meeting.id);
     setPendingIds(new Set(pendingIdsRef.current));
     try {
+      await queryClient.cancelQueries({ queryKey: createdMeetingsQueryKeys.list() });
       const response = await fetch(`/api/mypage/created-meetings/${meeting.id}/favorite`, {
         method: meeting.isFavorited ? "DELETE" : "POST",
       });

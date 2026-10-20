@@ -17,8 +17,11 @@ export function useCancelJoinedMeeting({ actionLockRef, refetch, onError, onStar
   const [cancelPendingId, setCancelPendingId] = useState<number | null>(null);
 
   async function cancelMeeting(meeting: { id: number; canCancel?: boolean }) {
-    if (!meeting.canCancel || actionLockRef.current !== null) return;
-    actionLockRef.current = "cancel";
+    if (
+      !meeting.canCancel || actionLockRef.current.cancelPending ||
+      actionLockRef.current.favoriteIds.size > 0
+    ) return;
+    actionLockRef.current.cancelPending = true;
     setCancelPendingId(meeting.id);
     onStarted();
     try {
@@ -46,7 +49,7 @@ export function useCancelJoinedMeeting({ actionLockRef, refetch, onError, onStar
     } catch (error) {
       onError(error instanceof Error ? error.message : "예약 취소에 실패했습니다.");
     } finally {
-      actionLockRef.current = null;
+      actionLockRef.current.cancelPending = false;
       setCancelPendingId(null);
     }
   }
