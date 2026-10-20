@@ -3,6 +3,8 @@
 
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 import Label from "@/components/ui/Form/label/Label";
 import Input from "@/components/ui/Form/input/Input";
@@ -43,6 +45,7 @@ export default function LoginForm({ redirect }: LoginFormProps) {
 
   const { openAlert } = useModal();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const emailValue = watch("email");
   const passwordValue = watch("password");
@@ -57,8 +60,14 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       return;
     }
 
+    await queryClient.resetQueries({
+      queryKey: CURRENT_USER_QUERY_KEY,
+      exact: true,
+    });
+
     // 로그인 성공 후 원래 목적지로 이동
     router.replace(redirect);
+    router.refresh();
   };
 
   useDebouncedTrigger({
