@@ -25,6 +25,7 @@ export function InfoStep() {
   const uploadImageMutation = useUploadImageMutation();
   const uploadRequestIdRef = useRef(0);
   const committedImageRef = useRef(""); // 서버에 확정된 마지막 이미지 URL (blob 아님)
+  const isBlobUrl = (url: string) => url.startsWith("blob:");
 
   // 아직 업로드가 끝나지 않은(또는 실패한) blob URL을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
@@ -71,6 +72,12 @@ export function InfoStep() {
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
     const requestId = ++uploadRequestIdRef.current;
+
+    // 현재 값이 서버에 확정된 URL(blob 아님)이면 그것을 복원 기준으로 갱신
+    // blob이면(업로드 중인 사진 위에 다시 선택) 기존 기준을 그대로 유지
+    if (image && !isBlobUrl(image)) {
+      committedImageRef.current = image;
+    }
 
     revokePendingBlob();
 

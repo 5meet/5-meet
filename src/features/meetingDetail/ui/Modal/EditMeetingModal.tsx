@@ -63,7 +63,7 @@ const INITIAL_FORM: MeetingFormState = {
   time: "",
   registrationEndDate: "",
   registrationEndTime: "",
-  capacity: 0,
+  capacity: 1,
   image: "",
   description: "",
 };
@@ -88,6 +88,8 @@ const EditMeetingModal = ({
 
   const uploadRequestIdRef = useRef(0);
   const committedImageRef = useRef(""); // 서버에 확정된 마지막 이미지 URL (blob 아님)
+  const isBlobUrl = (url: string) => url.startsWith("blob:");
+
   // 아직 업로드 중/실패한 blob을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
   const revokePendingBlob = () => {
@@ -123,6 +125,14 @@ const EditMeetingModal = ({
     });
     setInitializedMeetingId(meeting.id);
   }
+
+  // 폼이 (재)초기화될 때마다 서버에 저장된 사진을 복원 기준으로 맞춤
+  useEffect(() => {
+    if (initializedMeetingId !== null && meeting) {
+      committedImageRef.current = meeting.image;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initializedMeetingId]);
 
   const handleField = <K extends keyof MeetingFormState>(
     field: K,
@@ -177,7 +187,13 @@ const EditMeetingModal = ({
   const handleImageUpload = (file: File) => {
     const requestId = ++uploadRequestIdRef.current;
 
+    // 복원 기준: 현재 값이 blob이 아니면 그 값, blob이면(연속 선택) 기존 확정값 유지
+    if (form.image && !isBlobUrl(form.image)) {
+      committedImageRef.current = form.image;
+    }
+
     revokePendingBlob(); // 이전에 선택했던 blob(아직 업로드 완료 안 된 것)이 있으면 먼저 해제
+
     const previewUrl = URL.createObjectURL(file);
     pendingBlobUrlRef.current = previewUrl;
     handleField("image", previewUrl); // 즉시 미리보기 반영
@@ -245,6 +261,8 @@ const EditMeetingModal = ({
 
   // 모달 닫기
   const handleClose = () => {
+    uploadRequestIdRef.current++; // 진행 중이던 업로드 응답 무효화
+    committedImageRef.current = "";
     revokePendingBlob();
     setForm(INITIAL_FORM);
     setInitializedMeetingId(null);
