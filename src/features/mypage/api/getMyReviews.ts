@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
 export interface MyReviewMeeting {
   id: number;
@@ -15,6 +15,9 @@ export interface MyReview {
   meetingId: number;
   meeting: MyReviewMeeting;
   createdAt: string;
+  user?: {
+    name?: string;
+  };
 }
 
 export interface MyReviewsResponse {
@@ -23,13 +26,8 @@ export interface MyReviewsResponse {
   hasMore: boolean;
 }
 
-export type MyReviewsSortBy =
-  | "createdAt"
-  | "score";
-
-export type MyReviewsSortOrder =
-  | "asc"
-  | "desc";
+export type MyReviewsSortBy = "createdAt" | "score";
+export type MyReviewsSortOrder = "asc" | "desc";
 
 interface GetMyReviewsParams {
   teamId: string;
@@ -38,9 +36,6 @@ interface GetMyReviewsParams {
   size?: number;
   cursor?: string;
 }
-
-const BASE_URL =
-  process.env.NEXT_PUBLIC_CODEIT_API_URL;
 
 export async function getMyReviews({
   sortBy = "createdAt",
@@ -58,53 +53,7 @@ export async function getMyReviews({
     searchParams.set("cursor", cursor);
   }
 
-  const cookieStore = await cookies();
+  const url = `/users/me/reviews?${searchParams.toString()}`;
 
-  const accessToken =
-    cookieStore.get("accessToken")?.value;
-
-  const url =
-    `${BASE_URL}/users/me/reviews?` +
-    searchParams.toString();
-
-  console.log("MY REVIEWS REQUEST");
-  console.log("url:", url);
-  console.log(
-    "has accessToken:",
-    Boolean(accessToken),
-  );
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      ...(accessToken
-        ? {
-            Authorization: `Bearer ${accessToken}`,
-          }
-        : {}),
-    },
-    cache: "no-store",
-  });
-
-  const responseText = await response.text();
-
-  console.log("MY REVIEWS RESPONSE");
-  console.log("status:", response.status);
-  console.log("response:", responseText);
-
-  if (!response.ok) {
-    throw new Error(
-      `나의 리뷰 조회 실패 (${response.status}): ${responseText}`,
-    );
-  }
-
-  try {
-    return JSON.parse(
-      responseText,
-    ) as MyReviewsResponse;
-  } catch {
-    throw new Error(
-      `나의 리뷰 응답 형식이 올바르지 않습니다: ${responseText}`,
-    );
-  }
+  return serverFetchWithTokenRefresh<MyReviewsResponse>(url);
 }

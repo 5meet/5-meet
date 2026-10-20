@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 
 import {
@@ -5,6 +6,7 @@ import {
   type MyReviewsSortBy,
   type MyReviewsSortOrder,
 } from "@/features/mypage/api/getMyReviews";
+import { ApiError } from "@/lib/api/ApiError";
 
 const SORT_BY_VALUES: MyReviewsSortBy[] = [
   "createdAt",
@@ -18,44 +20,31 @@ const SORT_ORDER_VALUES: MyReviewsSortOrder[] = [
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams =
-      request.nextUrl.searchParams;
+    const searchParams = request.nextUrl.searchParams;
 
-    const sortByParam =
-      searchParams.get("sortBy");
-
-    const sortOrderParam =
-      searchParams.get("sortOrder");
-
-    const sizeParam =
-      searchParams.get("size");
-
-    const cursor =
-      searchParams.get("cursor");
+    const sortByParam = searchParams.get("sortBy");
+    const sortOrderParam = searchParams.get("sortOrder");
+    const sizeParam = searchParams.get("size");
+    const cursor = searchParams.get("cursor");
 
     const sortBy =
       sortByParam &&
-      SORT_BY_VALUES.includes(
-        sortByParam as MyReviewsSortBy,
-      )
+      SORT_BY_VALUES.includes(sortByParam as MyReviewsSortBy)
         ? (sortByParam as MyReviewsSortBy)
         : "createdAt";
 
     const sortOrder =
       sortOrderParam &&
-      SORT_ORDER_VALUES.includes(
-        sortOrderParam as MyReviewsSortOrder,
-      )
+      SORT_ORDER_VALUES.includes(sortOrderParam as MyReviewsSortOrder)
         ? (sortOrderParam as MyReviewsSortOrder)
         : "desc";
 
-    const parsedSize = sizeParam
-      ? Number(sizeParam)
-      : 10;
+    const parsedSize = sizeParam ? Number(sizeParam) : 10;
 
     const size =
       Number.isInteger(parsedSize) &&
-      parsedSize > 0
+      parsedSize > 0 &&
+      parsedSize <= 100
         ? parsedSize
         : 10;
 
@@ -69,26 +58,23 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(
-      "GET /api/mypage/reviews failed:",
-      error,
-    );
-
-    if (error instanceof Error) {
+    if (error instanceof ApiError) {
       return NextResponse.json(
         {
+          code: error.code,
           message: error.message,
         },
         {
-          status: 500,
+          status: error.status ?? 500,
         },
       );
     }
 
+    console.error("GET /api/mypage/reviews failed");
+
     return NextResponse.json(
       {
-        message:
-          "작성한 리뷰를 불러오지 못했어요.",
+        message: "작성한 리뷰를 불러오지 못했습니다.",
       },
       {
         status: 500,

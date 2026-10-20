@@ -1,4 +1,4 @@
-import { serverFetch } from "@/lib/api/serverFetch";
+import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
 export interface AvailableReviewMeeting {
   id: number;
@@ -64,21 +64,5 @@ export async function getAvailableReviews({
 
   const url = `/users/me/meetings?${searchParams.toString()}`;
 
-  console.log("AVAILABLE REVIEWS REQUEST");
-  console.log("url:", url);
-
-  const response = await serverFetch<AvailableReviewsResponse>(
-    url,
-    {
-      auth: true,
-    },
-  );
-
-  console.log("AVAILABLE REVIEWS RESPONSE");
-  console.log("data count:", response.data.length);
-  console.log("hasMore:", response.hasMore);
-  console.log("nextCursor:", response.nextCursor);
-  console.log("data:", response.data);
-
-  return response;
+  return serverFetchWithTokenRefresh<AvailableReviewsResponse>(url);
 }

@@ -2,25 +2,19 @@ import Image from "next/image";
 import { CircleUserRound } from "lucide-react";
 
 import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
+import type { ReviewApiItem } from "@/features/reviews/types";
+import type { MyReview } from "@/features/mypage/api/getMyReviews";
 
-import type {
-  ReviewApiItem,
-} from "@/features/reviews/types";
+type ReviewCardProps = {
+  review: ReviewApiItem | MyReview;
+};
 
-interface ReviewCardProps {
-  review: ReviewApiItem;
-}
-
-export function ReviewCard({
-  review,
-}: ReviewCardProps) {
+export function ReviewCard({ review }: ReviewCardProps) {
   const meeting = review.meeting;
   const user = review.user;
 
   const createdAt = review.createdAt
-    ? new Date(
-        review.createdAt,
-      ).toLocaleDateString("ko-KR", {
+    ? new Date(review.createdAt).toLocaleDateString("ko-KR", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -36,7 +30,6 @@ export function ReviewCard({
         rounded-[23px]
         bg-white
         pb-[30px]
-
         md:grid-cols-[180px_1fr]
         md:gap-[30px]
       "
@@ -69,16 +62,11 @@ export function ReviewCard({
           flex
           min-w-0
           flex-col
-
           md:h-[180px]
         "
       >
-        {/* 별점 + 작성자 */}
         <div>
-          <HeartRating
-            rating={review.score}
-            size="md"
-          />
+          <HeartRating rating={review.score} size="md" />
 
           <div
             className="
@@ -96,17 +84,12 @@ export function ReviewCard({
               className="text-[#c8c8c8]"
             />
 
-            <span>
-              {user?.name ?? "익명"}
-            </span>
+            <span>{user?.name ?? "익명"}</span>
 
-            <time dateTime={review.createdAt}>
-              {createdAt}
-            </time>
+            <time dateTime={review.createdAt}>{createdAt}</time>
           </div>
         </div>
 
-        {/* 리뷰 내용 + 모임 정보 */}
         <div className="mt-auto">
           <p
             className="
@@ -121,33 +104,13 @@ export function ReviewCard({
             {review.comment}
           </p>
 
-          <div
-            className="
-              flex
-              gap-1.5
-              text-[13px]
-              text-[#a3a5aa]
-            "
-          >
-            <span>
-              {meeting?.name ?? "모임 정보 없음"}
-            </span>
-
+          <div className="flex gap-1.5 text-[13px] text-[#a3a5aa]">
+            <span>{meeting?.name ?? "모임 정보 없음"}</span>
             <span>·</span>
-
-            <span>
-              {meeting?.type ?? ""}
-            </span>
+            <span>{meeting?.type ?? ""}</span>
           </div>
 
-          <div
-            className="
-              mt-4
-              w-full
-              border-b
-              border-[#e2e2e2]
-            "
-          />
+          <div className="mt-4 w-full border-b border-[#e2e2e2]" />
         </div>
       </div>
     </article>

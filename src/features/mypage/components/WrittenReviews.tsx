@@ -16,9 +16,11 @@ export default function WrittenReviews() {
     data,
     isLoading,
     isError,
+    isFetchNextPageError,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
+    refetch,
   } = useMyReviewsQuery({
     sortBy: "createdAt",
     sortOrder: "desc",
@@ -30,7 +32,12 @@ export default function WrittenReviews() {
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !hasNextPage || isFetchingNextPage) {
+    if (
+      !target ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      isFetchNextPageError
+    ) {
       return;
     }
 
@@ -51,27 +58,39 @@ export default function WrittenReviews() {
 
     observer.observe(target);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    return () => observer.disconnect();
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+  ]);
 
-  if (isLoading) {
+  if (isLoading && reviews.length === 0) {
     return (
       <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
-          작성한 리뷰를 불러오는 중이에요.
+          작성한 리뷰를 불러오는 중입니다.
         </p>
       </div>
     );
   }
 
-  if (isError) {
+  if (isError && reviews.length === 0) {
     return (
       <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
-        <p className="text-sm text-gray-500">
-          작성한 리뷰를 불러오지 못했어요.
-        </p>
+        <div className="text-center">
+          <p className="text-sm text-gray-500">
+            작성한 리뷰를 불러오지 못했습니다.
+          </p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="mt-3 text-sm text-blue-600 underline"
+          >
+            다시 시도
+          </button>
+        </div>
       </div>
     );
   }
@@ -100,38 +119,33 @@ export default function WrittenReviews() {
       "
     >
       {reviews.map((review) => (
-        <ReviewCard
-          key={review.id}
-          review={{
-            id: review.id,
-            teamId: "5-meet",
-            meetingId: review.meetingId,
-            userId: 0,
-            score: review.score,
-            comment: review.comment,
-            createdAt: review.createdAt,
-            updatedAt: review.createdAt,
-            user: undefined,
-            meeting: {
-              id: review.meeting.id,
-              name: review.meeting.name,
-              type: review.meeting.type,
-              region: "",
-              image: review.meeting.image,
-              dateTime: review.meeting.dateTime,
-            },
-          }}
-        />
+        <ReviewCard key={review.id} review={review} />
       ))}
 
       <div
         ref={loadMoreRef}
-        className="flex min-h-10 items-center justify-center"
+        className="flex min-h-10 flex-col items-center justify-center"
       >
         {isFetchingNextPage && (
-          <p className="text-sm text-gray-400">
-            리뷰를 더 불러오는 중이에요.
+          <p className="py-3 text-sm text-gray-400">
+            리뷰를 더 불러오는 중입니다.
           </p>
+        )}
+
+        {isFetchNextPageError && (
+          <div className="py-4 text-center">
+            <p className="text-sm text-gray-500">
+              다음 리뷰를 불러오지 못했습니다.
+            </p>
+            <button
+              type="button"
+              onClick={() => void fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="mt-2 text-sm text-blue-600 underline disabled:opacity-50"
+            >
+              다시 시도
+            </button>
+          </div>
         )}
       </div>
     </div>
