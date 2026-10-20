@@ -4,11 +4,12 @@ import { InputDropdown, DropdownOption } from "./InputDropdown";
 
 const categoryOptions: DropdownOption<string>[] = [
   { label: "전체", value: "all" },
-  { label: "취미/여가", value: "hobby" },
-  { label: "자기계발", value: "self-development" },
-  { label: "비즈니스", value: "business" },
-  { label: "라이프스타일", value: "lifestyle" },
-  { label: "가족/육아", value: "family" },
+  { label: "취미/여가", value: "취미/여가" },
+  { label: "스터디", value: "스터디" },
+  { label: "비즈니스", value: "비즈니스" },
+  { label: "운동/건강", value: "운동/건강" },
+  { label: "가족/육아", value: "가족/육아" },
+  { label: "기타", value: "기타" },
 ];
 
 const meta = {
