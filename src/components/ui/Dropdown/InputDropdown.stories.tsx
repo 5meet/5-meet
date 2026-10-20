@@ -12,7 +12,7 @@ const categoryOptions: DropdownOption<string>[] = [
 ];
 
 const meta = {
-  title: "Components/Dropdown/InputDropdown",
+  title: "Components/Input/InputDropdown",
   component: InputDropdown,
   parameters: {
     layout: "centered",
