@@ -99,13 +99,6 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         {/* 버튼 영역 */}
         <div className="mt-4 flex gap-2">
-          <button
-            type="button"
-            aria-label={`${name} 찜하기`}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition hover:bg-gray-50"
-          >
-            <Heart className="size-5" />
-          </button>
 
           {isFull ? (
             <button
