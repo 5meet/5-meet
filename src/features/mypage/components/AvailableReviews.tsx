@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -12,14 +13,17 @@ function formatDate(dateTime: string) {
     return "";
   }
 
-  return new Date(dateTime).toLocaleDateString(
-    "ko-KR",
-    {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    },
-  );
+  const date = new Date(dateTime);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 }
 
 function formatDateTime(dateTime: string) {
@@ -27,21 +31,23 @@ function formatDateTime(dateTime: string) {
     return "";
   }
 
-  return new Date(dateTime).toLocaleString(
-    "ko-KR",
-    {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    },
-  );
+  const date = new Date(dateTime);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleString("ko-KR", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
 
 export default function AvailableReviews() {
-  const loadMoreRef =
-    useRef<HTMLDivElement | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const {
     data,
@@ -53,47 +59,36 @@ export default function AvailableReviews() {
     fetchNextPage,
   } = useAvailableReviewsQuery();
 
-  const meetings =
-    data?.pages.flatMap(
-      (page) => page.data,
-    ) ?? [];
+  const meetings = data?.pages.flatMap((page) => page.data) ?? [];
 
   useEffect(() => {
-    const target =
-      loadMoreRef.current;
+    const target = loadMoreRef.current;
 
     if (!target || !hasNextPage) {
       return;
     }
 
-    const observer =
-      new IntersectionObserver(
-        (entries) => {
-          const entry = entries[0];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
 
-          if (
-            entry.isIntersecting &&
-            hasNextPage &&
-            !isFetchingNextPage
-          ) {
-            fetchNextPage();
-          }
-        },
-        {
-          rootMargin: "200px",
-        },
-      );
+        if (
+          entry.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage
+        ) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "200px" },
+    );
 
     observer.observe(target);
 
     return () => {
       observer.disconnect();
     };
-  }, [
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  ]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) {
     return (
@@ -118,9 +113,7 @@ export default function AvailableReviews() {
   }
 
   if (meetings.length === 0) {
-    return (
-      <EmptyState message="작성 가능한 리뷰가 없습니다." />
-    );
+    return <EmptyState message="작성 가능한 리뷰가 없습니다." />;
   }
 
   return (
@@ -154,27 +147,19 @@ export default function AvailableReviews() {
                 {meeting.region && (
                   <>
                     <span>·</span>
-                    <span>
-                      {meeting.region}
-                    </span>
+                    <span>{meeting.region}</span>
                   </>
                 )}
 
                 <span>·</span>
 
-                <time
-                  dateTime={meeting.dateTime}
-                >
-                  {formatDate(
-                    meeting.dateTime,
-                  )}
+                <time dateTime={meeting.dateTime}>
+                  {formatDate(meeting.dateTime)}
                 </time>
               </div>
 
               <p className="mt-2 text-[13px] text-[#a1a4aa]">
-                {formatDateTime(
-                  meeting.dateTime,
-                )}
+                {formatDateTime(meeting.dateTime)}
               </p>
             </div>
 

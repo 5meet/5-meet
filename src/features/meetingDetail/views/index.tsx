@@ -66,21 +66,21 @@ const MeetingDetailPageClient = ({
   //   });
   // };
 
-  if (isLoading || !meeting) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 p-20 text-gray-500">
-        <Spinner size="lg" className="text-primary-500" />
-        <span className="text-sm">불러오는 중...</span>
-      </div>
-    );
-  }
-
   if (isError) {
     console.error("모임 상세 조회 실패:", error);
 
     return (
       <div className="flex items-center justify-center p-20 text-gray-500">
         <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
+      </div>
+    );
+  }
+
+  if (isLoading || !meeting) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 p-20 text-gray-500">
+        <Spinner size="lg" className="text-primary-500" />
+        <span className="text-sm">불러오는 중...</span>
       </div>
     );
   }
@@ -94,7 +94,7 @@ const MeetingDetailPageClient = ({
     isLoggedIn && currentUserId !== null && meeting.hostId === currentUserId;
 
   return (
-    <main className="flex flex-col items-center mx-auto mt-20 mb-10 px-5 md:mb-20 lg:mb-40 md:mt-30">
+    <main className="flex flex-col items-center mt-10 mb-10 px-2 md:mb-20 lg:mb-40 md:mt-20">
       <div className="flex flex-col w-full max-w-[343px] gap-20 font-semibold text-black text-base md:text-xl lg:text-2xl md:max-w-174 lg:max-w-7xl">
         {/* 모임 information */}
         <section className="w-full">
@@ -102,7 +102,7 @@ const MeetingDetailPageClient = ({
             <div className="relative w-[343px] h-[241px] bg-[#EDEDED] rounded-4xl shadow-sm overflow-hidden md:w-[333px] md:h-[362px] lg:w-[630px] lg:h-[443px]">
               {meeting.image && (
                 <Image
-                  src={meeting.image}
+                  src={meeting.image || "/meetings-hero.jpg"}
                   alt={meeting.title}
                   fill
                   className="object-cover"
@@ -133,6 +133,7 @@ const MeetingDetailPageClient = ({
                 participantCount={meeting.participantCount}
                 capacity={meeting.capacity}
                 participants={participantsData?.data ?? []}
+                confirmedAt={meeting.confirmedAt}
               />
             </div>
           </div>
@@ -175,6 +176,7 @@ const MeetingDetailPageClient = ({
                 latitude={meeting.latitude}
                 longitude={meeting.longitude}
                 address={meeting.address}
+                placeName={meeting.title}
               />
             </div>
 
@@ -183,7 +185,7 @@ const MeetingDetailPageClient = ({
                 {meeting.address}
               </span>
               <button
-                className="flex gap-0.5 items-center font-medium text-xs md:text-lg text-primary-600"
+                className="flex gap-0.5 items-center font-medium text-xs md:text-lg text-primary-600 cursor-pointer hover:underline underline-offset-2"
                 onClick={handleShare}
               >
                 <Image src="/ic_copy.svg" alt="복사" width={18} height={18} />

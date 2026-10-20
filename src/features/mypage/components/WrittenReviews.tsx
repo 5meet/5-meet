@@ -1,10 +1,10 @@
+
 "use client";
 
 import { useEffect, useRef } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { ReviewCard } from "@/components/ui/ReviewCard/ReviewCard";
-
 import { useMyReviewsQuery } from "@/features/mypage/hooks/useMyReviewsQuery";
 
 const REVIEW_SIZE = 10;
@@ -25,17 +25,12 @@ export default function WrittenReviews() {
     size: REVIEW_SIZE,
   });
 
-  const reviews =
-    data?.pages.flatMap((page) => page.data) ?? [];
+  const reviews = data?.pages.flatMap((page) => page.data) ?? [];
 
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (
-      !target ||
-      !hasNextPage ||
-      isFetchingNextPage
-    ) {
+    if (!target || !hasNextPage || isFetchingNextPage) {
       return;
     }
 
@@ -51,9 +46,7 @@ export default function WrittenReviews() {
           void fetchNextPage();
         }
       },
-      {
-        rootMargin: "200px",
-      },
+      { rootMargin: "200px" },
     );
 
     observer.observe(target);
@@ -61,25 +54,11 @@ export default function WrittenReviews() {
     return () => {
       observer.disconnect();
     };
-  }, [
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  ]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) {
     return (
-      <div
-        className="
-          flex
-          h-[780px]
-          w-full
-          items-center
-          justify-center
-          rounded-[24px]
-          bg-white
-        "
-      >
+      <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
           작성한 리뷰를 불러오는 중이에요.
         </p>
@@ -89,17 +68,7 @@ export default function WrittenReviews() {
 
   if (isError) {
     return (
-      <div
-        className="
-          flex
-          h-[780px]
-          w-full
-          items-center
-          justify-center
-          rounded-[24px]
-          bg-white
-        "
-      >
+      <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
           작성한 리뷰를 불러오지 못했어요.
         </p>
@@ -108,9 +77,7 @@ export default function WrittenReviews() {
   }
 
   if (reviews.length === 0) {
-    return (
-      <EmptyState message="작성한 리뷰가 없어요." />
-    );
+    return <EmptyState message="작성한 리뷰가 없어요." />;
   }
 
   return (
@@ -123,11 +90,8 @@ export default function WrittenReviews() {
         bg-white
         px-5
         py-2
-
         sm:px-6
-
         md:px-8
-
         [&::-webkit-scrollbar]:w-2
         [&::-webkit-scrollbar-track]:bg-transparent
         [&::-webkit-scrollbar-thumb]:rounded-full

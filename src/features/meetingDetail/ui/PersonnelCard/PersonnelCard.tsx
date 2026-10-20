@@ -10,10 +10,11 @@ const PersonnelCard = ({
   participantCount,
   capacity,
   participants,
+  confirmedAt,
 }: PersonnelCardProps) => {
   const animatedParticipantCount = useCountUp(participantCount);
 
-  const isConfirmed = participantCount >= capacity;
+  const isConfirmed = confirmedAt !== null || participantCount >= capacity;
 
   return (
     <div className="flex w-[343px] min-h-[113px] px-6 pt-5 pb-[22px] lg:px-10 lg:pt-7 lg:pb-8.5 bg-mint-gradient-200 border border-solid border-[#BEEDE7] rounded-3xl lg:w-[630px] lg:h-[141px]">

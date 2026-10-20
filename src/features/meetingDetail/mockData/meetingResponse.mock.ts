@@ -15,7 +15,7 @@ export const mockMeetingResponseAsHost: MeetingDetailResponse = {
   registrationEnd: "2027-02-09T23:59:59.000Z",
   capacity: 30,
   participantCount: 15,
-  image: "/sample.jpg",
+  image: "/meetings-hero.jpg",
   description:
     "작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~",
   canceledAt: null,
@@ -44,7 +44,7 @@ export const mockMeetingResponseAsParticipant: MeetingDetailResponse = {
   registrationEnd: "2027-03-04T23:59:59.000Z",
   capacity: 20,
   participantCount: 8,
-  image: "/sample2.jpg",
+  image: "/meetings-hero.jpg",
   description:
     "퇴근 후 가볍게 뛰는 러닝 모임입니다. 누구나 환영해요! 페이스 걱정 없이 천천히 함께 달려요~",
   canceledAt: null,

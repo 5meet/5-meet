@@ -135,8 +135,16 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       </div>
 
       <div className="flex w-full flex-col gap-3 sm:flex-row">
-        <SocialLoginButton provider="google" className="sm:flex-1" />
-        <SocialLoginButton provider="kakao" className="sm:flex-1" />
+        <SocialLoginButton
+          provider="google"
+          redirect={redirect}
+          className="sm:flex-1"
+        />
+        <SocialLoginButton
+          provider="kakao"
+          redirect={redirect}
+          className="sm:flex-1"
+        />
       </div>
       <p className="mt-8 text-center text-sm text-gray-700">
         같이달램이 처음이신가요?{" "}

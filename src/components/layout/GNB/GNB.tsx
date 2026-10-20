@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
+
 import { MobileMenu } from "./MobileMenu";
-import { getCurrentUser } from "@/features/auth/api/getCurrentUser";
 import { logoutAction } from "@/features/auth/logout/actions/logoutAction";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 
 const NAV_ITEMS = [
   {
@@ -22,11 +25,12 @@ const NAV_ITEMS = [
   },
 ] as const;
 
-export default async function GNB() {
-  const user = await getCurrentUser();
+export default function GNB() {
+  const { data: user, isPending, isError } = useCurrentUser();
+
   return (
     <header className="relative w-full bg-[#f5f7f8]">
-      <div className="mx-auto flex h-16 w-full items-center px-4 md:max-w-280 md:px-6 md:w-[90%] lg:max-w-350">
+      <div className="mx-auto flex h-16 w-full items-center px-4 md:w-[90%] md:max-w-280 md:px-6 lg:max-w-350">
         {/* 로고 */}
         <Link
           href="/meetings"
@@ -53,7 +57,18 @@ export default async function GNB() {
 
         {/* 오른쪽 */}
         <div className="ml-auto flex items-center gap-3">
-          {user ? (
+          {isPending ? (
+            // 사용자 정보 조회 중
+            <span className="text-sm text-gray-400">
+              확인 중...
+            </span>
+          ) : isError ? (
+            // API 오류 발생
+            <span className="text-sm text-red-500">
+              사용자 정보 오류
+            </span>
+          ) : user ? (
+            // 로그인 상태
             <div className="hidden items-center gap-3 md:flex">
               <span className="text-sm font-semibold text-gray-700">
                 {user.name}님
@@ -69,6 +84,7 @@ export default async function GNB() {
               </form>
             </div>
           ) : (
+            // 비로그인 상태
             <Link
               href="/login"
               className="inline-flex h-8 items-center justify-center rounded-lg bg-emerald-500 px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-600 md:h-9 md:px-5 md:text-sm"
@@ -77,7 +93,8 @@ export default async function GNB() {
             </Link>
           )}
 
-          <MobileMenu user={user} />
+          {/* 모바일 메뉴 */}
+          <MobileMenu user={user ?? null} />
         </div>
       </div>
     </header>
