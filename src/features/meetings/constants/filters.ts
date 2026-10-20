@@ -1,11 +1,42 @@
+// export const CATEGORY_CHIPS = [
+//   { id: "all", label: "전체" },
+//   { id: "hobby", label: "취미/여가" },
+//   { id: "study", label: "스터디" },
+//   { id: "business", label: "비즈니스" },
+//   { id: "health", label: "운동/건강" },
+//   { id: "family", label: "가족/육아" },
+//   { id: "etc", label: "기타" },
+// ] as const;
+
 export const CATEGORY_CHIPS = [
-  { id: "all", label: "전체" },
-  { id: "hobby", label: "취미/여가" },
-  { id: "study", label: "스터디" },
-  { id: "business", label: "비즈니스" },
-  { id: "health", label: "운동/건강" },
-  { id: "family", label: "가족/육아" },
-  { id: "etc", label: "기타" },
+  "전체",
+  "취미/여가",
+  "스터디",
+  "운동/건강",
+  "비즈니스",
+  "라이프스타일",
+  "가족/육아",
+] as const;
+
+export const REGION_OPTIONS = [
+  { label: "지역 전체", value: "all" },
+  { label: "서울", value: "서울" },
+  { label: "경기", value: "경기" },
+  { label: "인천", value: "인천" },
+  { label: "부산", value: "부산" },
+  { label: "대구", value: "대구" },
+  { label: "광주", value: "광주" },
+  { label: "대전", value: "대전" },
+  { label: "울산", value: "울산" },
+  { label: "세종", value: "세종" },
+  { label: "강원", value: "강원" },
+  { label: "충북", value: "충북" },
+  { label: "충남", value: "충남" },
+  { label: "전북", value: "전북" },
+  { label: "전남", value: "전남" },
+  { label: "경북", value: "경북" },
+  { label: "경남", value: "경남" },
+  { label: "제주", value: "제주" },
 ] as const;
 
 export const CONFIRMED_SORT_OPTIONS = [

@@ -1,6 +1,5 @@
-
 import { SearchSection } from "../search/SearchSection";
-import { InfiniteMeetingList } from "./InfiniteMeetingList";
+import { MeetingsFilteredList } from "./MeetingsFilteredList"
 
 interface MeetingsFindContentProps {
   keyword?: string;
@@ -25,7 +24,7 @@ export default function MeetingsFindContent({
         )}
       </section>
 
-      <InfiniteMeetingList keyword={keyword} />
+      <MeetingsFilteredList keyword={keyword} />
     </main>
   );
 }

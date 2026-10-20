@@ -7,13 +7,17 @@ import { MeetingCardListSkeleton } from "./MeetingCardListSkeleton";
 import { useMeetingsInfiniteQuery } from "../../hooks/useMeetingsInfiniteQuery";
 import { useInfiniteScrollTrigger } from "@/lib/hooks/useInfiniteScrollTrigger";
 
+import type { MeetingFilters } from "@/lib/types/meeting";
+
 interface InfiniteMeetingListProps {
   keyword?: string;
+  filters?: MeetingFilters;
   className?: string;
 }
 
 export function InfiniteMeetingList({
   keyword,
+  filters,
   className = "px-8 md:px-6",
 }: InfiniteMeetingListProps) {
   const {
@@ -26,7 +30,7 @@ export function InfiniteMeetingList({
     isFetchNextPageError,
     fetchNextPage,
     refetch,
-  } = useMeetingsInfiniteQuery(keyword);
+  } = useMeetingsInfiniteQuery(keyword, filters);
 
   // 다음 페이지 요청을 위한 스크롤 감지
   const continuationRef = useInfiniteScrollTrigger({

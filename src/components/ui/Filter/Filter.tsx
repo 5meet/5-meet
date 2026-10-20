@@ -1,40 +1,11 @@
 "use client";
 
-import {
-  ChevronDown,
-  SlidersHorizontal,
-} from "lucide-react";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-
-const categories = [
-  "전체",
-  "취미/여가",
-  "자기계발",
-  "비즈니스",
-  "라이프스타일",
-  "가족/육아",
-] as const;
-
-const regionOptions = [
-  { label: "지역 전체", value: "all" },
-  { label: "서울", value: "서울" },
-  { label: "경기", value: "경기" },
-  { label: "인천", value: "인천" },
-  { label: "부산", value: "부산" },
-  { label: "대구", value: "대구" },
-  { label: "광주", value: "광주" },
-  { label: "대전", value: "대전" },
-  { label: "울산", value: "울산" },
-  { label: "세종", value: "세종" },
-  { label: "강원", value: "강원" },
-  { label: "충북", value: "충북" },
-  { label: "충남", value: "충남" },
-  { label: "전북", value: "전북" },
-  { label: "전남", value: "전남" },
-  { label: "경북", value: "경북" },
-  { label: "경남", value: "경남" },
-  { label: "제주", value: "제주" },
-] as const;
+import {
+  CATEGORY_CHIPS,
+  REGION_OPTIONS,
+} from "@/features/meetings/constants/filters";
 
 interface FilterProps {
   selectedCategory: string;
@@ -42,10 +13,7 @@ interface FilterProps {
 
   dateStart: string;
   dateEnd: string;
-  onDateChange: (
-    dateStart: string,
-    dateEnd: string,
-  ) => void;
+  onDateChange: (dateStart: string, dateEnd: string) => void;
 
   selectedRegion: string;
   onRegionChange: (region: string) => void;
@@ -85,19 +53,14 @@ export function Filter({
   };
 
   const selectedRegionLabel =
-    regionOptions.find(
-      (option) => option.value === selectedRegion,
-    )?.label ?? "지역 전체";
+    REGION_OPTIONS.find((option) => option.value === selectedRegion)?.label ??
+    "지역 전체";
 
-  const handleStartDateChange = (
-    value: string,
-  ) => {
+  const handleStartDateChange = (value: string) => {
     onDateChange(value, dateEnd);
   };
 
-  const handleEndDateChange = (
-    value: string,
-  ) => {
+  const handleEndDateChange = (value: string) => {
     onDateChange(dateStart, value);
   };
 
@@ -128,9 +91,8 @@ export function Filter({
           scrollbar-none
         "
       >
-        {categories.map((category) => {
-          const isSelected =
-            selectedCategory === category;
+        {CATEGORY_CHIPS.map((category) => {
+          const isSelected = selectedCategory === category;
 
           return (
             <button
@@ -174,19 +136,12 @@ export function Filter({
         <div className="relative">
           <button
             type="button"
-            onClick={() =>
-              setIsDateOpen((prev) => !prev)
-            }
+            onClick={() => setIsDateOpen((prev) => !prev)}
             className="flex max-w-[220px] shrink-0 items-center gap-1"
           >
-            <span className="truncate">
-              {getDateLabel()}
-            </span>
+            <span className="truncate">{getDateLabel()}</span>
 
-            <ChevronDown
-              size={13}
-              className="shrink-0"
-            />
+            <ChevronDown size={13} className="shrink-0" />
           </button>
 
           {isDateOpen && (
@@ -217,18 +172,14 @@ export function Filter({
 
               <div className="flex flex-col gap-3">
                 <label className="flex flex-col gap-1">
-                  <span className="text-[11px] text-[#777b82]">
-                    시작일
-                  </span>
+                  <span className="text-[11px] text-[#777b82]">시작일</span>
 
                   <input
                     type="date"
                     value={dateStart}
                     max={dateEnd || undefined}
                     onChange={(event) =>
-                      handleStartDateChange(
-                        event.target.value,
-                      )
+                      handleStartDateChange(event.target.value)
                     }
                     className="
                       h-9
@@ -247,18 +198,14 @@ export function Filter({
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="text-[11px] text-[#777b82]">
-                    종료일
-                  </span>
+                  <span className="text-[11px] text-[#777b82]">종료일</span>
 
                   <input
                     type="date"
                     value={dateEnd}
                     min={dateStart || undefined}
                     onChange={(event) =>
-                      handleEndDateChange(
-                        event.target.value,
-                      )
+                      handleEndDateChange(event.target.value)
                     }
                     className="
                       h-9
@@ -314,9 +261,7 @@ export function Filter({
         <div className="relative">
           <button
             type="button"
-            onClick={() =>
-              setIsRegionOpen((prev) => !prev)
-            }
+            onClick={() => setIsRegionOpen((prev) => !prev)}
             className="flex shrink-0 items-center gap-1"
           >
             {selectedRegionLabel}
@@ -342,9 +287,8 @@ export function Filter({
                 shadow-lg
               "
             >
-              {regionOptions.map((option) => {
-                const isSelected =
-                  selectedRegion === option.value;
+              {REGION_OPTIONS.map((option) => {
+                const isSelected = selectedRegion === option.value;
 
                 return (
                   <button
@@ -389,11 +333,7 @@ export function Filter({
             gap-1
             transition-colors
 
-            ${
-              isUrgent
-                ? "font-semibold text-primary-500"
-                : "text-[#777b82]"
-            }
+            ${isUrgent ? "font-semibold text-primary-500" : "text-[#777b82]"}
           `}
         >
           <SlidersHorizontal size={13} />

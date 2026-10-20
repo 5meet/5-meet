@@ -22,3 +22,12 @@ export interface BaseMeeting {
   host: MeetingHost;
   isCompleted: boolean;
 }
+
+export interface MeetingFilters {
+  type?: string;
+  region?: string;
+  dateStart?: string;
+  dateEnd?: string;
+  sortBy?: "registrationEnd";
+  sortOrder?: "asc" | "desc";
+}
