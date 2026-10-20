@@ -3,7 +3,7 @@ import ReviewCardList from "./ReviewCardList";
 import type { Review } from "@/features/meetingDetail/types/meetingDetail";
 
 const meta = {
-  title: "Components/MeetingDetail/ReviewCard/ReviewCardList",
+  title: "Features/MeetingDetail/ReviewCard/ReviewCardList",
   component: ReviewCardList,
   parameters: {
     layout: "centered",
