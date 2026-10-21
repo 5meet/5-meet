@@ -1,5 +1,6 @@
 "use client";
 
+import { notFound } from "next/navigation";
 import { useCallback } from "react";
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
@@ -77,13 +78,18 @@ const MeetingDetailPageClient = ({
   }, []);
 
   if (isError) {
-    console.error("모임 상세 조회 실패:", error);
+    // showToast({
+    //   kind: "error",
+    //   message: "모임 정보를 불러오지 못했습니다.",
+    // });
 
-    return (
-      <div className="flex items-center justify-center p-20 text-gray-500">
-        <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
-      </div>
-    );
+    notFound();
+
+    // return (
+    //   <div className="flex items-center justify-center p-20 text-gray-500">
+    //     <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
+    //   </div>
+    // );
   }
 
   if (isLoading || !meeting) {

@@ -11,6 +11,14 @@ const MEETING_TITLES = [
   "클라이밍 입문반",
   "배드민턴 정기모임",
 ];
+const MEETING_CATEGIRIES = [
+  "취미/여가",
+  "스터디",
+  "비즈니스",
+  "운동/건강",
+  "가족/육아",
+  "기타",
+];
 const MEETING_REGIONS = ["건대입구", "성수", "홍대입구", "강남", "잠실"];
 const MEETING_IMAGES = ["/sample.jpg", "/sample2.jpg", "/sample3.jpg"];
 
@@ -23,7 +31,7 @@ const buildRecommendedResponse = (index: number): MeetingAPIResponse => {
     id: 100 + index,
     teamId: "dallaem",
     name: MEETING_TITLES[index % MEETING_TITLES.length],
-    type: "달램핏",
+    type: MEETING_CATEGIRIES[index % MEETING_CATEGIRIES.length],
     region: MEETING_REGIONS[index % MEETING_REGIONS.length],
     address: "서울시 어딘가 123-45",
     latitude: 37.5407,
