@@ -16,6 +16,7 @@ export default function WrittenReviews() {
     data,
     isLoading,
     isError,
+    isFetchNextPageError,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -28,9 +29,10 @@ export default function WrittenReviews() {
 
   const reviews = data?.pages.flatMap((page) => page.data) ?? [];
 
-  // 최초 조회 실패와 추가 조회 실패를 구분한다.
-  const isInitialError = isError && !data;
-  const isNextPageError = isError && !!data && reviews.length > 0;
+  // 최초 조회 실패와 추가 페이지 조회 실패를 구분한다.
+  const isInitialError = isError && reviews.length === 0;
+  const isNextPageError =
+    isFetchNextPageError && reviews.length > 0;
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -73,6 +75,7 @@ export default function WrittenReviews() {
     isNextPageError,
   ]);
 
+  // 최초 조회 중
   if (isLoading && !data) {
     return (
       <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
@@ -83,6 +86,7 @@ export default function WrittenReviews() {
     );
   }
 
+  // 최초 조회 실패: 리뷰가 없을 때만 전체 오류 화면 표시
   if (isInitialError) {
     return (
       <div className="flex h-[780px] w-full flex-col items-center justify-center rounded-[24px] bg-white">
@@ -100,6 +104,7 @@ export default function WrittenReviews() {
     );
   }
 
+  // 작성한 리뷰가 없는 경우
   if (reviews.length === 0) {
     return <EmptyState message="작성한 리뷰가 없어요." />;
   }
