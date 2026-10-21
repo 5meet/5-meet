@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { showToast } from "@/components/ui/Sonner";
 import { meetingKeys } from "@/lib/queryKeys";
-import { useAddFavoriteMutation } from "@/features/favorites/hook/useAddFavoriteMutation";
-import { useDeleteFavoriteMutation } from "@/features/favorites/hook/useDeleteFavoriteMutation";
+import { addFavorite } from "@/features/favorites/api/addFavorite";
+import { deleteFavorite } from "@/features/favorites/api/deleteFavorite";
 import type { MeetingFront } from "@/features/meetingDetail/types/meetingDetail";
 
 interface FavoriteMutationContext {
@@ -12,15 +12,11 @@ interface FavoriteMutationContext {
 
 function useFavoriteMeetingMutation(meetingId: number) {
   const queryClient = useQueryClient();
-  const addMutation = useAddFavoriteMutation();
-  const deleteMutation = useDeleteFavoriteMutation();
 
   // 변수: 현재 찜 상태(true면 해제, false면 추가)
   return useMutation<unknown, Error, boolean, FavoriteMutationContext>({
     mutationFn: (isFavorited) =>
-      isFavorited
-        ? deleteMutation.mutateAsync(meetingId)
-        : addMutation.mutateAsync(meetingId),
+      isFavorited ? deleteFavorite(meetingId) : addFavorite(meetingId),
 
     onMutate: async (isFavorited) => {
       await queryClient.cancelQueries({
@@ -58,12 +54,13 @@ function useFavoriteMeetingMutation(meetingId: number) {
       showToast({ kind: "error", message: error.message });
     },
 
-    // 성공/실패와 무관하게 서버 상태로 동기화 (상세 + 목록/추천 카드)
+    // 성공/실패와 무관하게 서버 상태로 동기화 (상세, 목록/추천 카드, 찜 목록)
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: meetingKeys.detail(meetingId),
       });
       queryClient.invalidateQueries({ queryKey: meetingKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
     },
   });
 }
