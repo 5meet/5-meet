@@ -39,8 +39,10 @@ const MeetingDetailPage = () => {
   return (
     <MeetingDetailPageClient
       currentUserId={currentUser?.id ?? null}
+      // currentUserId={1}
       meetingId={meetingId}
       isLoggedIn={currentUser !== null}
+      // isLoggedIn={true}
     />
   );
 };
