@@ -1,5 +1,5 @@
 // MSW용 mock 데이터
-import { MeetingDetailResponse } from "@/features/meetingDetail/types/meetingDetail";
+import { MeetingAPIResponse } from "@/features/meetingDetail/types/meetingDetail";
 
 const MEETING_TITLES = [
   "퇴근 후 달리기 모임",
@@ -14,7 +14,7 @@ const MEETING_TITLES = [
 const MEETING_REGIONS = ["건대입구", "성수", "홍대입구", "강남", "잠실"];
 const MEETING_IMAGES = ["/sample.jpg", "/sample2.jpg", "/sample3.jpg"];
 
-const buildRecommendedResponse = (index: number): MeetingDetailResponse => {
+const buildRecommendedResponse = (index: number): MeetingAPIResponse => {
   const capacity = 8 + (index % 5) * 2;
   const participantCount = index % capacity;
   const day = String((index % 28) + 1).padStart(2, "0");
@@ -47,7 +47,7 @@ const buildRecommendedResponse = (index: number): MeetingDetailResponse => {
   };
 };
 
-export const mockRecommendedResponseAll: MeetingDetailResponse[] = Array.from(
+export const mockRecommendedResponseAll: MeetingAPIResponse[] = Array.from(
   { length: 8 },
   (_, i) => buildRecommendedResponse(i),
 );

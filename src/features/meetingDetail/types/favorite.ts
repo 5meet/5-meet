@@ -1,4 +1,4 @@
-import { MeetingDetail, MeetingDetailResponse } from "./meetingDetail";
+import { MeetingFront, MeetingAPIResponse } from "./meetingDetail";
 
 // 찜 추가 응답
 export interface FavoriteResponse {
@@ -7,14 +7,14 @@ export interface FavoriteResponse {
   meetingId: number;
   userId: number;
   createdAt: string;
-  meeting: MeetingDetailResponse;
+  meeting: MeetingAPIResponse;
 }
 
 export interface FavoriteToggleResult {
   message: string;
-  meeting?: MeetingDetailResponse;
+  meeting?: MeetingAPIResponse;
 }
 
 export interface FavoriteMutationContext {
-  previousMeeting: MeetingDetail | undefined;
+  previousMeeting: MeetingFront | undefined;
 }

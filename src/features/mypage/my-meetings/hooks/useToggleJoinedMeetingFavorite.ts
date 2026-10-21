@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
-import { meetingKeys } from "@/features/meetingDetail/queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 import { joinedMeetingsQueryKeys } from "./useJoinedMeetingsQuery";
 import type { JoinedMeetingsResponse } from "../types";
 import type { MyMeetingActionLock } from "./useMyMeetingActionLock";
