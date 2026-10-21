@@ -60,3 +60,15 @@ export const WithMeetings: Story = {
     ],
   },
 };
+
+export const OneFavoritePending: Story = {
+  args: { ...WithMeetings.args, favoritePendingIds: new Set([1]) },
+};
+
+export const TwoFavoritesPending: Story = {
+  args: { ...WithMeetings.args, favoritePendingIds: new Set([1, 2]) },
+};
+
+export const CancellationPending: Story = {
+  args: { ...WithMeetings.args, cancelPendingId: 1 },
+};
