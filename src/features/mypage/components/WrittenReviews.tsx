@@ -1,10 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { ReviewCard } from "@/components/ui/ReviewCard/ReviewCard";
-
 import { useMyReviewsQuery } from "@/features/mypage/hooks/useMyReviewsQuery";
 
 const REVIEW_SIZE = 10;
@@ -65,9 +64,7 @@ export default function WrittenReviews() {
 
     observer.observe(target);
 
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, [
     fetchNextPage,
     hasNextPage,
@@ -86,17 +83,18 @@ export default function WrittenReviews() {
     );
   }
 
-  // 최초 조회 실패: 리뷰가 없을 때만 전체 오류 화면 표시
+  // 최초 조회 실패: 표시할 리뷰가 없을 때만 전체 오류 화면을 보여준다.
   if (isInitialError) {
     return (
       <div className="flex h-[780px] w-full flex-col items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
           작성한 리뷰를 불러오지 못했어요.
         </p>
+
         <button
           type="button"
           onClick={() => void refetch()}
-          className="mt-3 text-sm text-blue-600 underline"
+          className="mt-4 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
           다시 시도
         </button>
@@ -110,44 +108,16 @@ export default function WrittenReviews() {
   }
 
   return (
-    <div
-      className="
-        h-[780px]
-        w-full
-        overflow-y-auto
-        rounded-[24px]
-        bg-white
-        px-5
-        py-2
-        sm:px-6
-        md:px-8
-        [&::-webkit-scrollbar]:w-2
-        [&::-webkit-scrollbar-track]:bg-transparent
-        [&::-webkit-scrollbar-thumb]:rounded-full
-        [&::-webkit-scrollbar-thumb]:bg-gray-300
-        [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
-      "
-    >
+    <div className="flex w-full flex-col gap-4">
       {reviews.map((review) => (
         <ReviewCard
           key={review.id}
           review={{
-            id: review.id,
-            teamId: "5-meet",
-            meetingId: review.meetingId,
-            userId: review.userId,
-            score: review.score,
-            comment: review.comment,
-            createdAt: review.createdAt,
-            updatedAt: review.updatedAt,
-            user: review.user,
+            ...review,
+            teamId: review.teamId || "5-meet",
             meeting: {
-              id: review.meeting.id,
-              name: review.meeting.name,
-              type: review.meeting.type,
-              region: "",
-              image: review.meeting.image,
-              dateTime: review.meeting.dateTime,
+              ...review.meeting,
+              region: review.meeting.region ?? "",
             },
           }}
         />
@@ -155,28 +125,29 @@ export default function WrittenReviews() {
 
       <div
         ref={loadMoreRef}
-        className="flex min-h-10 flex-col items-center justify-center gap-2 py-2"
+        className="flex flex-col items-center justify-center gap-3 py-4"
       >
         {isFetchingNextPage && (
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-500">
             리뷰를 더 불러오는 중이에요.
           </p>
         )}
 
         {isNextPageError && (
-          <div className="flex flex-col items-center gap-2 py-3">
+          <>
             <p className="text-center text-sm text-gray-500">
               리뷰를 더 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
             </p>
+
             <button
               type="button"
               onClick={() => void fetchNextPage()}
               disabled={isFetchingNextPage}
-              className="text-sm text-blue-600 underline disabled:opacity-50"
+              className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               다시 시도
             </button>
-          </div>
+          </>
         )}
       </div>
     </div>

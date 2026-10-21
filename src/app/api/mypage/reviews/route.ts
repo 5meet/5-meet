@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { getCurrentUser } from "@/features/auth/api/getCurrentUser";
 import {
   getMyReviews,
   type MyReviewsSortBy,
@@ -39,21 +40,40 @@ export async function GET(request: NextRequest) {
         : "desc";
 
     const parsedSize = sizeParam ? Number(sizeParam) : 10;
-
     const size =
       Number.isInteger(parsedSize) && parsedSize > 0
         ? parsedSize
         : 10;
 
-    const data = await getMyReviews({
-      sortBy,
-      sortOrder,
-      size,
-      cursor: cursor ?? undefined,
-      teamId: "",
-    });
+    const [data, currentUser] = await Promise.all([
+      getMyReviews({
+        sortBy,
+        sortOrder,
+        size,
+        cursor: cursor ?? undefined,
+        teamId: "",
+      }),
+      getCurrentUser(),
+    ]);
 
-    return NextResponse.json(data);
+    const reviews = data.data.map((review) => ({
+      ...review,
+      user:
+        review.user ??
+        (currentUser
+          ? {
+              id: currentUser.id,
+              email: currentUser.email,
+              name: currentUser.name,
+              image: currentUser.image,
+            }
+          : undefined),
+    }));
+
+    return NextResponse.json({
+      ...data,
+      data: reviews,
+    });
   } catch (error) {
     if (error instanceof SyntaxError) {
       console.error("[리뷰 API JSON 파싱 오류]", error);
