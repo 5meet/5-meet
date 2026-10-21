@@ -1,6 +1,6 @@
 // 참가자 목록 조회
 import { useQuery } from "@tanstack/react-query";
-import { meetingKeys } from "../queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 import { getParticipants } from "../api/meetingDetail.service";
 
 export default function useParticipantsQuery(meetingId: number, size = 20) {

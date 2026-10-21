@@ -5,11 +5,11 @@ import {
   mockReviewsResponseAll,
   mockRecommendedResponseAll,
 } from "@/features/meetingDetail/mockData";
-import type { MeetingDetailResponse } from "@/features/meetingDetail/types/meetingDetail";
+import type { MeetingAPIResponse } from "@/features/meetingDetail/types/meetingDetail";
 
 const API_BASE = process.env.NEXT_PUBLIC_CODEIT_API_URL;
 
-const meetingStore = new Map<number, MeetingDetailResponse>(
+const meetingStore = new Map<number, MeetingAPIResponse>(
   mockMeetingResponseList.map((meeting) => [meeting.id, meeting]),
 );
 

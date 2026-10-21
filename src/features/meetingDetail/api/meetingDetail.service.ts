@@ -1,9 +1,10 @@
 import { api } from "@/lib/api/api";
+import { authApi } from "@/lib/api/authApi";
 
 import type {
   ResponseMessage,
-  MeetingDetail,
-  MeetingDetailResponse,
+  MeetingFront,
+  MeetingAPIResponse,
   MeetingUpdateRequest,
   MeetingStatus,
   ParticipantResponse,
@@ -12,8 +13,6 @@ import type {
   ReviewResponse,
   ReviewListResponse,
   GetReviewsParams,
-  MeetingListResponse,
-  GetMeetingsParams,
   RecommendedMeeting,
   GetRecommendedMeetingsParams,
 } from "@/features/meetingDetail/types/meetingDetail";
@@ -22,53 +21,25 @@ import {
   convertDateType4,
 } from "@/lib/convertDate/formatMeetingDate";
 
+import { getMeetings } from "@/features/meetings/api/meetings.service";
+import { mapToMeeting } from "@/features/meetings/meetings.mapper";
+
 // const TEAM_ID = process.env.NEXT_PUBLIC_TEAM_ID;
-
-// 응답 매핑 공통 함수
-export const mapToMeetingDetail = (
-  res: MeetingDetailResponse,
-): MeetingDetail => {
-  const { date, time } = convertDateType1(res.dateTime);
-  const createdAt = convertDateType4(new Date(res.createdAt));
-
-  return {
-    id: res.id,
-    title: res.name,
-    location: res.region,
-    category: res.type,
-    date,
-    time,
-    dateTime: res.dateTime,
-    registrationEnd: res.registrationEnd,
-    capacity: res.capacity,
-    participantCount: res.participantCount,
-    image: res.image,
-    description: res.description,
-    address: res.address,
-    latitude: res.latitude,
-    longitude: res.longitude,
-    createdAt: createdAt,
-    hostId: res.hostId,
-    host: res.host,
-    initialIsFavorited: res.isFavorited,
-    initialIsParticipating: res.isJoined,
-    isCompleted: res.isCompleted,
-    canceledAt: res.canceledAt,
-    confirmedAt: res.confirmedAt,
-  };
-};
 
 //-----------------------------------------------------------------
 
 // 모임 상세 조회
 export const getMeetingDetail = async (
   meetingId: number,
-): Promise<MeetingDetail> => {
-  const res = await api
-    .get(`meetings/${meetingId}`)
-    .json<MeetingDetailResponse>();
+  isLoggedIn: boolean,
+): Promise<MeetingFront> => {
+  const client = isLoggedIn ? authApi : api;
 
-  return mapToMeetingDetail(res);
+  const res = await client
+    .get(`meetings/${meetingId}`)
+    .json<MeetingAPIResponse>();
+
+  return mapToMeeting(res);
 };
 
 //-----------------------------------------------------------------
@@ -77,19 +48,19 @@ export const getMeetingDetail = async (
 export const updateMeetingDetail = async (
   meetingId: number,
   payload: MeetingUpdateRequest,
-): Promise<MeetingDetail> => {
-  const res = await api
+): Promise<MeetingFront> => {
+  const res = await authApi
     .patch(`meetings/${meetingId}`, { json: payload })
-    .json<MeetingDetailResponse>();
+    .json<MeetingAPIResponse>();
 
-  return mapToMeetingDetail(res);
+  return mapToMeeting(res);
 };
 
 // 모임 삭제 (주최자)
 export const deleteMeetingDetail = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.delete(`meetings/${meetingId}`).json<ResponseMessage>();
+  return authApi.delete(`meetings/${meetingId}`).json<ResponseMessage>();
 };
 
 //-----------------------------------------------------------------
@@ -98,14 +69,14 @@ export const deleteMeetingDetail = async (
 export const joinMeeting = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.post(`meetings/${meetingId}/join`).json<ResponseMessage>();
+  return authApi.post(`meetings/${meetingId}/join`).json<ResponseMessage>();
 };
 
 // 모임 참여 취소 (참여자)
 export const cancelMeeting = async (
   meetingId: number,
 ): Promise<ResponseMessage> => {
-  return api.delete(`meetings/${meetingId}/join`).json<ResponseMessage>();
+  return authApi.delete(`meetings/${meetingId}/join`).json<ResponseMessage>();
 };
 
 //-----------------------------------------------------------------
@@ -114,14 +85,14 @@ export const cancelMeeting = async (
 export const changeMeetingStatus = async (
   meetingId: number,
   status: MeetingStatus,
-): Promise<MeetingDetail> => {
-  const res = await api
+): Promise<MeetingFront> => {
+  const res = await authApi
     .patch(`meetings/${meetingId}/status`, {
       json: { status },
     })
-    .json<MeetingDetailResponse>();
+    .json<MeetingAPIResponse>();
 
-  return mapToMeetingDetail(res);
+  return mapToMeeting(res);
 };
 
 //-----------------------------------------------------------------
@@ -212,22 +183,9 @@ export const getReviews = async ({
 
 //-----------------------------------------------------------------
 
-// 추천 모임 목록의 기반이 되는 범용 목록 조회 - 추후 삭제
-export const getMeetings = async (
-  params: GetMeetingsParams,
-): Promise<MeetingListResponse> => {
-  const searchParams = Object.fromEntries(
-    Object.entries(params).filter(([, v]) => v !== undefined && v !== null),
-  );
-
-  return api.get(`meetings`, { searchParams }).json<MeetingListResponse>();
-};
-
-//-----------------------------------------------------------------
-
 // 추천 모임 목록 조회
 const mapToRecommendedMeeting = (
-  res: MeetingDetailResponse,
+  res: MeetingAPIResponse,
 ): RecommendedMeeting => {
   const { date, time } = convertDateType1(res.dateTime);
 
@@ -255,7 +213,7 @@ export const getRecommendedMeetings = async ({
   const now = new Date().toISOString();
 
   // 공통: 자기 자신 제외 + 정원 미달 + 아직 시작 전인 모임만
-  const postFilter = (list: MeetingDetailResponse[]) =>
+  const postFilter = (list: MeetingAPIResponse[]) =>
     list.filter(
       (m) =>
         m.id !== currentMeetingId &&

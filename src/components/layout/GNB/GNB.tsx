@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import { MobileMenu } from "./MobileMenu";
 import { logoutAction } from "@/features/auth/logout/actions/logoutAction";
@@ -36,7 +37,7 @@ export default function GNB() {
           href="/meetings"
           className="shrink-0 text-xl font-bold text-emerald-500 md:text-2xl"
         >
-          같이달램
+          <Image src={"/logo.svg"} alt="같이달램" width={112} height={39} />
         </Link>
 
         {/* 데스크탑 / 태블릿 메뉴 */}
@@ -59,14 +60,10 @@ export default function GNB() {
         <div className="ml-auto flex items-center gap-3">
           {isPending ? (
             // 사용자 정보 조회 중
-            <span className="text-sm text-gray-400">
-              확인 중...
-            </span>
+            <span className="text-sm text-gray-400">확인 중...</span>
           ) : isError ? (
             // API 오류 발생
-            <span className="text-sm text-red-500">
-              사용자 정보 오류
-            </span>
+            <span className="text-sm text-red-500">사용자 정보 오류</span>
           ) : user ? (
             // 로그인 상태
             <div className="hidden items-center gap-3 md:flex">
