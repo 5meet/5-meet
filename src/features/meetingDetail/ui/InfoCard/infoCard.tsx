@@ -41,7 +41,6 @@ const InfoCard = ({
   confirmedAt,
   canceledAt,
 }: MeetingDetailInfoCardProps) => {
-  // TODO: 인증 구현 후에는 isLoggedIn props를 제거하고 실제 인증 상태를 가져오는 구조로 변경
   // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
 
   const favoriteMutation = useFavoriteMeetingMutation(id);
@@ -63,7 +62,6 @@ const InfoCard = ({
   const isParticipationLoading =
     joinMutation.isPending || cancelMutation.isPending;
 
-  // TODO: 찜하기 기능 구현 완료 후 수정 예정
   // 찜하기
   const handleLikeToggle = () => {
     if (!isLoggedIn) {
@@ -183,7 +181,7 @@ const InfoCard = ({
                 aria-label={isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
                 fullWidth
                 disabled={isConfirmed || isCanceled}
-                // TODO: 정원 미달이어도 주최자가 수동으로 확정가능하지 않다면 아래 코드
+                // 정원 미달이어도 주최자가 수동으로 확정가능하지 않다면 아래 코드
                 // disabled={isConfirmed || isCanceled || !isFull}
                 isLoading={changeStatusMutation.isPending}
                 onClick={handleConfirmMeeting}
