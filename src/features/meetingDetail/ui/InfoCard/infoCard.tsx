@@ -22,7 +22,6 @@ import {
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
 import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
-import formatRegistrationEnd from "@/lib/convertDate/formatRegistrationEnd";
 import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
 
 const InfoCard = ({
@@ -221,6 +220,7 @@ const InfoCard = ({
 
       <EditMeetingModal
         meetingId={id}
+        isLoggedIn={isLoggedIn}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       />
