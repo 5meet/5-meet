@@ -18,7 +18,8 @@ interface ProfileEditModalProps {
   email: string;
   imageSrc?: string;
   onClose: () => void;
-  onSubmit?: (name: string, imageFile?: File) => void;
+  onSubmit?: (name: string, imageFile?: File) => void | Promise<void>;
+  allowImageEdit?: boolean;
 }
 
 type ProfileEditModalContentProps = Omit<
@@ -32,11 +33,20 @@ function ProfileEditModalContent({
   imageSrc = "/profile/profile_female1.svg",
   onClose,
   onSubmit,
+  allowImageEdit = true,
 }: ProfileEditModalContentProps) {
   const [editedName, setEditedName] = useState(name);
   const [previewImageSrc, setPreviewImageSrc] = useState(imageSrc);
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const submitLock = useRef(false);
+
+  const requestClose = () => {
+    if (!submitLock.current) onClose();
+  };
 
   const [imageError, setImageError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
@@ -47,7 +57,7 @@ function ProfileEditModalContent({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || submitLock.current) return;
 
       if (cropImageSrc) {
         if (pendingObjectUrlRef.current) {
@@ -91,6 +101,7 @@ function ProfileEditModalContent({
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!allowImageEdit || submitLock.current) return;
     const file = event.target.files?.[0];
 
     if (!file) return;
@@ -126,12 +137,26 @@ function ProfileEditModalContent({
     clearPendingImage();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (submitLock.current) return;
     const trimmedName = editedName.trim();
-
-    if (!trimmedName) return;
-
-    onSubmit?.(trimmedName, selectedImageFile ?? undefined);
+    if (!trimmedName || trimmedName.length > 20) return;
+    if (trimmedName === name && !selectedImageFile) {
+      onClose();
+      return;
+    }
+    submitLock.current = true;
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      await onSubmit?.(trimmedName, selectedImageFile ?? undefined);
+      onClose();
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "이름을 저장하지 못했어요. 다시 시도해주세요.");
+    } finally {
+      submitLock.current = false;
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -140,7 +165,7 @@ function ProfileEditModalContent({
         <button
           type="button"
           aria-label="프로필 수정 닫기"
-          onClick={onClose}
+          onClick={requestClose}
           className="absolute inset-0 cursor-default bg-black/50"
         />
 
@@ -171,7 +196,7 @@ function ProfileEditModalContent({
 
               <IconButton
                 size="sm"
-                onClick={onClose}
+                onClick={requestClose}
                 aria-label="프로필 수정 닫기"
                 className={`${styles.icon} ${styles.close} cursor-pointer text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500`}
               >
@@ -209,11 +234,15 @@ function ProfileEditModalContent({
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/gif"
                       onChange={handleImageChange}
+                      disabled={!allowImageEdit || isSaving}
+                      aria-describedby={!allowImageEdit ? "profile-image-notice" : undefined}
                       className="sr-only"
                     />
                   </Label>
                 </div>
               </div>
+
+              {!allowImageEdit && <p id="profile-image-notice" className="text-sm text-gray-600">현재 이름만 저장할 수 있어요. 이미지 변경은 추후 제공됩니다.</p>}
 
               {imageError && <p role="alert" className="text-sm text-red-600">{imageError}</p>}
 
@@ -230,7 +259,10 @@ function ProfileEditModalContent({
                     id="profile-name"
                     type="text"
                     value={editedName}
-                    onChange={(event) => setEditedName(event.target.value)}
+                    onChange={(event) => { setEditedName(event.target.value); setSaveError(null); }}
+                    maxLength={20}
+                    disabled={isSaving}
+                    aria-describedby={saveError ? "profile-save-error" : undefined}
                     className="
                       h-10 w-full rounded-[10px] border-0 bg-[#f9fafb]
                       px-3 text-sm leading-5 tracking-[-0.28px] text-gray-800
@@ -259,12 +291,14 @@ function ProfileEditModalContent({
               </div>
             </div>
 
+            {saveError && <p id="profile-save-error" role="alert" className="text-sm text-red-600">{saveError}</p>}
+
             <div className={`${styles.actions} ${styles.responsive}`}>
-              <Button type="button" variant="secondary" onClick={onClose}
+              <Button type="button" variant="secondary" disabled={isSaving} onClick={requestClose}
                 className={`${styles.button} ${styles.secondary}`}>
                 취소
               </Button>
-              <Button type="button" disabled={!editedName.trim()} onClick={handleSubmit}
+              <Button type="button" disabled={!editedName.trim() || editedName.trim().length > 20} isLoading={isSaving} onClick={handleSubmit}
                 className={`${styles.button} ${styles.primary}`}>
                 수정하기
               </Button>
