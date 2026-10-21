@@ -1,19 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
-import type { AvailableReviewMeeting } from "@/features/mypage/api/getAvailableReviews";
+import { useAvailableReviewsQuery } from "@/features/mypage/hooks/useAvailableReviewsQuery";
 
 import ReviewMeetingCard from "./ReviewMeetingCard";
 
 const PAGE_SIZE = 10;
 
 function formatDate(dateTime: string) {
-  if (!dateTime) return "";
-
   const date = new Date(dateTime);
-  if (Number.isNaN(date.getTime())) return "";
+
+  if (Number.isNaN(date.getTime())) return "-";
 
   return date.toLocaleDateString("ko-KR", {
     year: "numeric",
@@ -23,10 +23,9 @@ function formatDate(dateTime: string) {
 }
 
 function formatTime(dateTime: string) {
-  if (!dateTime) return "";
-
   const date = new Date(dateTime);
-  if (Number.isNaN(date.getTime())) return "";
+
+  if (Number.isNaN(date.getTime())) return "-";
 
   return date.toLocaleTimeString("ko-KR", {
     hour: "2-digit",
@@ -36,116 +35,104 @@ function formatTime(dateTime: string) {
 }
 
 export default function AvailableReviews() {
-  const [meetings, setMeetings] = useState<AvailableReviewMeeting[]>([]);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
+  const queryClient = useQueryClient();
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const observerTarget = useRef<HTMLDivElement | null>(null);
 
-  const fetchMeetings = useCallback(async () => {
-    const response = await fetch("/api/mypage/available-reviews", {
-      method: "GET",
-      cache: "no-store",
-    });
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    refetch,
+  } = useAvailableReviewsQuery({ size: PAGE_SIZE });
 
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      throw new Error(
-        result?.message ?? "작성 가능한 리뷰를 불러오지 못했습니다.",
-      );
-    }
-
-    setMeetings(Array.isArray(result?.data) ? result.data : []);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadMeetings() {
-      try {
-        const response = await fetch("/api/mypage/available-reviews", {
-          method: "GET",
-          cache: "no-store",
-        });
-
-        const result = await response.json().catch(() => null);
-
-        if (!response.ok) {
-          throw new Error(
-            result?.message ?? "작성 가능한 리뷰를 불러오지 못했습니다.",
-          );
-        }
-
-        if (!cancelled) {
-          setMeetings(Array.isArray(result?.data) ? result.data : []);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "작성 가능한 리뷰를 불러오지 못했습니다.",
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadMeetings();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const handleReviewSuccess = useCallback((meetingId: number) => {
-    setMeetings((prev) =>
-      prev.filter((meeting) => meeting.id !== meetingId),
-    );
-  }, []);
-
-  const visibleMeetings = meetings.slice(0, visibleCount);
-  const hasMore = visibleCount < meetings.length;
+  const meetings = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data],
+  );
 
   useEffect(() => {
+    const root = scrollContainerRef.current;
     const target = observerTarget.current;
 
-    if (!target || !hasMore) return;
+    if (
+      !root ||
+      !target ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      isError
+    ) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          setVisibleCount((prev) =>
-            Math.min(prev + PAGE_SIZE, meetings.length),
-          );
+          void fetchNextPage();
         }
       },
-      { rootMargin: "100px" },
+      {
+        root,
+        rootMargin: "100px",
+      },
     );
 
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [hasMore, meetings.length, visibleCount]);
+  }, [hasNextPage, isFetchingNextPage, isError, fetchNextPage]);
 
-  if (isLoading) {
+  const handleReviewSuccess = async (meetingId: number) => {
+    queryClient.setQueryData(
+      ["mypage", "reviews", "available", PAGE_SIZE],
+      (previousData: typeof data | undefined) => {
+        if (!previousData) return previousData;
+
+        return {
+          ...previousData,
+          pages: previousData.pages.map((page) => ({
+            ...page,
+            data: page.data.filter((meeting) => meeting.id !== meetingId),
+          })),
+        };
+      },
+    );
+
+    await queryClient.invalidateQueries({
+      queryKey: ["mypage", "reviews", "available"],
+    });
+  };
+
+  if (isPending) {
     return (
       <p className="py-8 text-center text-gray-500">
-        불러오는 중...
+        작성 가능한 리뷰를 불러오는 중입니다...
       </p>
     );
   }
 
-  if (errorMessage) {
+  if (isError && meetings.length === 0) {
     return (
-      <p role="alert" className="py-8 text-center text-red-500">
-        {errorMessage}
-      </p>
+      <div>
+        <p role="alert" className="py-8 text-center text-red-500">
+          {error instanceof Error
+            ? error.message
+            : "작성 가능한 리뷰를 불러오지 못했습니다."}
+        </p>
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="rounded-md border px-4 py-2 text-sm"
+          >
+            다시 시도
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -154,36 +141,53 @@ export default function AvailableReviews() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      {visibleMeetings.map((meeting) => (
-        <ReviewMeetingCard
-          key={meeting.id}
-          teamId={meeting.teamId}
-          meetingId={meeting.id}
-          imageUrl={meeting.image}
-          title={meeting.name}
-          location={meeting.address}
-          date={formatDate(meeting.dateTime)}
-          time={formatTime(meeting.dateTime)}
-          participantCount={meeting.participantCount}
-          capacity={meeting.capacity}
-          onReviewSuccess={handleReviewSuccess}
-        />
-      ))}
+    <div
+      ref={scrollContainerRef}
+      className="h-[70vh] min-h-[400px] overflow-y-auto overscroll-contain pr-3"
+    >
+      <div className="flex flex-col gap-5">
+        {meetings.map((meeting) => (
+          <ReviewMeetingCard
+            key={meeting.id}
+            teamId={meeting.teamId}
+            meetingId={meeting.id}
+            imageUrl={meeting.image}
+            title={meeting.name}
+            location={meeting.address}
+            date={formatDate(meeting.dateTime)}
+            time={formatTime(meeting.dateTime)}
+            participantCount={meeting.participantCount}
+            capacity={meeting.capacity}
+            isFavorite={meeting.isFavorited}
+            onReviewSuccess={handleReviewSuccess}
+          />
+        ))}
 
-      {hasMore && (
-        <>
+        {hasNextPage && (
           <div
             ref={observerTarget}
-            className="h-2"
-            aria-hidden="true"
-          />
+            className="py-3 text-center text-sm text-gray-500"
+            aria-live="polite"
+          >
+            {isFetchingNextPage
+              ? "다음 목록을 불러오는 중입니다..."
+              : isError
+                ? "다음 목록을 불러오지 못했습니다."
+                : "스크롤하면 다음 목록을 불러옵니다."}
+          </div>
+        )}
 
-          <p className="py-2 text-center text-sm text-gray-500">
-            스크롤하면 더 많은 모임을 볼 수 있어요.
-          </p>
-        </>
-      )}
+        {isError && meetings.length > 0 && (
+          <button
+            type="button"
+            onClick={() => void fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="self-center rounded-md border px-4 py-2 text-sm disabled:opacity-50"
+          >
+            다음 목록 다시 시도
+          </button>
+        )}
+      </div>
     </div>
   );
 }
