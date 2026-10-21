@@ -8,7 +8,8 @@ interface ImageUploadFieldProps {
   value: string;
   onFileSelect: (file: File) => void;
   onRemove: () => void;
-  alt?: string;
+  alt: string;
+  disabled?: boolean;
 }
 
 const isBlobUrl = (url: string) => url.startsWith("blob:");

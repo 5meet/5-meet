@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./provider";
 import { AppToaster } from "@/components/ui/Sonner";
 import GNB from "@/components/layout/GNB/GNB";
+import { GlobalCreateFAB } from "@/components/layout/GlabalCreateFAB/GlobalCreateFAB";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <GNB />
 
             <div className="flex flex-1 flex-col">{children}</div>
+            <GlobalCreateFAB />
           </div>
 
           <AppToaster />
