@@ -77,10 +77,10 @@ export const Desktop: Story = {
   },
 };
 
-export const NameOnly: Story = { args: { allowImageEdit: false } };
+export const ImageEditing: Story = { args: { allowImageEdit: true } };
 
 export const Saving: Story = {
-  args: { allowImageEdit: false, onSubmit: () => new Promise<void>(() => {}) },
+  args: { onSubmit: () => new Promise<void>(() => {}) },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.clear(canvas.getByLabelText("이름", { exact: true }));
@@ -92,7 +92,7 @@ export const Saving: Story = {
 };
 
 export const SaveError: Story = {
-  args: { allowImageEdit: false, onSubmit: async () => { throw new Error("이름을 저장하지 못했어요. 잠시 후 다시 시도해주세요."); } },
+  args: { onSubmit: async () => { throw new Error("프로필을 저장하지 못했어요. 잠시 후 다시 시도해주세요."); } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.clear(canvas.getByLabelText("이름", { exact: true }));
