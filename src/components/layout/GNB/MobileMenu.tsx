@@ -1,10 +1,12 @@
+
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { NAV_ITEMS } from "./constants";
 
+import { NAV_ITEMS } from "./constants";
 import { useLogout } from "@/features/auth/logout/hooks/useLogout";
 import type { User } from "@/features/auth/type";
 
@@ -14,12 +16,19 @@ interface MobileMenuProps {
 
 export function MobileMenu({ user }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
   const { logout } = useLogout();
 
   const handleLogout = async () => {
     setIsOpen(false);
     await logout();
   };
+
+  const isActivePath = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
+
+  const isMyPageActive =
+    pathname === "/mypage" || pathname.startsWith("/mypage/");
 
   return (
     <>
@@ -70,32 +79,43 @@ export function MobileMenu({ user }: MobileMenuProps) {
 
         {/* 메뉴 목록 */}
         <ul className="flex flex-col gap-2">
-          {NAV_ITEMS.map((item, index) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className={`flex h-14 items-center justify-between text-sm transition-colors hover:text-emerald-500 ${
-                  index === 0
-                    ? "font-semibold text-emerald-500"
-                    : "font-medium text-gray-500"
-                }`}
-              >
-                <span>{item.label}</span>
-                <ChevronRight
-                  className="size-4 text-gray-400"
-                  strokeWidth={1.5}
-                />
-              </Link>
-            </li>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const isActive = isActivePath(item.href);
 
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex h-14 items-center justify-between text-sm transition-colors hover:text-emerald-500 ${
+                    isActive
+                      ? "font-semibold text-emerald-500"
+                      : "font-medium text-gray-500"
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  <ChevronRight
+                    className="size-4 text-gray-400"
+                    strokeWidth={1.5}
+                  />
+                </Link>
+              </li>
+            );
+          })}
+
+          {/* 마이페이지 */}
           {user && (
             <li>
               <Link
                 href="/mypage/meetings"
                 onClick={() => setIsOpen(false)}
-                className="flex h-14 items-center justify-between text-sm font-medium text-gray-500 transition-colors hover:text-emerald-500"
+                aria-current={isMyPageActive ? "page" : undefined}
+                className={`flex h-14 items-center justify-between text-sm transition-colors hover:text-emerald-500 ${
+                  isMyPageActive
+                    ? "font-semibold text-emerald-500"
+                    : "font-medium text-gray-500"
+                }`}
               >
                 <span>마이페이지</span>
                 <ChevronRight
