@@ -17,6 +17,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <main className="flex flex-1 items-center justify-center bg-gray-50 px-4">
+      <OAuthErrorAlert error={error} />
       <LoginForm redirect={safeRedirect} />
     </main>
   );
