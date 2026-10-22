@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, Heart, MapPin, Users } from "lucide-react";
 
-import type { Meeting } from "@/features/meetings/types/meeting";
+import type { Meeting } from "@/features/meetings/types/meetings";
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -21,7 +21,6 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   } = meeting;
 
   const date = new Date(dateTime);
-
   const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
   const formattedTime = date.toLocaleTimeString("ko-KR", {
@@ -46,10 +45,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         {/* 상태 배지 */}
         <span
-          className={`absolute bottom-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${isFull
+          className={`absolute bottom-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${
+            isFull
               ? "bg-blue-50 text-blue-500"
               : "bg-emerald-50 text-emerald-600"
-            }`}
+          }`}
         >
           {isFull ? "모집 마감" : "참여 가능"}
         </span>

@@ -18,6 +18,7 @@ import { showToast } from "@/components/ui/Sonner";
 import { useUpdateMeetingMutation } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useMeetingDetailQuery } from "@/features/meetingDetail/hooks";
 import { useUploadImageMutation } from "@/features/images/hooks/useUploadImageMutation";
+import { getUploadErrorMessage } from "@/features/images/utils/getUploadErrorMessage";
 import { MEETING_TYPE_OPTIONS } from "@/lib/constants/meetingType";
 import {
   splitISOToKSTDateTime,
@@ -26,11 +27,18 @@ import {
 import {
   validateMeetingForm,
   MeetingFormErrors,
+  CAPACITY_MIN,
+  CAPACITY_MAX,
 } from "@/lib/validators/meetingFormValidators";
-import type { MeetingUpdateRequest } from "@/features/meetingDetail/types/meetingDetail";
+
+import type {
+  MeetingUpdateRequest,
+  MeetingFormState,
+} from "@/features/meetingDetail/types/meetingDetail";
 
 interface EditMeetingModalProps {
   meetingId: number;
+  isLoggedIn: boolean;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -43,54 +51,44 @@ const EDIT_TABS = [
 
 type EditTabValue = (typeof EDIT_TABS)[number]["value"];
 
-// 폼 내부에서 쓰는 상태
-interface EditMeetingFormState {
-  name: string;
-  type: string;
-  region: string; // 도로명 주소 (AddressSearchField의 address)
-  address: string; // 상세 주소
-  latitude: number;
-  longitude: number;
-  date: string; // "2027-02-10"
-  time: string; // "17:30"
-  registrationEndDate: string;
-  registrationEndTime: string;
-  capacity: number;
-  image: string; // 미리보기/업로드된 URL
-  description: string;
-}
-
-const INITIAL_FORM: EditMeetingFormState = {
+const INITIAL_FORM: MeetingFormState = {
   name: "",
   type: "",
   region: "",
   address: "",
+  detailAddress: "",
   latitude: 0,
   longitude: 0,
   date: "",
   time: "",
   registrationEndDate: "",
   registrationEndTime: "",
-  capacity: 0,
+  capacity: 1,
   image: "",
   description: "",
 };
 
 const EditMeetingModal = ({
   meetingId,
+  isLoggedIn,
   isOpen,
   onClose,
 }: EditMeetingModalProps) => {
-  const { data: meeting } = useMeetingDetailQuery(meetingId);
+  const { data: meeting } = useMeetingDetailQuery(meetingId, isLoggedIn);
   const editMutation = useUpdateMeetingMutation(meetingId);
   const uploadImageMutation = useUploadImageMutation();
 
   const [errors, setErrors] = useState<MeetingFormErrors>({});
   const [activeTab, setActiveTab] = useState<EditTabValue>("basic");
-  const [form, setForm] = useState<EditMeetingFormState>(INITIAL_FORM);
+  const [form, setForm] = useState<MeetingFormState>(INITIAL_FORM);
   const [initializedMeetingId, setInitializedMeetingId] = useState<
     number | null
   >(null);
+  const [isAddressChanged, setIsAddressChanged] = useState(false);
+
+  const uploadRequestIdRef = useRef(0);
+  const committedImageRef = useRef(""); // 서버에 확정된 마지막 이미지 URL (blob 아님)
+  const isBlobUrl = (url: string) => url.startsWith("blob:");
 
   // 아직 업로드 중/실패한 blob을 추적
   const pendingBlobUrlRef = useRef<string | null>(null);
@@ -114,6 +112,7 @@ const EditMeetingModal = ({
       type: meeting.category,
       region: meeting.location,
       address: meeting.address,
+      detailAddress: "",
       latitude: meeting.latitude,
       longitude: meeting.longitude,
       date,
@@ -127,9 +126,17 @@ const EditMeetingModal = ({
     setInitializedMeetingId(meeting.id);
   }
 
-  const handleField = <K extends keyof EditMeetingFormState>(
+  // 폼이 (재)초기화될 때마다 서버에 저장된 사진을 복원 기준으로 맞춤
+  useEffect(() => {
+    if (initializedMeetingId !== null && meeting) {
+      committedImageRef.current = meeting.image;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initializedMeetingId]);
+
+  const handleField = <K extends keyof MeetingFormState>(
     field: K,
-    value: EditMeetingFormState[K],
+    value: MeetingFormState[K],
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -152,7 +159,9 @@ const EditMeetingModal = ({
       name: form.name,
       type: form.type,
       region: form.region,
-      address: form.address,
+      address: isAddressChanged
+        ? `${form.address} ${form.detailAddress}`.trim()
+        : form.address,
       latitude: form.latitude,
       longitude: form.longitude,
       dateTime: combineKSTDateTimeToISO(form.date, form.time),
@@ -176,38 +185,88 @@ const EditMeetingModal = ({
 
   // 이미지 업로드: 선택 즉시 미리보기 반영 후, 백그라운드에서 업로드하고 성공/실패에 따라 URL 교체
   const handleImageUpload = (file: File) => {
-    const previousImage = form.image; // 실패 시 되돌릴 원래 값 (서버의 기존 이미지 URL 또는 빈 문자열)
+    const requestId = ++uploadRequestIdRef.current;
+
+    // 복원 기준: 현재 값이 blob이 아니면 그 값, blob이면(연속 선택) 기존 확정값 유지
+    if (form.image && !isBlobUrl(form.image)) {
+      committedImageRef.current = form.image;
+    }
+
     revokePendingBlob(); // 이전에 선택했던 blob(아직 업로드 완료 안 된 것)이 있으면 먼저 해제
+
     const previewUrl = URL.createObjectURL(file);
     pendingBlobUrlRef.current = previewUrl;
     handleField("image", previewUrl); // 즉시 미리보기 반영
 
-    uploadImageMutation.mutate(file, {
-      onSuccess: (publicUrl) => {
-        revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
-        handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
+    uploadImageMutation.mutate(
+      { file },
+      {
+        onSuccess: (publicUrl) => {
+          if (requestId !== uploadRequestIdRef.current) return; // 오래된 결과는 무시
+          committedImageRef.current = publicUrl;
+          revokePendingBlob(); // 업로드 성공 → 더는 필요 없는 blob 해제
+          handleField("image", publicUrl); // 업로드 완료되면 실제 URL로 교체
+        },
+        onError: (error) => {
+          if (requestId !== uploadRequestIdRef.current) return;
+          revokePendingBlob();
+          handleField("image", committedImageRef.current); // 폐기된 blob이 아니라 확정된 URL로 복원
+          showToast({
+            kind: "error",
+            message: getUploadErrorMessage(error),
+          });
+        },
       },
-      onError: () => {
-        revokePendingBlob();
-        handleField("image", previousImage); // 실패 시 롤백
-        showToast({
-          kind: "error",
-          message: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
-        });
-      },
-    });
+    );
   };
 
   // 이미지 삭제
   const handleImageRemove = () => {
+    uploadRequestIdRef.current++; // 진행 중이던 요청을 무효화
+    committedImageRef.current = "";
     revokePendingBlob(); // 사용자가 직접 삭제를 눌렀을 때도 정리
     handleField("image", "");
   };
 
+  // 주소 검색
+  const handleSelectAddress = ({
+    region,
+    address,
+    latitude,
+    longitude,
+  }: {
+    region: string;
+    address: string;
+    latitude: number | null;
+    longitude: number | null;
+  }) => {
+    if (latitude === null || longitude === null) {
+      showToast({
+        kind: "error",
+        message: "주소의 위치를 확인할 수 없습니다. 다른 주소를 선택해주세요.",
+      });
+      return;
+    }
+
+    setIsAddressChanged(true);
+    setForm((prev) => ({
+      ...prev,
+      region,
+      address,
+      detailAddress: "",
+      latitude: latitude,
+      longitude: longitude,
+    }));
+  };
+
+  // 모달 닫기
   const handleClose = () => {
+    uploadRequestIdRef.current++; // 진행 중이던 업로드 응답 무효화
+    committedImageRef.current = "";
     revokePendingBlob();
     setForm(INITIAL_FORM);
     setInitializedMeetingId(null);
+    setIsAddressChanged(false);
     setErrors({});
     onClose();
   };
@@ -263,17 +322,13 @@ const EditMeetingModal = ({
 
                 <div className="flex flex-col gap-1">
                   <AddressSearchField
-                    address={form.region}
-                    detailAddress={form.address}
-                    onSelectAddress={({ address, latitude, longitude }) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        region: address,
-                        latitude: latitude ?? prev.latitude,
-                        longitude: longitude ?? prev.longitude,
-                      }))
+                    address={form.address}
+                    detailAddress={form.detailAddress}
+                    isDetailDisabled={!isAddressChanged}
+                    onSelectAddress={handleSelectAddress}
+                    onDetailAddressChange={(v) =>
+                      handleField("detailAddress", v)
                     }
-                    onDetailAddressChange={(v) => handleField("address", v)}
                   />
                 </div>
 
@@ -283,7 +338,7 @@ const EditMeetingModal = ({
                   </Label>
                   <ImageUploadField
                     value={form.image}
-                    alt={meeting?.title}
+                    alt={meeting?.title || "모임 이미지"}
                     onFileSelect={handleImageUpload}
                     onRemove={handleImageRemove}
                   />
@@ -345,7 +400,8 @@ const EditMeetingModal = ({
                   <Input
                     id="capacity"
                     type="number"
-                    min={0}
+                    min={CAPACITY_MIN}
+                    max={CAPACITY_MAX}
                     value={form.capacity}
                     onChange={(e) =>
                       handleField("capacity", Number(e.target.value))

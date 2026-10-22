@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -26,21 +25,13 @@ interface LoginFormValue {
   password: string;
 }
 
-
-
 export default function LoginForm({ redirect }: LoginFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     trigger,
-    formState: {
-      errors,
-      isValid,
-      touchedFields,
-      isSubmitting,
-      isValidating,
-    },
+    formState: { errors, isValid, touchedFields, isSubmitting, isValidating },
   } = useForm<LoginFormValue>({ mode: "onBlur" });
 
   const { openAlert } = useModal();
@@ -86,7 +77,14 @@ export default function LoginForm({ redirect }: LoginFormProps) {
 
   return (
     <section
-      className="w-full max-w-169 rounded-2xl bg-white px-10 py-9"
+      className="
+      w-full max-w-[343px] min-h-[746px]
+      rounded-2xl bg-white
+      px-4 py-9
+      min-[744px]:max-w-[568px]
+      min-[744px]:min-h-[756px]
+      min-[744px]:px-10
+    "
       aria-labelledby="login-title"
     >
       <h1
@@ -163,23 +161,20 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       {/* 소셜 로그인 구분선 */}
       <div className="my-8 flex items-center gap-3" aria-hidden="true">
         <div className="h-px flex-1 bg-gray-300" />
-        <span className="text-sm text-gray-500">
-          SNS 계정으로 로그인
-        </span>
+        <span className="text-sm text-gray-500">SNS 계정으로 로그인</span>
         <div className="h-px flex-1 bg-gray-300" />
       </div>
 
-      {/* 소셜 로그인 */}
-      <div className="flex w-full flex-col gap-3 sm:flex-row">
+      <div className="flex w-full flex-col gap-3 min-[744px]:flex-row">
         <SocialLoginButton
           provider="google"
           redirect={redirect}
-          className="sm:flex-1"
+          className="min-[744px]:min-w-0 min-[744px]:flex-1"
         />
         <SocialLoginButton
           provider="kakao"
           redirect={redirect}
-          className="sm:flex-1"
+          className="min-[744px]:min-w-0 min-[744px]:flex-1"
         />
       </div>
 

@@ -12,6 +12,15 @@ const MEETING_TITLES = [
   "배드민턴 정기모임",
 ];
 
+const MEETING_CATEGIRIES = [
+  "취미/여가",
+  "스터디",
+  "비즈니스",
+  "운동/건강",
+  "가족/육아",
+  "기타",
+];
+
 const MEETING_REGIONS = ["건대입구", "성수", "홍대입구", "강남", "잠실"];
 const MEETING_IMAGES = ["/sample.jpg", "/sample2.jpg", "/sample3.jpg"];
 
@@ -27,7 +36,7 @@ const buildMockRecommendedMeeting = (index: number): RecommendedMeeting => {
     title: MEETING_TITLES[index % MEETING_TITLES.length],
     image: MEETING_IMAGES[index % MEETING_IMAGES.length],
     location: MEETING_REGIONS[index % MEETING_REGIONS.length],
-    category: "달램핏",
+    category: MEETING_CATEGIRIES[index % MEETING_CATEGIRIES.length],
     date,
     time,
     registrationEnd: `2027-03-${String((index % 28) + 1).padStart(2, "0")}T12:00:00.000Z`,

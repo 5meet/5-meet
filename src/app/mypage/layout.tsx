@@ -1,4 +1,5 @@
-import MyPageTabs from "@/features/mypage/components/MyPageTabs";
+import MyPageProfile from "@/features/mypage/components/MyPageProfile";
+import MyPageShell from "@/features/mypage/components/MyPageShell";
 
 export default function MyPageLayout({
   children,
@@ -6,12 +7,6 @@ export default function MyPageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full">
-      <MyPageTabs />
-
-      <div className="mt-6">
-        {children}
-      </div>
-    </div>
+    <MyPageShell profile={<MyPageProfile />}>{children}</MyPageShell>
   );
 }

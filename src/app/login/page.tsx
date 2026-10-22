@@ -16,8 +16,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const safeRedirect = getSafeRedirect(redirect, "/meetings");
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-[#f5f7f8] px-4">
-      <OAuthErrorAlert error={error} />
+    <main className="flex flex-1 items-center justify-center bg-gray-50 px-4">
       <LoginForm redirect={safeRedirect} />
     </main>
   );

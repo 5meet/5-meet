@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { Button } from "@/components/ui/Button/Button";
 
@@ -7,6 +10,13 @@ interface LoginRequiredModalProps {
 }
 
 const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
+  const router = useRouter();
+
+  const handleLogin = () => {
+    onClose();
+    router.push("/login");
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <Modal.Header onClose={onClose} />
@@ -26,14 +36,7 @@ const LoginRequiredModal = ({ isOpen, onClose }: LoginRequiredModalProps) => {
         >
           취소
         </Button>
-        <Button
-          className="flex-1"
-          onClick={() => {
-            // TODO: 로그인 페이지 이동
-            onClose();
-          }}
-          size="md"
-        >
+        <Button className="flex-1" onClick={handleLogin} size="md">
           확인
         </Button>
       </Modal.Footer>

@@ -1,31 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import ParticipantProfiles from "./ParticipantProfiles";
 
-const meta = {
-  title: "Components/MeetingDetail/PersonnelCard/ParticipantProfiles",
-  component: ParticipantProfiles,
-  parameters: {
-    layout: "centered",
-  },
-  tags: ["autodocs"],
-  argTypes: {
-    participantCount: {
-      control: {
-        type: "number",
-      },
-      description: "전체 모임 참가자 수",
-    },
-    participants: {
-      control: false,
-      description: "프로필을 표시할 참가자 목록",
-    },
-  },
-} satisfies Meta<typeof ParticipantProfiles>;
-
-export default meta;
-
-type Story = StoryObj<typeof meta>;
-
 const participants = [
   {
     id: 1,
@@ -103,6 +78,38 @@ const participants = [
     image: "/profile/profile_male.svg",
   },
 ];
+
+const meta = {
+  title: "Features/MeetingDetail/PersonnelCard/ParticipantProfiles",
+  component: ParticipantProfiles,
+  parameters: {
+    layout: "centered",
+    docs: {
+      autodocs: true,
+    },
+  },
+  tags: ["autodocs"],
+  argTypes: {
+    participantCount: {
+      control: {
+        type: "number",
+      },
+      description: "전체 모임 참가자 수",
+    },
+    participants: {
+      control: false,
+      description: "프로필을 표시할 참가자 목록",
+    },
+  },
+  args: {
+    participantCount: 4,
+    participants: participants.slice(0, 4),
+  },
+} satisfies Meta<typeof ParticipantProfiles>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
 
 export const NoParticipants: Story = {
   args: {

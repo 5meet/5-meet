@@ -13,12 +13,14 @@ interface ProfileCardProps {
   name?: string;
   email?: string;
   imageSrc?: string;
+  onSaveProfile?: (name: string, imageFile?: File) => Promise<void>;
 }
 
 export default function ProfileCard({
   name = "럽윈즈올",
   email = "lovewins@codeit.com",
   imageSrc = "/profile/profile_female1.svg",
+  onSaveProfile,
 }: ProfileCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [displayName, setDisplayName] = useState(name);
@@ -33,7 +35,11 @@ export default function ProfileCard({
     };
   }, []);
 
-  const handleSubmit = (nextName: string, nextImageFile?: File) => {
+  const handleSubmit = async (nextName: string, nextImageFile?: File) => {
+    if (onSaveProfile) {
+      await onSaveProfile(nextName, nextImageFile);
+      return;
+    }
     setDisplayName(nextName);
 
     if (nextImageFile) {
@@ -78,7 +84,7 @@ export default function ProfileCard({
               fill
               sizes="(min-width: 640px) 114px, 54px"
               className="object-cover"
-              unoptimized={profileImageSrc.startsWith("blob:")}
+              unoptimized
             />
           </div>
 
