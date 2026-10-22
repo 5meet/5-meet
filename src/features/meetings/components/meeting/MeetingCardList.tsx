@@ -1,4 +1,3 @@
-
 import { serverFetch } from "@/lib/api/serverFetch";
 import { EmptyState } from "../EmptyState";
 import type { MeetingsResponse } from "../../types/meeting";
@@ -14,8 +13,12 @@ export async function MeetingCardList({
   endpoint,
   className = "px-8 md:px-6",
 }: MeetingCardListProps) {
-  const response = await serverFetch<MeetingsResponse>(endpoint);
+  // 인증이 없어도 정상적으로 처리되는 요청
+  const response = await serverFetch<MeetingsResponse>(endpoint, {
+    auth: true,
+  });
   const meetings = response.data;
+  
 
   if (meetings.length === 0) {
     return (

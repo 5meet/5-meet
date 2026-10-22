@@ -5,6 +5,7 @@ import { IconButton } from "./IconButton";
 interface LikeButtonProps {
   isLiked: boolean;
   onToggle: () => void;
+  disabled?: boolean;
   size?: "sm" | "md" | "lg";
 }
 
@@ -12,11 +13,12 @@ export const LikeButton = ({
   isLiked,
   onToggle,
   size = "md",
+  disabled = false,
 }: LikeButtonProps) => {
   const gradientId = useId();
   return (
     <>
-      {/* #mint-gradient-500: 왼쪽(#17DA71)에서 오른쪽(#08DDF0)으로 이어지는 선형 그라데이션 정의 */}
+    {/* #mint-gradient-500: 왼쪽(#17DA71)에서 오른쪽(#08DDF0)으로 이어지는 선형 그라데이션 정의 */}
       <svg width="0" height="0" className="absolute">
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
@@ -27,6 +29,7 @@ export const LikeButton = ({
       </svg>
 
       <IconButton
+        disabled={disabled}
         size={size}
         aria-label={isLiked ? "좋아요 취소" : "좋아요"}
         aria-pressed={isLiked}
