@@ -5,11 +5,14 @@
 import { useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+
 
 import { useModal } from "@/contexts/ModalContext";
 import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 import { socialLoginAction } from "../actions/socialLoginAction";
+
+
+
 
 
 export function useGoogleSocialLogin(redirect: string) {
