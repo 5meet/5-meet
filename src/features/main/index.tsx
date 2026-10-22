@@ -87,7 +87,7 @@ function CtaButton() {
 
 export default function LandingPageClient() {
   return (
-    <main className="flex flex-col justify-center text-gray-900">
+    <main className="flex flex-col justify-center text-gray-900 cursor-default">
       {/* 1. 히어로 */}
       <section className="w-full bg-mint-gradient-100">
         <header className="relative content-end mx-auto flex flex-col max-w-300 items-center gap-15 px-5 py-16 md:flex-row md:justify-between md:py-24">
