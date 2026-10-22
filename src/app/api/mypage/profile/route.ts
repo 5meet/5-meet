@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ApiError } from "@/lib/api/ApiError";
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 import type { User } from "@/features/auth/type";
+import { validateProfileUpdate } from "@/features/mypage/validators/profile";
 
 export async function PATCH(request: Request) {
   let body: unknown;
@@ -10,33 +11,15 @@ export async function PATCH(request: Request) {
   } catch {
     return NextResponse.json({ message: "올바른 프로필 정보를 입력해주세요." }, { status: 400 });
   }
-  if (!body || typeof body !== "object" || Array.isArray(body)
-    || Object.keys(body).length === 0 || Object.keys(body).some((key) => key !== "name" && key !== "image")) {
-    return NextResponse.json({ message: "올바른 프로필 정보를 입력해주세요." }, { status: 400 });
-  }
-  const payload: { name?: string; image?: string } = {};
-  if ("name" in body) {
-    if (typeof body.name !== "string" || !body.name.trim() || body.name.trim().length > 20) {
-      return NextResponse.json({ message: "이름은 1자 이상 20자 이하로 입력해주세요." }, { status: 400 });
-    }
-    payload.name = body.name.trim();
-  }
-  if ("image" in body) {
-    let url: URL;
-    try {
-      if (typeof body.image !== "string") throw new Error();
-      url = new URL(body.image);
-      if (url.protocol !== "https:" || url.username || url.password) throw new Error();
-    } catch {
-      return NextResponse.json({ message: "올바른 이미지 URL이 필요합니다." }, { status: 400 });
-    }
-    payload.image = url.href;
+  const validation = validateProfileUpdate(body);
+  if (!validation.success) {
+    return NextResponse.json({ message: validation.message }, { status: 400 });
   }
   try {
     const user = await serverFetchWithTokenRefresh<User>("/users/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(validation.data),
     });
     return NextResponse.json(user);
   } catch (error) {

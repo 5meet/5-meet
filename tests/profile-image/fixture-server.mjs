@@ -1,6 +1,6 @@
 import http from "node:http";
 let state;
-const initialUser = { id: 7, teamId: "qa", name: "기존 이름", email: "profile@example.invalid", companyName: null, image: "https://profile-storage.example.invalid/users/original.jpg", createdAt: "2026-10-01T00:00:00Z", updatedAt: "2026-10-01T00:00:00Z" };
+const initialUser = { id: 7, teamId: "qa", name: "기존 이름", email: "profile@example.invalid", companyName: null, image: "https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/users/original.jpg", createdAt: "2026-10-01T00:00:00Z", updatedAt: "2026-10-01T00:00:00Z" };
 const reset = () => { state = { user: { ...initialUser }, mode: "success", patches: [], uploads: [], refreshes: 0 }; };
 reset();
 http.createServer(async (req, res) => {
@@ -17,7 +17,7 @@ http.createServer(async (req, res) => {
     const body = JSON.parse(raw); state.uploads.push({ body, authorization: req.headers.authorization });
     if (state.mode === "presign-error") return send(503, { code: "UNAVAILABLE" });
     if (state.mode === "presign-unauthorized" || (state.mode === "presign-refresh" && req.headers.authorization !== "Bearer qa-refreshed")) return send(401, { code: "UNAUTHORIZED" });
-    return send(200, { presignedUrl: `https://profile-storage.example.invalid/upload/${state.uploads.length}`, publicUrl: `https://profile-storage.example.invalid/users/${state.uploads.length}.jpg` });
+    return send(200, { presignedUrl: `https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/upload/${state.uploads.length}`, publicUrl: `https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/users/${state.uploads.length}.jpg` });
   }
   if (url.pathname === "/users/me" && req.method === "GET") return send(200, state.user);
   if (url.pathname === "/users/me" && req.method === "PATCH") {

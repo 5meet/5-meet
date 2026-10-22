@@ -8,7 +8,7 @@ import { chromium } from "playwright";
 const output = process.env.QA_OUTPUT ?? "/tmp/profile-image-qa";
 await mkdir(output, { recursive: true });
 const base = "http://127.0.0.1:3007", upstream = "http://127.0.0.1:4014";
-const original = "https://profile-storage.example.invalid/users/original.jpg";
+const original = "https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/users/original.jpg";
 const children = [], results = [];
 let browser;
 function start(args, env = {}) {
@@ -31,7 +31,7 @@ async function open(width = 1920, refresh = false) {
   await context.addCookies([{ name: "accessToken", value: "qa-token", url: base, httpOnly: true }, ...(refresh ? [{ name: "refreshToken", value: "qa-refresh", url: base, httpOnly: true }] : [])]);
   const page = await context.newPage(), puts = [], held = [];
   const control = { hold: false, fail: false };
-  await page.route("https://profile-storage.example.invalid/**", async route => {
+  await page.route("https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/**", async route => {
     if (route.request().method() === "PUT") {
       puts.push({ headers: route.request().headers(), bytes: route.request().postDataBuffer() });
       if (control.hold) { held.push(route); return; }
@@ -109,7 +109,7 @@ try {
   }
 
   q=await open();await crop(q.page);await mode("error");await save(q.dialog).click();await q.dialog.getByRole("alert").waitFor();
-  await crop(q.page);await mode("success");await save(q.dialog).click();await q.dialog.waitFor({state:"detached"});s=await state();assert.equal(s.uploads.length,2);assert.equal(q.puts.length,2);assert.equal(s.user.image,"https://profile-storage.example.invalid/users/2.jpg");await restored(q.page,s.user.image);
+  await crop(q.page);await mode("success");await save(q.dialog).click();await q.dialog.waitFor({state:"detached"});s=await state();assert.equal(s.uploads.length,2);assert.equal(q.puts.length,2);assert.equal(s.user.image,"https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/users/2.jpg");await restored(q.page,s.user.image);
   record("Selecting a different crop after PATCH failure uploads the new file instead of reusing old URL");await q.context.close();
 
   q=await open();await crop(q.page);q.control.hold=true;await save(q.dialog).evaluate(b=>{b.click();b.click()});await until(()=>q.held.length===1);
@@ -136,8 +136,8 @@ try {
   record("Expired presign authentication retains old profile and offers login guidance");await q.context.close();
 
   q=await open();
-  for(const data of [{},{image:"blob:x"},{image:"http://example.invalid/x"},{image:123},{image:null},{image:"https://example.invalid/x",companyName:"x"},{name:" ",image:"https://example.invalid/x"}])assert.equal((await q.context.request.patch(`${base}/api/mypage/profile`,{data})).status(),400);
-  const anonymous=await browser.newContext();assert.equal((await anonymous.request.patch(`${base}/api/mypage/profile`,{data:{image:"https://example.invalid/x.jpg"}})).status(),401);await anonymous.close();assert.equal((await state()).patches.length,0);
+  for(const data of [{},{image:"https://outside.example/avatar.jpg"},{image:"https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com.outside.example/avatar.jpg"},{image:"blob:x"},{image:"http://example.invalid/x"},{image:123},{image:null},{image:"https://example.invalid/x",companyName:"x"},{name:" ",image:"https://example.invalid/x"}])assert.equal((await q.context.request.patch(`${base}/api/mypage/profile`,{data})).status(),400);
+  const anonymous=await browser.newContext();assert.equal((await anonymous.request.patch(`${base}/api/mypage/profile`,{data:{image:"https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/users/anonymous.jpg"}})).status(),401);await anonymous.close();assert.equal((await state()).patches.length,0);
   record("BFF rejects invalid image protocols/types, empty/unknown fields, invalid names and anonymous writes");await q.context.close();
 
   }
