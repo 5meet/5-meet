@@ -44,9 +44,9 @@ try {
     return { context, page, dialog: page.getByRole("dialog"), input: page.getByLabel("이름", { exact: true }) };
   };
   let { context, page, dialog, input } = await open();
-  assert.equal(await dialog.locator('input[type="file"]').isDisabled(), true);
+  assert.equal(await dialog.locator('input[type="file"]').isDisabled(), false);
   await dialog.getByRole("button", { name: "수정하기", exact: true }).click(); await dialog.waitFor({ state: "detached" });
-  assert.equal((await state()).patches.length, 0); record("Unchanged name closes without PATCH; connected editor disables image upload"); await context.close();
+  assert.equal((await state()).patches.length, 0); record("Unchanged name closes without PATCH; connected editor enables image upload"); await context.close();
 
   ({ context, page, dialog, input } = await open());
   await input.fill("   "); assert(await dialog.getByRole("button", { name: "수정하기", exact: true }).isDisabled());
@@ -84,7 +84,7 @@ try {
   record("Existing refresh helper renews cookie and retries authenticated PATCH once"); await context.close();
 
   ({ context, page, dialog, input } = await open());
-  for (const data of [{ name: "" }, { name: "a".repeat(21) }, { name: "valid", image: "https://example.invalid/a" }]) {
+  for (const data of [{ name: "" }, { name: "a".repeat(21) }, { name: "valid", image: "blob:invalid" }]) {
     const response = await context.request.patch(`${base}/api/mypage/profile`, { data }); assert.equal(response.status(), 400);
   }
   assert.equal((await state()).patches.length, 0);

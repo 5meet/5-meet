@@ -11,6 +11,8 @@ import { loginAction } from "../actions/loginActions";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";
 import { useModal } from "@/contexts/ModalContext";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 interface LoginFormProps {
   redirect: string;
@@ -31,6 +33,7 @@ export default function LoginForm({ redirect }: LoginFormProps) {
   } = useForm<LoginFormValue>({ mode: "onBlur" });
   const { openAlert } = useModal();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const emailValue = watch("email");
   const passwordValue = watch("password");
@@ -44,7 +47,9 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       return;
     }
     // 로그인 성공
+    await queryClient.resetQueries({ queryKey: CURRENT_USER_QUERY_KEY, exact: true });
     router.replace(redirect);
+    router.refresh();
   };
 
   useDebouncedTrigger({
@@ -62,7 +67,14 @@ export default function LoginForm({ redirect }: LoginFormProps) {
   });
   return (
     <section
-      className="w-full max-w-169 rounded-2xl bg-white px-10 py-9"
+      className="
+      w-full max-w-[343px] min-h-[746px]
+      rounded-2xl bg-white
+      px-4 py-9
+      min-[744px]:max-w-[568px]
+      min-[744px]:min-h-[756px]
+      min-[744px]:px-10
+    "
       aria-labelledby="login-title"
     >
       <h1
@@ -134,16 +146,16 @@ export default function LoginForm({ redirect }: LoginFormProps) {
         <div className="h-px flex-1 bg-gray-300" />
       </div>
 
-      <div className="flex w-full flex-col gap-3 sm:flex-row">
+      <div className="flex w-full flex-col gap-3 min-[744px]:flex-row">
         <SocialLoginButton
           provider="google"
           redirect={redirect}
-          className="sm:flex-1"
+          className="min-[744px]:min-w-0 min-[744px]:flex-1"
         />
         <SocialLoginButton
           provider="kakao"
           redirect={redirect}
-          className="sm:flex-1"
+          className="min-[744px]:min-w-0 min-[744px]:flex-1"
         />
       </div>
       <p className="mt-8 text-center text-sm text-gray-700">

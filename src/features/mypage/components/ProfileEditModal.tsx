@@ -116,6 +116,7 @@ function ProfileEditModalContent({
       return;
     }
     setImageError(null);
+    setSaveError(null);
     clearPendingImage();
 
     const nextImageSrc = URL.createObjectURL(file);
@@ -132,6 +133,7 @@ function ProfileEditModalContent({
     previewObjectUrlRef.current = nextPreviewUrl;
 
     setImageError(null);
+    setSaveError(null);
     setSelectedImageFile(croppedFile);
     setPreviewImageSrc(nextPreviewUrl);
     clearPendingImage();
@@ -161,7 +163,7 @@ function ProfileEditModalContent({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-4 py-4" inert={cropImageSrc ? true : undefined}>
+      <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto px-4 py-4" inert={cropImageSrc ? true : undefined}>
         <button
           type="button"
           aria-label="프로필 수정 닫기"
@@ -214,7 +216,7 @@ function ProfileEditModalContent({
                       fill
                       sizes="114px"
                       className="object-cover"
-                      unoptimized={previewImageSrc.startsWith("blob:")}
+                      unoptimized
                     />
                   </div>
 
