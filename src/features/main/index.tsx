@@ -78,7 +78,7 @@ const REVIEWS = [
 function CtaButton() {
   return (
     <Link href="/meetings">
-      <Button size="md" variant="primary">
+      <Button size="md" variant="primary" className="cursor-pointer">
         모임 둘러보기
       </Button>
     </Link>
