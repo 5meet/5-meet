@@ -31,7 +31,7 @@ export const IconButton = ({
       disabled={isDisabled}
       aria-busy={isLoading}
       className={cn(
-        "relative inline-flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm transition-all duration-200hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:transform-none disabled:shadow-none",
+        "relative inline-flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:transform-none disabled:shadow-none",
         sizeStyles[size],
         className,
       )}
