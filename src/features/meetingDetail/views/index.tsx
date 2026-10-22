@@ -1,6 +1,5 @@
 "use client";
 
-import { notFound } from "next/navigation";
 import { useCallback } from "react";
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
@@ -11,7 +10,7 @@ import Pagination from "@/components/ui/Pagination/Pagination";
 import CompactCard from "@/components/ui/CompactCard/CompactCard";
 import FallbackImage from "@/components/ui/FallbackImage/FallbackImage";
 import { showToast } from "@/components/ui/Sonner";
-import { Spinner } from "@/components/ui/Spinner/Spinner";
+
 import {
   useMeetingDetailQuery,
   useParticipantsQuery,
