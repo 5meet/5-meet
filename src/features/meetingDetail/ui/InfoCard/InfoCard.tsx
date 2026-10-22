@@ -26,6 +26,9 @@ import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
 
 import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
+const DEFAULT_SHARE_IMAGE = "/images/meeting-default.png";
+const IMAGE_CHECK_TIMEOUT = 5000;
+
 const InfoCard = ({
   id,
   title,
@@ -111,15 +114,29 @@ const InfoCard = ({
     }
   };
 
-  const DEFAULT_SHARE_IMAGE = "/images/meeting-default.png";
-
-  // 이미지가 정상적으로 로드되는지 확인
+  // 이미지가 정상적으로 로드되는지 확인(최대 5초 - IMAGE_CHECK_TIMEOUT)
   const checkImage = (src: string): Promise<boolean> =>
     new Promise((resolve) => {
       const img = new window.Image();
+      let settled = false;
 
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
+      const finish = (isValid: boolean) => {
+        if (settled) return;
+        settled = true;
+
+        window.clearTimeout(timeoutId);
+        img.onload = null;
+        img.onerror = null;
+
+        resolve(isValid);
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        finish(false);
+      }, IMAGE_CHECK_TIMEOUT);
+
+      img.onload = () => finish(true);
+      img.onerror = () => finish(false);
       img.src = src;
     });
 
@@ -130,10 +147,14 @@ const InfoCard = ({
 
     if (!image) return fallbackUrl;
 
-    const imageUrl = new URL(image, window.location.origin).href;
-    const isImageValid = await checkImage(imageUrl);
+    try {
+      const imageUrl = new URL(image, window.location.origin).href;
+      const isImageValid = await checkImage(imageUrl);
 
-    return isImageValid ? imageUrl : fallbackUrl;
+      return isImageValid ? imageUrl : fallbackUrl;
+    } catch {
+      return fallbackUrl;
+    }
   };
 
   // 카카오 공유
