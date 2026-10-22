@@ -1,4 +1,3 @@
-```tsx
 "use client";
 
 import { useId } from "react";
@@ -60,4 +59,3 @@ export const LikeButton = ({
     </>
   );
 };
-```
