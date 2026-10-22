@@ -7,16 +7,20 @@ declare global {
       init: (appKey: string) => void;
       Share: {
         sendDefault: (settings: {
-          objectType: "feed";
+          objectType: "feed" | "location";
           content: {
             title: string;
-            description: string;
-            imageUrl?: string;
+            description?: string;
+            imageUrl: string;
+            imageWidth?: number;
+            imageHeight?: number;
             link: {
               mobileWebUrl: string;
               webUrl: string;
             };
           };
+          address?: string;
+          addressTitle?: string;
           buttons?: {
             title: string;
             link: {

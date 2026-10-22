@@ -110,6 +110,31 @@ const InfoCard = ({
     }
   };
 
+  const DEFAULT_SHARE_IMAGE = "/images/meeting-default.png";
+
+  // 이미지가 정상적으로 로드되는지 확인
+  const checkImage = (src: string): Promise<boolean> =>
+    new Promise((resolve) => {
+      const img = new window.Image();
+
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = src;
+    });
+
+  // 카카오로 공유할 이미지 URL 결정
+  const getShareImageUrl = async (): Promise<string> => {
+    const fallbackUrl = new URL(DEFAULT_SHARE_IMAGE, window.location.origin)
+      .href;
+
+    if (!image) return fallbackUrl;
+
+    const imageUrl = new URL(image, window.location.origin).href;
+    const isImageValid = await checkImage(imageUrl);
+
+    return isImageValid ? imageUrl : fallbackUrl;
+  };
+
   // 카카오 공유
   const handleKakaoShare = async () => {
     if (isKakaoSharing) return;
@@ -124,22 +149,22 @@ const InfoCard = ({
       return;
     }
 
-    const url = window.location.href;
-
-    // API에서 내려오는 모임 이미지가 절대 URL이 아닐 경우를 처리
-    const imageUrl = image
-      ? new URL(image, window.location.origin).href
-      : undefined;
-
     setIsKakaoSharing(true);
 
     try {
+      const url = window.location.href;
+      const imageUrl = await getShareImageUrl();
+
       kakao.Share.sendDefault({
-        objectType: "feed",
+        objectType: "location",
+        address: location,
+        addressTitle: title,
         content: {
           title,
           description: `${date} ${time} · ${location}`,
-          ...(imageUrl ? { imageUrl } : {}),
+          imageUrl,
+          imageWidth: 800,
+          imageHeight: 800,
           link: {
             mobileWebUrl: url,
             webUrl: url,
@@ -155,7 +180,9 @@ const InfoCard = ({
           },
         ],
       });
-    } catch {
+    } catch (error) {
+      console.error("카카오 공유 실패:", error);
+
       showToast({
         kind: "error",
         message: "카카오톡 공유에 실패했습니다.",
