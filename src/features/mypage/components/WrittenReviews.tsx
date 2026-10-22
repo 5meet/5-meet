@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef } from "react";
 
@@ -16,6 +16,7 @@ export default function WrittenReviews() {
     isLoading,
     isError,
     isFetchNextPageError,
+    isFetching,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -28,10 +29,13 @@ export default function WrittenReviews() {
 
   const reviews = data?.pages.flatMap((page) => page.data) ?? [];
 
-  // 최초 조회 실패와 추가 페이지 조회 실패를 구분한다.
   const isInitialError = isError && reviews.length === 0;
   const isNextPageError =
     isFetchNextPageError && reviews.length > 0;
+
+  // 기존 목록이 있는 상태에서 첫 페이지 재조회가 실패한 경우
+  const isRefetchError =
+    isError && reviews.length > 0 && !isFetchNextPageError;
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -83,7 +87,7 @@ export default function WrittenReviews() {
     );
   }
 
-  // 최초 조회 실패: 표시할 리뷰가 없을 때만 전체 오류 화면을 보여준다.
+  // 최초 조회 실패: 표시할 리뷰가 없는 경우
   if (isInitialError) {
     return (
       <div className="flex h-[780px] w-full flex-col items-center justify-center rounded-[24px] bg-white">
@@ -94,9 +98,10 @@ export default function WrittenReviews() {
         <button
           type="button"
           onClick={() => void refetch()}
-          className="mt-4 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          disabled={isFetching}
+          className="mt-4 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          다시 시도
+          {isFetching ? "다시 불러오는 중..." : "다시 시도"}
         </button>
       </div>
     );
@@ -109,6 +114,27 @@ export default function WrittenReviews() {
 
   return (
     <div className="flex w-full flex-col gap-4">
+      {/* 기존 목록이 있는 상태에서 재조회가 실패해도 목록을 유지한다. */}
+      {isRefetchError && (
+        <div
+          role="alert"
+          className="flex flex-col items-center gap-3 rounded-xl bg-white p-4"
+        >
+          <p className="text-center text-sm text-gray-500">
+            리뷰를 새로 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isFetching ? "다시 불러오는 중..." : "다시 시도"}
+          </button>
+        </div>
+      )}
+
       {reviews.map((review) => (
         <ReviewCard
           key={review.id}
@@ -135,7 +161,7 @@ export default function WrittenReviews() {
 
         {isNextPageError && (
           <>
-            <p className="text-center text-sm text-gray-500">
+            <p role="alert" className="text-center text-sm text-gray-500">
               리뷰를 더 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
             </p>
 
@@ -145,7 +171,7 @@ export default function WrittenReviews() {
               disabled={isFetchingNextPage}
               className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              다시 시도
+              {isFetchingNextPage ? "다시 불러오는 중..." : "다시 시도"}
             </button>
           </>
         )}

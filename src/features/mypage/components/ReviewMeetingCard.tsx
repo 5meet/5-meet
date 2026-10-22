@@ -33,8 +33,7 @@ export default function ReviewMeetingCard({
   isFavorite = false,
   rating,
 }: ReviewMeetingCardProps) {
-  const [isLiked, setIsLiked] =
-    useState(isFavorite);
+  const [isLiked, setIsLiked] = useState(isFavorite);
 
   const [isReviewModalOpen, setIsReviewModalOpen] =
     useState(false);
@@ -73,41 +72,22 @@ export default function ReviewMeetingCard({
           border-[#eeeeee]
           bg-white
           p-5
-
           md:h-[210px]
           md:flex-row
           md:gap-6
           md:p-4
         "
       >
-        <div
-          className="
-            relative
-            h-[220px]
-            w-full
-            shrink-0
-            overflow-hidden
-            rounded-[18px]
-            bg-[#eeeae8]
-
-            sm:h-[250px]
-
-            md:h-[178px]
-            md:w-[178px]
-            md:rounded-[18px]
-          "
-        >
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            sizes="
-              (max-width: 767px) 100vw,
-              178px
-            "
-            className="object-cover"
-          />
-        </div>
+        <div className="relative h-[220px] w-full overflow-hidden rounded-[18px] bg-[#eeeae8] md:h-[178px] md:w-[178px]">
+  <Image
+    src={imageUrl}
+    alt={title}
+    fill
+    sizes="(max-width: 767px) 100vw, 178px"
+    loading="eager"
+    className="object-cover"
+  />
+</div>
 
         <div
           className="
@@ -116,7 +96,6 @@ export default function ReviewMeetingCard({
             flex-1
             flex-col
             pt-5
-
             md:h-full
             md:pt-0
           "
@@ -138,9 +117,7 @@ export default function ReviewMeetingCard({
                   font-bold
                   tracking-[-0.2px]
                   text-[#20242d]
-
                   sm:text-[19px]
-
                   md:text-[18px]
                 "
               >
@@ -149,10 +126,7 @@ export default function ReviewMeetingCard({
 
               {rating !== undefined && (
                 <div className="mt-2">
-                  <HeartRating
-                    rating={rating}
-                    size="md"
-                  />
+                  <HeartRating rating={rating} size="md" />
                 </div>
               )}
             </div>
@@ -169,7 +143,6 @@ export default function ReviewMeetingCard({
               flex
               flex-col
               gap-5
-
               md:mt-auto
               md:flex-row
               md:items-end
@@ -186,9 +159,7 @@ export default function ReviewMeetingCard({
                   text-[14px]
                   font-medium
                   text-[#20242d]
-
                   sm:text-[15px]
-
                   md:text-[14px]
                 "
               >
@@ -214,31 +185,19 @@ export default function ReviewMeetingCard({
                   gap-y-1
                   text-[13px]
                   text-[#888b90]
-
                   sm:text-[14px]
-
                   md:text-[13px]
                 "
               >
-                <span>
-                  위치 {location}
-                </span>
+                <span>위치 {location}</span>
 
-                <span className="text-[#d2d2d2]">
-                  |
-                </span>
+                <span className="text-[#d2d2d2]">|</span>
 
-                <span>
-                  날짜 {date}
-                </span>
+                <span>날짜 {date}</span>
 
-                <span className="text-[#d2d2d2]">
-                  |
-                </span>
+                <span className="text-[#d2d2d2]">|</span>
 
-                <span>
-                  시간 {time}
-                </span>
+                <span>시간 {time}</span>
               </div>
             </div>
 
@@ -255,10 +214,8 @@ export default function ReviewMeetingCard({
                 px-7
                 text-[15px]
                 font-semibold
-
                 sm:w-auto
                 sm:px-9
-
                 md:h-[44px]
                 md:px-8
                 md:text-[14px]
@@ -272,9 +229,7 @@ export default function ReviewMeetingCard({
 
       <ReviewWriteModal
         isOpen={isReviewModalOpen}
-        onClose={() =>
-          setIsReviewModalOpen(false)
-        }
+        onClose={() => setIsReviewModalOpen(false)}
         onSubmit={handleReviewSubmit}
       />
     </>

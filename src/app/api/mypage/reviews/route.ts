@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { getCurrentUser } from "@/features/auth/api/getCurrentUser";
+import type { User } from "@/features/auth/type";
 import {
   getMyReviews,
   type MyReviewsSortBy,
   type MyReviewsSortOrder,
 } from "@/features/mypage/api/getMyReviews";
 import { ApiError } from "@/lib/api/ApiError";
+import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
 const SORT_BY_VALUES: MyReviewsSortBy[] = [
   "createdAt",
@@ -45,30 +46,47 @@ export async function GET(request: NextRequest) {
         ? parsedSize
         : 10;
 
-    const [data, currentUser] = await Promise.all([
-      getMyReviews({
-        sortBy,
-        sortOrder,
-        size,
-        cursor: cursor ?? undefined,
-        teamId: "",
-      }),
-      getCurrentUser(),
-    ]);
+    const data = await getMyReviews({
+      sortBy,
+      sortOrder,
+      size,
+      cursor: cursor ?? undefined,
+      teamId: "",
+    });
 
-    const reviews = data.data.map((review) => ({
-      ...review,
-      user:
-        review.user ??
-        (currentUser
+    const needsCurrentUser = data.data.some(
+      (review) => !review.user?.name?.trim(),
+    );
+
+    let currentUser: User | undefined;
+
+    if (needsCurrentUser) {
+      currentUser = await serverFetchWithTokenRefresh<User>(
+        "/users/me",
+        {
+          method: "GET",
+          cache: "no-store",
+        },
+      );
+    }
+
+    const reviews = data.data.map((review) => {
+      const hasAuthorName = Boolean(review.user?.name?.trim());
+      if (hasAuthorName) {
+        return review;
+      }
+      return {
+        ...review,
+        user: currentUser
           ? {
               id: currentUser.id,
               email: currentUser.email,
               name: currentUser.name,
               image: currentUser.image,
             }
-          : undefined),
-    }));
+          : undefined,
+      };
+    });
 
     return NextResponse.json({
       ...data,
@@ -76,7 +94,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof SyntaxError) {
-      console.error("[리뷰 API JSON 파싱 오류]", error);
+      console.error("[내 리뷰 API JSON 파싱 오류]", error);
 
       return NextResponse.json(
         { message: "백엔드 응답을 JSON으로 읽지 못했습니다." },
@@ -85,7 +103,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (error instanceof ApiError) {
-      console.error("[나의 리뷰 API 오류]", {
+      console.error("[내 리뷰 API 오류]", {
         message: error.message,
         status: error.status,
         code: error.code,
@@ -96,11 +114,11 @@ export async function GET(request: NextRequest) {
           message: error.message,
           code: error.code,
         },
-        { status: error.status ?? 500 },
+        { status: error.status },
       );
     }
 
-    console.error("[나의 리뷰 API 서버 오류]", error);
+    console.error("[내 리뷰 API 서버 오류]", error);
 
     return NextResponse.json(
       { message: "알 수 없는 서버 오류가 발생했습니다." },
