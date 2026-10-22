@@ -241,3 +241,9 @@
     min-height: 44px;
   }
 }
+
+.withoutStatus .content { padding-block: 16px; }
+@container detail-card (max-width: 639px) {
+  .withoutStatus { min-height: 280px; }
+  .withoutStatus .content { padding: 0 16px; }
+}

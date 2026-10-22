@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import { MobileMenu } from "./MobileMenu";
 import { DesktopMenu } from "./DesktopMenu";
@@ -26,7 +27,7 @@ export default function GNB({ hasSession }: GNBProps) {
           href="/meetings"
           className="shrink-0 text-xl font-bold text-emerald-500 md:text-2xl"
         >
-          같이달램
+          <Image src={"/logo.svg"} alt="같이달램" width={112} height={39} />
         </Link>
 
         {/* 데스크탑 / 태블릿 메뉴 */}

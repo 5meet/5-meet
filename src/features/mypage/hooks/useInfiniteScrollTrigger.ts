@@ -7,7 +7,7 @@ interface InfiniteScrollOptions {
   fetchNextPage: (options: { cancelRefetch: false }) => Promise<unknown>;
 }
 
-export function useJoinedMeetingsInfiniteScroll({
+export function useInfiniteScrollTrigger({
   enabled,
   fetchNextPage,
 }: InfiniteScrollOptions) {
