@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useState } from "react";
 
-import { KakaoShareButton } from "./KakaoShareButton";
+import KakaoShareButton from "./KakaoShareButton";
 
 const meta = {
   title: "Features/MeetingDetail/KakaoShareButton",
