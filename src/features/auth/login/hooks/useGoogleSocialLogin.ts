@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useModal } from "@/contexts/ModalContext";
 import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 import { socialLoginAction } from "../actions/socialLoginAction";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 
