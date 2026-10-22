@@ -5,8 +5,8 @@ import Providers from "./provider";
 import { AppToaster } from "@/components/ui/Sonner";
 import GNB from "@/components/layout/GNB/GNB";
 import { hasSession } from "@/lib/auth/hasSession";
-import { GlobalCreateFAB } from "@/components/layout/GlabalCreateFAB/GlobalCreateFAB";
 import { KakaoShareScript } from "@/components/layout/KakaoShare/KakaoShareScript";
+import ConditionalLayoutUI from "@/components/layout/ConditionalLayoutUI";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,9 +38,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <KakaoShareScript />
 
             <div className="flex flex-1 flex-col">{children}</div>
-            <GlobalCreateFAB />
           </div>
-
+          <ConditionalLayoutUI />
           <AppToaster />
         </Providers>
       </body>
