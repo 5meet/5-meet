@@ -12,10 +12,15 @@ export const useDeleteFavoriteMutation = () => {
     mutationFn: (meetingId: number) =>
       deleteFavorite(meetingId),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["favorites"],
-      });
-    },
+    onSuccess: async () => {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ["favorites"],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["mypage", "reviews", "available"],
+    }),
+  ]);
+},
   });
 };

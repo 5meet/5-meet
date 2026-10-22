@@ -4,14 +4,13 @@
 import { useEffect, useRef } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
-import { useAvailableReviewsQuery } from "@/features/mypage/hooks/useAvailableReviewsQuery";
 import ReviewMeetingCard from "@/features/mypage/components/ReviewMeetingCard";
+import { useAvailableReviewsQuery } from "@/features/mypage/hooks/useAvailableReviewsQuery";
 
 function formatDate(dateTime: string) {
   if (!dateTime) return "";
 
   const date = new Date(dateTime);
-
   if (Number.isNaN(date.getTime())) return "";
 
   return date.toLocaleDateString("ko-KR", {
@@ -25,7 +24,6 @@ function formatTime(dateTime: string) {
   if (!dateTime) return "";
 
   const date = new Date(dateTime);
-
   if (Number.isNaN(date.getTime())) return "";
 
   return date.toLocaleTimeString("ko-KR", {
@@ -53,7 +51,12 @@ export default function AvailableReviews() {
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !hasNextPage || isError || isFetchingNextPage) {
+    if (
+      !target ||
+      !hasNextPage ||
+      isError ||
+      isFetchingNextPage
+    ) {
       return;
     }
 
@@ -69,7 +72,12 @@ export default function AvailableReviews() {
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isError, isFetchingNextPage]);
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetchingNextPage,
+  ]);
 
   if (isLoading && meetings.length === 0) {
     return (
@@ -104,7 +112,9 @@ export default function AvailableReviews() {
   }
 
   if (meetings.length === 0) {
-    return <EmptyState message="작성 가능한 리뷰가 없습니다." />;
+    return (
+      <EmptyState message="작성 가능한 리뷰가 없습니다." />
+    );
   }
 
   return (
@@ -112,7 +122,10 @@ export default function AvailableReviews() {
       {meetings.map((meeting) => (
         <ReviewMeetingCard
           key={meeting.id}
-          imageUrl={meeting.image || "/images/meeting-placeholder.png"}
+          teamId={meeting.teamId}
+          meetingId={meeting.id}
+          isFavorite={meeting.isFavorited}
+          imageUrl={meeting.image || ""}
           title={meeting.name}
           location={meeting.region ?? ""}
           date={formatDate(meeting.dateTime)}
@@ -127,6 +140,7 @@ export default function AvailableReviews() {
           <p className="text-sm text-red-500">
             추가 목록을 불러오지 못했습니다.
           </p>
+
           <button
             type="button"
             onClick={() => void fetchNextPage()}
@@ -139,8 +153,8 @@ export default function AvailableReviews() {
       )}
 
       {isFetchingNextPage && (
-        <p className="text-center text-sm text-[#a1a4aa]">
-          더 불러오는 중...
+        <p className="py-3 text-center text-sm text-[#a1a4aa]">
+          추가 목록을 불러오는 중...
         </p>
       )}
 

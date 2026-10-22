@@ -9,10 +9,15 @@ export const useAddFavoriteMutation = () => {
     mutationFn: (meetingId: number) =>
       addFavorite(meetingId),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["favorites"],
-      });
-    },
+    onSuccess: async () => {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ["favorites"],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ["mypage", "reviews", "available"],
+    }),
+  ]);
+},
   });
 };

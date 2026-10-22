@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Heart } from "lucide-react";
@@ -9,7 +10,10 @@ import { Modal } from "@/components/ui/Modal/Modal";
 interface ReviewWriteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (rating: number, content: string) => void;
+  onSubmit?: (
+    rating: number,
+    content: string,
+  ) => void | Promise<void>;
 }
 
 export default function ReviewWriteModal({
@@ -19,23 +23,53 @@ export default function ReviewWriteModal({
 }: ReviewWriteModalProps) {
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
+    if (isSubmitting) return;
+
     setRating(0);
     setContent("");
     onClose();
   };
 
-  const handleSubmit = () => {
-    if (rating === 0 || !content.trim()) {
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    const trimmedContent = content.trim();
+
+    if (rating === 0) {
+      alert("별점을 선택해 주세요.");
       return;
     }
 
-    onSubmit?.(rating, content.trim());
+    if (!trimmedContent) {
+      alert("리뷰 내용을 입력해 주세요.");
+      return;
+    }
 
-    setRating(0);
-    setContent("");
-    onClose();
+    if (!onSubmit) {
+      alert("리뷰 작성 기능을 사용할 수 없습니다.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit(rating, trimmedContent);
+
+      setRating(0);
+      setContent("");
+      onClose();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "리뷰 등록에 실패했습니다. 다시 시도해 주세요.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -52,7 +86,7 @@ export default function ReviewWriteModal({
         <div className="flex flex-col gap-10">
           <section>
             <p className="text-lg font-medium text-gray-800">
-              모임에서의 경험은 어떠셨나요?
+              모임에서의 경험은 어땠나요?
               <span className="ml-1 text-primary-500">
                 *
               </span>
@@ -68,8 +102,10 @@ export default function ReviewWriteModal({
                     key={star}
                     type="button"
                     onClick={() => setRating(star)}
+                    disabled={isSubmitting}
                     aria-label={`${star}점`}
-                    className="cursor-pointer transition-transform hover:scale-105"
+                    aria-pressed={isActive}
+                    className="cursor-pointer transition-transform hover:scale-105 disabled:cursor-not-allowed"
                   >
                     <Heart
                       size={52}
@@ -92,7 +128,7 @@ export default function ReviewWriteModal({
               htmlFor="review-content"
               className="text-lg font-medium text-gray-800"
             >
-              좋았던 점이나 아쉬웠던 점을 자유롭게 적어주세요.
+              좋았던 점이나 아쉬웠던 점을 자유롭게 적어 주세요.
               <span className="ml-1 text-primary-500">
                 *
               </span>
@@ -101,10 +137,9 @@ export default function ReviewWriteModal({
             <textarea
               id="review-content"
               value={content}
-              onChange={(event) =>
-                setContent(event.target.value)
-              }
-              placeholder="모임에 참여한 경험이나 다른 회원분들에게 도움이 될 내용을 작성해주세요."
+              onChange={(event) => setContent(event.target.value)}
+              disabled={isSubmitting}
+              placeholder="모임 참여 경험이나 다른 회원들에게 전하고 싶은 내용을 작성해 주세요."
               className="
                 mt-3
                 h-48
@@ -121,6 +156,7 @@ export default function ReviewWriteModal({
                 placeholder:text-gray-400
                 focus:ring-2
                 focus:ring-primary-500
+                disabled:opacity-60
               "
             />
           </section>
@@ -133,6 +169,7 @@ export default function ReviewWriteModal({
           variant="secondary"
           size="lg"
           onClick={handleClose}
+          disabled={isSubmitting}
           className="flex-1 border-gray-300 text-gray-500"
         >
           취소
@@ -142,11 +179,15 @@ export default function ReviewWriteModal({
           type="button"
           variant="primary"
           size="lg"
-          disabled={rating === 0 || !content.trim()}
-          onClick={handleSubmit}
+          disabled={
+            rating === 0 ||
+            !content.trim() ||
+            isSubmitting
+          }
+          onClick={() => void handleSubmit()}
           className="flex-1"
         >
-          확인
+          {isSubmitting ? "등록 중..." : "확인"}
         </Button>
       </Modal.Footer>
     </Modal>
