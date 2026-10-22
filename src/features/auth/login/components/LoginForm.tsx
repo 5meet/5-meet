@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -25,13 +26,21 @@ interface LoginFormValue {
   password: string;
 }
 
+
+
 export default function LoginForm({ redirect }: LoginFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     trigger,
-    formState: { errors, isValid, touchedFields, isSubmitting, isValidating },
+    formState: {
+      errors,
+      isValid,
+      touchedFields,
+      isSubmitting,
+      isValidating,
+    },
   } = useForm<LoginFormValue>({ mode: "onBlur" });
 
   const { openAlert } = useModal();
@@ -161,7 +170,9 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       {/* 소셜 로그인 구분선 */}
       <div className="my-8 flex items-center gap-3" aria-hidden="true">
         <div className="h-px flex-1 bg-gray-300" />
-        <span className="text-sm text-gray-500">SNS 계정으로 로그인</span>
+        <span className="text-sm text-gray-500">
+          SNS 계정으로 로그인
+        </span>
         <div className="h-px flex-1 bg-gray-300" />
       </div>
 

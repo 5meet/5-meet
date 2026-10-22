@@ -10,9 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useModal } from "@/contexts/ModalContext";
 import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 import { socialLoginAction } from "../actions/socialLoginAction";
-import { useQueryClient } from "@tanstack/react-query";
 
-import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 export function useGoogleSocialLogin(redirect: string) {
   const [isLoading, setIsLoading] = useState(false);

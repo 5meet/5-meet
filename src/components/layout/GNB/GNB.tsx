@@ -21,6 +21,7 @@ export default function GNB({ hasSession }: GNBProps) {
   } = useCurrentUser({ enabled: hasSession });
   const pathname = usePathname();
 
+  // 다른 페이지에서 로그인 버튼을 누를 경우 이전 페이지로 이동하도록 수정
   const redirect = pathname === "/" ? "/meetings" : pathname;
 
   const loginHref = `/login?${new URLSearchParams({
@@ -50,7 +51,7 @@ export default function GNB({ hasSession }: GNBProps) {
           />
 
           {/* 모바일 메뉴 */}
-          <MobileMenu user={hasSession ? (user ?? null) : null} />
+          <MobileMenu user={hasSession ? (user ?? null) : null}  />
         </div>
       </div>
     </header>
