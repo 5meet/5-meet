@@ -42,9 +42,9 @@ const variantStyles: Record<
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-xs font-semibold rounded-lg",
-  md: "h-11 px-5 text-sm font-semibold rounded-xl",
-  lg: "h-[52px] px-7 text-base font-bold rounded-2xl",
+  sm: "h-10 px-3 text-xs font-semibold rounded-lg",
+  md: "h-12 px-5 text-sm font-semibold rounded-xl",
+  lg: "h-15 px-7 text-base font-bold rounded-2xl",
 };
 
 export const Button = forwardRef<

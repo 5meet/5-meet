@@ -1,10 +1,10 @@
-import { MeetingDetail } from "@/features/meetingDetail/types/meetingDetail";
+import { MeetingFront } from "@/features/meetingDetail/types/meetingDetail";
 
-export const mockMeeting: MeetingDetail = {
+export const mockMeeting: MeetingFront = {
   id: 1,
   title: "작은 독서 습관 만들기",
   location: "건대입구",
-  category: "달램핏",
+  category: "스터디",
   date: "2월 15일",
   time: "17:30",
   registrationEnd: "2027-02-09T23:59:59.000Z",
