@@ -34,6 +34,7 @@ const InfoCard = ({
   title,
   image,
   location,
+  address,
   category,
   date,
   time,
@@ -179,7 +180,7 @@ const InfoCard = ({
 
       kakao.Share.sendDefault({
         objectType: "location",
-        address: location,
+        address: address,
         addressTitle: title,
         content: {
           title,

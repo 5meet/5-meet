@@ -99,6 +99,7 @@ const MeetingDetailContent = ({
                 title={meeting.title}
                 image={meeting.image}
                 location={meeting.location}
+                address={meeting.address}
                 category={meeting.category}
                 date={meeting.date}
                 time={meeting.time}
