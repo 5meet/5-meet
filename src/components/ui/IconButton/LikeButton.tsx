@@ -1,3 +1,4 @@
+```tsx
 "use client";
 
 import { useId } from "react";
@@ -45,6 +46,7 @@ export const LikeButton = ({
         onClick={onToggle}
         disabled={disabled}
         isLoading={isLoading}
+        className="cursor-pointer disabled:cursor-not-allowed"
       >
         <Heart
           className={
@@ -58,3 +60,4 @@ export const LikeButton = ({
     </>
   );
 };
+```

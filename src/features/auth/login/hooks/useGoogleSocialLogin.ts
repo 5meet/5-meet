@@ -8,10 +8,14 @@ import { useRouter } from "next/navigation";
 
 import { useModal } from "@/contexts/ModalContext";
 import { socialLoginAction } from "../actions/socialLoginAction";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 export function useGoogleSocialLogin(redirect: string) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { openAlert } = useModal();
 
   const login = useGoogleLogin({
@@ -29,6 +33,10 @@ export function useGoogleSocialLogin(redirect: string) {
           });
           return;
         }
+        await queryClient.resetQueries({
+          queryKey: CURRENT_USER_QUERY_KEY,
+          exact: true,
+        });
 
         router.replace(redirect);
         router.refresh();

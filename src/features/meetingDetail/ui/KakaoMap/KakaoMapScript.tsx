@@ -9,7 +9,7 @@ interface KakaoMapScriptProps {
 }
 
 const kakaoKey = process.env.NEXT_PUBLIC_KAKAO_MAP_KEY;
-const SDK_SRC = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`;
+const SDK_SRC = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false&libraries=services`;
 
 export const KakaoMapScript = ({ onReady, onError }: KakaoMapScriptProps) => {
   // 이미 SDK가 로드되어 있는 경우(페이지 재진입 등) 바로 준비 완료 처리

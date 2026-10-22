@@ -16,6 +16,7 @@ export interface DetailCardProps {
   capacity: number;
   status: "upcoming" | "completed" | "canceled";
   isConfirmed?: boolean;
+  showStatus?: boolean;
   actionLabel?: string;
   actionDisabled?: boolean;
   actionPending?: boolean;
@@ -23,6 +24,7 @@ export interface DetailCardProps {
   actionHref?: string;
   isFavorited?: boolean;
   favoritePending?: boolean;
+  favoriteDisabled?: boolean;
   onFavorite?: () => void;
 }
 
@@ -39,6 +41,7 @@ export default function DetailCard({
   capacity,
   status,
   isConfirmed = false,
+  showStatus = true,
   actionLabel,
   actionDisabled = false,
   actionPending = false,
@@ -46,6 +49,7 @@ export default function DetailCard({
   actionHref,
   isFavorited = false,
   favoritePending = false,
+  favoriteDisabled = false,
   onFavorite,
 }: DetailCardProps) {
   const statusText =
@@ -56,11 +60,11 @@ export default function DetailCard({
         : "이용 예정";
   return (
     <div className={styles.frame}>
-      <article className={styles.card} aria-label={`${category} 모임`}>
+      <article className={`${styles.card} ${showStatus ? "" : styles.withoutStatus}`} aria-label={`${category} 모임`}>
         {onFavorite && (
           <fieldset
             className={styles.favorite}
-            disabled={favoritePending}
+            disabled={favoritePending || favoriteDisabled}
             aria-busy={favoritePending}
           >
             <LikeButton size="lg" isLiked={isFavorited} onToggle={onFavorite} />
@@ -80,7 +84,7 @@ export default function DetailCard({
         </div>
         <div className={styles.content}>
           <div className={styles.heading}>
-            <div className={styles.badges}>
+            {showStatus && <div className={styles.badges}>
               <span
                 className={`${styles.badge} ${status === "upcoming" ? styles.upcoming : styles.inactive}`}
               >
@@ -96,7 +100,7 @@ export default function DetailCard({
                   {isConfirmed ? "개설확정" : "개설대기"}
                 </span>
               )}
-            </div>
+            </div>}
             <h2 className={styles.title}>
               <Link href={`/meetings/${encodeURIComponent(String(id))}`}>
                 {title}

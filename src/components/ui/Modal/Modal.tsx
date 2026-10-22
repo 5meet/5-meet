@@ -16,6 +16,7 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   size?: ModalSize;
+  className?: string;
 }
 
 const sizeStyles: Record<ModalSize, string> = {
@@ -29,6 +30,7 @@ export const ModalRoot = ({
   onClose,
   children,
   size = "md",
+  className = "",
 }: ModalProps) => {
   useEffect(() => {
     if (!isOpen) return;
@@ -58,7 +60,7 @@ export const ModalRoot = ({
         role="dialog"
         aria-modal="true"
         className={`relative z-10 w-full rounded-3xl bg-gray-50 pt-6
-        ${sizeStyles[size]}`}
+        ${sizeStyles[size]} ${className}`}
       >
         {children}
       </section>

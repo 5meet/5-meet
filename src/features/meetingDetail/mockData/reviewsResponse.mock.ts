@@ -63,7 +63,7 @@ const buildReviewResponse = (index: number): ReviewResponse => {
     meeting: {
       id: 1,
       name: "작은 독서 습관 만들기",
-      type: "달램핏",
+      type: "스터디",
       region: "건대입구",
       image: "/sample.jpg",
       dateTime: "2027-02-10T14:00:00.000Z",

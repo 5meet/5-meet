@@ -3,7 +3,7 @@ import { HTTPError } from "ky";
 import { AppError } from "@/lib/api/type";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { meetingKeys } from "../queryKeys";
+import { meetingKeys } from "@/lib/queryKeys";
 
 import { showToast } from "@/components/ui/Sonner";
 
