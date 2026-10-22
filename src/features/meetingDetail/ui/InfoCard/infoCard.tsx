@@ -22,8 +22,9 @@ import {
   useChangeMeetingStatusMutation,
 } from "@/features/meetingDetail/hooks/useMeetingMutations";
 import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
-import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
+
+import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const InfoCard = ({
   id,

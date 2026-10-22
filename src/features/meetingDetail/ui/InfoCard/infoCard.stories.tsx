@@ -13,6 +13,10 @@ const meta = {
       control: "text",
       description: "모임 이름",
     },
+    image: {
+      control: "text",
+      description: "모임 이미지",
+    },
     location: {
       control: "text",
       description: "모임 장소",
