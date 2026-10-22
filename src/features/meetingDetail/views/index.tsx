@@ -131,6 +131,7 @@ const MeetingDetailPageClient = ({
               <InfoCard
                 id={meeting.id}
                 title={meeting.title}
+                image={meeting.image}
                 location={meeting.location}
                 category={meeting.category}
                 date={meeting.date}

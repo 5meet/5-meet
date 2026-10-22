@@ -5,6 +5,7 @@ import Providers from "./provider";
 import { AppToaster } from "@/components/ui/Sonner";
 import GNB from "@/components/layout/GNB/GNB";
 import { GlobalCreateFAB } from "@/components/layout/GlabalCreateFAB/GlobalCreateFAB";
+import { KakaoShareScript } from "@/components/layout/KakaoShare/KakaoShareScript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Providers>
           <div className="flex min-h-screen flex-col">
             <GNB />
+
+            <KakaoShareScript />
 
             <div className="flex flex-1 flex-col">{children}</div>
             <GlobalCreateFAB />

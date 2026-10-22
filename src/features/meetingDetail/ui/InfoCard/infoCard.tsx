@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button/Button";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import { IconButton } from "@/components/ui/IconButton/IconButton";
+import KakaoShareButton from "@/features/meetingDetail/ui/KakaoShare";
 import { Share2 } from "lucide-react";
 import Tags from "@/components/ui/Tags/Tags";
 import Kebab from "@/components/ui/Kebab/Kebab";
@@ -27,6 +28,7 @@ import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
 const InfoCard = ({
   id,
   title,
+  image,
   location,
   category,
   date,
@@ -48,6 +50,8 @@ const InfoCard = ({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [isKakaoSharing, setIsKakaoSharing] = useState(false);
 
   const isParticipating = initialIsParticipating;
 
@@ -89,7 +93,7 @@ const InfoCard = ({
     }
   };
 
-  // 모임 공유하기
+  // 모임 공유하기 (링크 복사)
   const handleShare = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -103,6 +107,61 @@ const InfoCard = ({
         kind: "error",
         message: "모임 링크 복사에 실패했습니다.",
       });
+    }
+  };
+
+  // 카카오 공유
+  const handleKakaoShare = async () => {
+    if (isKakaoSharing) return;
+
+    const kakao = window.Kakao;
+
+    if (!kakao?.isInitialized?.()) {
+      showToast({
+        kind: "error",
+        message: "카카오 공유 기능을 사용할 수 없습니다.",
+      });
+      return;
+    }
+
+    const url = window.location.href;
+
+    // API에서 내려오는 모임 이미지가 절대 URL이 아닐 경우를 처리
+    const imageUrl = image
+      ? new URL(image, window.location.origin).href
+      : undefined;
+
+    setIsKakaoSharing(true);
+
+    try {
+      kakao.Share.sendDefault({
+        objectType: "feed",
+        content: {
+          title,
+          description: `${date} ${time} · ${location}`,
+          ...(imageUrl ? { imageUrl } : {}),
+          link: {
+            mobileWebUrl: url,
+            webUrl: url,
+          },
+        },
+        buttons: [
+          {
+            title: "모임 보러가기",
+            link: {
+              mobileWebUrl: url,
+              webUrl: url,
+            },
+          },
+        ],
+      });
+    } catch {
+      showToast({
+        kind: "error",
+        message: "카카오톡 공유에 실패했습니다.",
+      });
+    } finally {
+      setIsKakaoSharing(false);
     }
   };
 
@@ -169,9 +228,20 @@ const InfoCard = ({
             </div>
 
             <div>
-              <IconButton aria-label="공유하기" onClick={handleShare}>
+              <IconButton
+                aria-label="링크 복사하기"
+                onClick={handleShare}
+                className="cursor-pointer disabled:cursor-not-allowed"
+              >
                 <Share2 className="w-12 h-12 text-neutral-600" />
               </IconButton>
+            </div>
+
+            <div>
+              <KakaoShareButton
+                onClick={handleKakaoShare}
+                isLoading={isKakaoSharing}
+              />
             </div>
 
             {isOwner ? (
@@ -185,6 +255,7 @@ const InfoCard = ({
                 // disabled={isConfirmed || isCanceled || !isFull}
                 isLoading={changeStatusMutation.isPending}
                 onClick={handleConfirmMeeting}
+                className="cursor-pointer disabled:cursor-not-allowed"
               >
                 {isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
               </Button>
@@ -197,6 +268,7 @@ const InfoCard = ({
                 disabled={!isParticipating && (isFull || isClosed)}
                 isLoading={isParticipationLoading}
                 onClick={handleParticipation}
+                className="cursor-pointer disabled:cursor-not-allowed"
               >
                 {isParticipating ? "참여 취소하기" : "참여하기"}
               </Button>

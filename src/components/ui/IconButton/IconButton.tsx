@@ -1,5 +1,6 @@
 import React from "react";
 import { Spinner } from "../Spinner/Spinner"; // 기존 Spinner 활용
+import { cn } from "@/lib/utils";
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg";
@@ -29,14 +30,11 @@ export const IconButton = ({
       type="button"
       disabled={isDisabled}
       aria-busy={isLoading}
-      className={`
-        relative inline-flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm transition-all duration-200
-        hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5
-        active:translate-y-0 active:scale-95
-        disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:transform-none disabled:shadow-none
-        ${sizeStyles[size]} 
-        ${className}
-      `.trim()}
+      className={cn(
+        "relative inline-flex items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm transition-all duration-200hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none disabled:transform-none disabled:shadow-none",
+        sizeStyles[size],
+        className,
+      )}
       {...props}
     >
       {isLoading && (
