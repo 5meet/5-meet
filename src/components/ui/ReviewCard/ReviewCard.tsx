@@ -29,6 +29,8 @@ export function ReviewCard({
 }: ReviewCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editError, setEditError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const meeting = review.meeting;
 
@@ -40,34 +42,52 @@ export function ReviewCard({
       })
     : "";
 
+  const handleSubmitEdit = async (
+    rating: number,
+    content: string,
+  ) => {
+    if (!onEdit || isProcessing) return;
 
-const handleSubmitEdit = async (
-  rating: number,
-  content: string,
-) => {
-  if (!onEdit || isProcessing) return;
+    setEditError("");
 
-  setEditError("");
+    try {
+      await onEdit({
+        ...review,
+        score: rating,
+        comment: content.trim(),
+      });
 
-  try {
-    await onEdit({
-      ...review,
-      score: rating,
-      comment: content.trim(),
-    });
+      setIsEditModalOpen(false);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "리뷰 수정에 실패했습니다.";
 
-    setIsEditModalOpen(false);
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "리뷰 수정에 실패했습니다.";
+      setEditError(message);
+      throw error;
+    }
+  };
 
-    setEditError(message);
+  const handleDelete = async () => {
+    if (!onDelete || isProcessing || isDeleting) return;
 
-    throw error;
-  }
-};
+    setDeleteError("");
+    setIsDeleting(true);
+
+    try {
+      await onDelete(review);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "리뷰 삭제에 실패했습니다. 다시 시도해 주세요.";
+
+      setDeleteError(message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <>
@@ -120,7 +140,7 @@ const handleSubmitEdit = async (
                 variant="primary"
                 size="md"
                 fullWidth={false}
-                disabled={isProcessing}
+                disabled={isProcessing || isDeleting}
                 onClick={() => {
                   setEditError("");
                   setIsEditModalOpen(true);
@@ -154,8 +174,8 @@ const handleSubmitEdit = async (
               {showDeleteAction && (
                 <button
                   type="button"
-                  disabled={isProcessing}
-                  onClick={() => onDelete?.(review)}
+                  disabled={isProcessing || isDeleting}
+                  onClick={() => void handleDelete()}
                   className="
                     shrink-0 cursor-pointer text-[13px] font-medium
                     text-[#a1a4aa] transition-colors hover:text-red-500
@@ -163,10 +183,16 @@ const handleSubmitEdit = async (
                     disabled:cursor-not-allowed disabled:opacity-50
                   "
                 >
-                  삭제하기
+                  {isDeleting ? "삭제 중..." : "삭제하기"}
                 </button>
               )}
             </div>
+
+            {deleteError && (
+              <p role="alert" className="mt-2 text-sm text-red-500">
+                {deleteError}
+              </p>
+            )}
 
             <div className="mt-3 w-full border-b border-[#e2e2e2]" />
           </div>
@@ -185,14 +211,10 @@ const handleSubmitEdit = async (
         mode="edit"
         initialRating={review.score}
         initialContent={review.comment}
-        onSuccess={async () => {
-          // 부모의 onEdit이 서버 수정과 목록 갱신을 담당합니다.
-          // 모달에서 별도로 updateReview를 호출하지 않습니다.
-        }}
         onSubmit={handleSubmitEdit}
       />
 
-      {editError && (
+      {editError && !isEditModalOpen && (
         <p role="alert" className="mt-2 text-sm text-red-500">
           {editError}
         </p>

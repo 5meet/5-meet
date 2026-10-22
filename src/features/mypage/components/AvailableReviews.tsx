@@ -102,9 +102,14 @@ export default function AvailableReviews() {
       },
     );
 
-    await queryClient.invalidateQueries({
-      queryKey: ["mypage", "reviews", "available"],
-    });
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: ["mypage", "reviews", "available"],
+      }),
+      queryClient.invalidateQueries({
+        queryKey: ["mypage", "reviews", "written"],
+      }),
+    ]);
   };
 
   if (isPending) {
