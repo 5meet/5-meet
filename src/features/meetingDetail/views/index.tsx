@@ -19,23 +19,18 @@ import {
   useReviewsPagination,
 } from "@/features/meetingDetail/hooks";
 
-interface MeetingDetailPageClientProps {
+export interface MeetingDetailPageClientProps {
   meetingId: number;
   isLoggedIn: boolean;
   currentUserId: number | null;
 }
 
-const MeetingDetailPageClient = ({
+const MeetingDetailContent = ({
   meetingId,
   isLoggedIn,
   currentUserId,
 }: MeetingDetailPageClientProps) => {
-  const {
-    data: meeting,
-    isLoading,
-    isError,
-    error,
-  } = useMeetingDetailQuery(meetingId, isLoggedIn);
+  const { data: meeting } = useMeetingDetailQuery(meetingId, isLoggedIn);
   const { data: participantsData } = useParticipantsQuery(meetingId);
   const { reviews, currentPage, totalPages, onPageChange } =
     useReviewsPagination(meetingId);
@@ -76,34 +71,6 @@ const MeetingDetailPageClient = ({
       message: "모임 이미지를 불러오지 못했습니다.",
     });
   }, []);
-
-  if (isError) {
-    // showToast({
-    //   kind: "error",
-    //   message: "모임 정보를 불러오지 못했습니다.",
-    // });
-
-    notFound();
-
-    // return (
-    //   <div className="flex items-center justify-center p-20 text-gray-500">
-    //     <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
-    //   </div>
-    // );
-  }
-
-  if (isLoading || !meeting) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 p-20 text-gray-500">
-        <Spinner size="lg" className="text-primary-500" />
-        <span className="text-sm">불러오는 중...</span>
-      </div>
-    );
-  }
-
-  // if (!meeting) {
-  //   return <MeetingNotFound />;
-  // }
 
   // isOwner는 API 응답이 아니라, 로그인한 사용자와 hostId를 비교해 클라이언트가 계산
   const isOwner =
@@ -257,4 +224,4 @@ const MeetingDetailPageClient = ({
   );
 };
 
-export default MeetingDetailPageClient;
+export default MeetingDetailContent;
