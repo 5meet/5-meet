@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 
 import type { User } from "@/features/auth/type";
@@ -9,15 +10,9 @@ import {
 import { ApiError } from "@/lib/api/ApiError";
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
-const SORT_BY_VALUES: MyReviewsSortBy[] = [
-  "createdAt",
-  "score",
-];
+const SORT_BY_VALUES: MyReviewsSortBy[] = ["createdAt", "score"];
 
-const SORT_ORDER_VALUES: MyReviewsSortOrder[] = [
-  "asc",
-  "desc",
-];
+const SORT_ORDER_VALUES: MyReviewsSortOrder[] = ["asc", "desc"];
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,9 +37,7 @@ export async function GET(request: NextRequest) {
 
     const parsedSize = sizeParam ? Number(sizeParam) : 10;
     const size =
-      Number.isInteger(parsedSize) && parsedSize > 0
-        ? parsedSize
-        : 10;
+      Number.isInteger(parsedSize) && parsedSize > 0 ? parsedSize : 10;
 
     const data = await getMyReviews({
       sortBy,
@@ -61,20 +54,19 @@ export async function GET(request: NextRequest) {
     let currentUser: User | undefined;
 
     if (needsCurrentUser) {
-      currentUser = await serverFetchWithTokenRefresh<User>(
-        "/users/me",
-        {
-          method: "GET",
-          cache: "no-store",
-        },
-      );
+      currentUser = await serverFetchWithTokenRefresh<User>("/users/me", {
+        method: "GET",
+        cache: "no-store",
+      });
     }
 
     const reviews = data.data.map((review) => {
       const hasAuthorName = Boolean(review.user?.name?.trim());
+
       if (hasAuthorName) {
         return review;
       }
+
       return {
         ...review,
         user: currentUser
@@ -94,7 +86,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof SyntaxError) {
-      console.error("[내 리뷰 API JSON 파싱 오류]", error);
+      console.error("[마이페이지 리뷰 API JSON 파싱 오류]", error);
 
       return NextResponse.json(
         { message: "백엔드 응답을 JSON으로 읽지 못했습니다." },
@@ -103,7 +95,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (error instanceof ApiError) {
-      console.error("[내 리뷰 API 오류]", {
+      console.error("[마이페이지 리뷰 API 오류]", {
         message: error.message,
         status: error.status,
         code: error.code,
@@ -114,11 +106,11 @@ export async function GET(request: NextRequest) {
           message: error.message,
           code: error.code,
         },
-        { status: error.status },
+        { status: error.status ?? 500 },
       );
     }
 
-    console.error("[내 리뷰 API 서버 오류]", error);
+    console.error("[마이페이지 리뷰 API 서버 오류]", error);
 
     return NextResponse.json(
       { message: "알 수 없는 서버 오류가 발생했습니다." },

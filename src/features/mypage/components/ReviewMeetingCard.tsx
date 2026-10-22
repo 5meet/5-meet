@@ -34,7 +34,6 @@ export default function ReviewMeetingCard({
   rating,
 }: ReviewMeetingCardProps) {
   const [isLiked, setIsLiked] = useState(isFavorite);
-
   const [isReviewModalOpen, setIsReviewModalOpen] =
     useState(false);
 
@@ -50,7 +49,7 @@ export default function ReviewMeetingCard({
     reviewRating: number,
     content: string,
   ) => {
-    console.log("리뷰 등록", {
+    console.log("리뷰 제출", {
       rating: reviewRating,
       content,
     });
@@ -78,16 +77,29 @@ export default function ReviewMeetingCard({
           md:p-4
         "
       >
-        <div className="relative h-[220px] w-full overflow-hidden rounded-[18px] bg-[#eeeae8] md:h-[178px] md:w-[178px]">
-  <Image
-    src={imageUrl}
-    alt={title}
-    fill
-    sizes="(max-width: 767px) 100vw, 178px"
-    loading="eager"
-    className="object-cover"
-  />
-</div>
+        <div
+          className="
+            relative
+            h-[220px]
+            w-full
+            shrink-0
+            overflow-hidden
+            rounded-[18px]
+            bg-[#eeeae8]
+            sm:h-[250px]
+            md:h-[178px]
+            md:w-[178px]
+          "
+        >
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            sizes="(max-width: 767px) 100vw, 178px"
+            loading="eager"
+            className="object-cover"
+          />
+        </div>
 
         <div
           className="
@@ -190,13 +202,9 @@ export default function ReviewMeetingCard({
                 "
               >
                 <span>위치 {location}</span>
-
                 <span className="text-[#d2d2d2]">|</span>
-
                 <span>날짜 {date}</span>
-
                 <span className="text-[#d2d2d2]">|</span>
-
                 <span>시간 {time}</span>
               </div>
             </div>

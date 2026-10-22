@@ -1,0 +1,63 @@
+.actions {
+  display: flex;
+  gap: 12px;
+}
+.actions .button {
+  height: 48px;
+  min-width: 0;
+  flex: 1;
+  border-radius: 12px;
+  padding: 0 24px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+}
+.actions .secondary {
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-600);
+  background: white;
+}
+.actions .primary {
+  color: white;
+}
+.responsive.actions {
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .responsive.actions {
+    gap: 16px;
+  }
+  .responsive.actions .button {
+    height: 60px;
+    padding-inline: 30px;
+    border-radius: 16px;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: -0.4px;
+  }
+}
+.icon.icon {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.close.icon {
+  width: 24px;
+  height: 24px;
+}
+.icon.icon:hover {
+  transform: none;
+  box-shadow: none;
+}
+.icon.icon svg {
+  width: 18px;
+  height: 18px;
+}
+.close.icon svg {
+  width: 24px;
+  height: 24px;
+}

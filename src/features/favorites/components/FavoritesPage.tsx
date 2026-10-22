@@ -28,6 +28,30 @@ function getEndOfDay(date: string): number | undefined {
   return Number.isNaN(timestamp) ? undefined : timestamp;
 }
 
+function toStartOfDay(date: string): string | undefined {
+  if (!date) return undefined;
+
+  const parsedDate = new Date(`${date}T00:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return undefined;
+  }
+
+  return parsedDate.toISOString();
+}
+
+function toEndOfDay(date: string): string | undefined {
+  if (!date) return undefined;
+
+  const parsedDate = new Date(`${date}T23:59:59.999`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return undefined;
+  }
+
+  return parsedDate.toISOString();
+}
+
 function filterFavoriteMeetings(
   meetings: FavoriteMeeting[],
   selectedCategory: string,
@@ -97,13 +121,7 @@ export function FavoritesPage() {
   const [selectedRegion, setSelectedRegion] = useState("all");
   const [isUrgent, setIsUrgent] = useState(false);
 
-  const handleDateChange = (
-    nextDateStart: string,
-    nextDateEnd: string,
-  ) => {
-    setDateStart(nextDateStart);
-    setDateEnd(nextDateEnd);
-  };
+  const deleteFavoriteMutation = useDeleteFavoriteMutation();
 
   const queryParams: GetFavoritesParams = {
     ...(selectedCategory !== "전체" && {
@@ -113,10 +131,10 @@ export function FavoritesPage() {
       region: selectedRegion,
     }),
     ...(dateStart && {
-      dateStart: `${dateStart}T00:00:00`,
+      dateStart: toStartOfDay(dateStart),
     }),
     ...(dateEnd && {
-      dateEnd: `${dateEnd}T23:59:59.999`,
+      dateEnd: toEndOfDay(dateEnd),
     }),
     ...(isUrgent && {
       sortBy: "registrationEnd",
@@ -132,8 +150,6 @@ export function FavoritesPage() {
     refetch,
   } = useFavoritesQuery(queryParams);
 
-  const deleteFavoriteMutation = useDeleteFavoriteMutation();
-
   const sourceMeetings: FavoriteMeeting[] = data?.data ?? [];
 
   const displayedMeetings = filterFavoriteMeetings(
@@ -144,6 +160,14 @@ export function FavoritesPage() {
     dateEnd,
     isUrgent,
   );
+
+  const handleDateChange = (
+    nextDateStart: string,
+    nextDateEnd: string,
+  ) => {
+    setDateStart(nextDateStart);
+    setDateEnd(nextDateEnd);
+  };
 
   const handleFavoriteClick = (meetingId: number) => {
     if (deleteFavoriteMutation.isPending) return;
@@ -205,12 +229,14 @@ export function FavoritesPage() {
         )}
 
         {isLoading ? (
-          <p
-            role="status"
-            className="py-6 text-center text-gray-500"
-          >
-            찜한 모임을 불러오는 중입니다...
-          </p>
+          <div className="flex min-h-[315px] items-center justify-center">
+            <p
+              role="status"
+              className="text-[14px] font-medium text-[#a7aaad]"
+            >
+              찜한 모임을 불러오는 중이에요.
+            </p>
+          </div>
         ) : (
           <FavoriteList
             meetings={displayedMeetings}

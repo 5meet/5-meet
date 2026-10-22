@@ -43,7 +43,7 @@ export function FavoriteList({
   onFavoriteClick,
 }: FavoriteListProps) {
   if (meetings.length === 0) {
-    return <EmptyState message="아직 찜한 모임이 없어요" />;
+    return <EmptyState message="아직 찜한 모임이 없어요." />;
   }
 
   return (

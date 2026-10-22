@@ -92,7 +92,14 @@ export default function SignupForm() {
 
   return (
     <section
-      className="w-full max-w-169 rounded-2xl bg-white px-10 py-9"
+      className="
+    w-full max-w-[343px] min-h-[746px]
+    rounded-2xl bg-white
+    px-4 py-9
+    min-[744px]:max-w-[568px]
+    min-[744px]:min-h-[756px]
+    min-[744px]:px-10
+  "
       aria-labelledby="signup-title"
     >
       <h1

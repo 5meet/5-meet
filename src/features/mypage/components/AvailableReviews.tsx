@@ -28,18 +28,13 @@ const reviewMeetings = [
 
 export default function AvailableReviews() {
   if (reviewMeetings.length === 0) {
-    return (
-      <EmptyState message="작성 가능한 리뷰가 없어요." />
-    );
+    return <EmptyState message="작성 가능한 리뷰가 없어요." />;
   }
 
   return (
     <div className="flex flex-col gap-5">
       {reviewMeetings.map((meeting) => (
-        <ReviewMeetingCard
-          key={meeting.id}
-          {...meeting}
-        />
+        <ReviewMeetingCard key={meeting.id} {...meeting} />
       ))}
     </div>
   );
