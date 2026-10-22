@@ -78,7 +78,7 @@ const REVIEWS = [
 function CtaButton() {
   return (
     <Link href="/meetings">
-      <Button size="md" variant="primary" className="cursor-pointer">
+      <Button size="md" variant="primary" className="cursor-pointer z-1">
         모임 둘러보기
       </Button>
     </Link>
@@ -264,14 +264,31 @@ export default function LandingPageClient() {
       </section>
 
       {/* 5. 마지막 CTA */}
-      <section className="bg-mint-gradient-100 py-16 md:py-24">
-        <footer className="mx-auto flex max-w-300 flex-col items-center gap-6 px-5 text-center">
-          <h2 className="text-xl font-bold leading-snug md:text-3xl">
+      <section className="relative bg-mint-gradient-100 py-16 md:py-24">
+        <footer className=" mx-auto flex max-w-300 flex-col items-center gap-6 px-5 text-center">
+          <h2 className="text-xl font-bold leading-snug z-1 md:text-3xl">
             혼자 시작하기 어려웠던 일들,
             <br />
             <span className="text-primary-600">같이달램</span>에서 함께 해요
           </h2>
           <CtaButton />
+
+          <div className="absolute top-5 left-30 md:top-10 md:left-40 lg:left-120 lg:top-10">
+            <Image
+              src="/landing/header-bg.svg"
+              alt=""
+              width={100}
+              height={100}
+            />
+          </div>
+
+          <div className="absolute top-30 left-20 md:top-40 md:left-30 lg:left-70">
+            <Image src="/landing/star.svg" alt="" width={50} height={50} />
+          </div>
+
+          <div className="absolute bottom-0 right-0">
+            <Image src="/landing/Union.svg" alt="" width={400} height={400} />
+          </div>
         </footer>
       </section>
     </main>
