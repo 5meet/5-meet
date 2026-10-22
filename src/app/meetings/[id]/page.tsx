@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useParams, notFound } from "next/navigation";
 
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import MeetingDetailPageClient from "@/features/meetingDetail/views";
+import MeetingDetailPageClient from "@/features/meetingDetail/page";
 import { showToast } from "@/components/ui/Sonner";
 
 const MeetingDetailPage = () => {

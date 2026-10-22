@@ -2,7 +2,9 @@
 export interface MeetingDetailInfoCardProps {
   id: number;
   title: string;
+  image: string;
   location: string;
+  address: string;
   category: string;
   date: string;
   time: string;

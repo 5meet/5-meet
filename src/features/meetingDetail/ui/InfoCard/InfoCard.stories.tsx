@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import InfoCard from "./infoCard";
+import InfoCard from "./InfoCard";
 
 const meta = {
   title: "Features/MeetingDetail/InfoCard",
@@ -12,6 +12,10 @@ const meta = {
     title: {
       control: "text",
       description: "모임 이름",
+    },
+    image: {
+      control: "text",
+      description: "모임 이미지",
     },
     location: {
       control: "text",
