@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import MyPageProfileView from "./MyPageProfileView";
 
 export default function MyPageProfile() {
   const query = useCurrentUser();
+  const { saveProfile } = useUpdateProfile(query.data?.id);
   const [hasCheckedUser, setHasCheckedUser] = useState(false);
   const refetch = query.refetch;
 
@@ -31,7 +33,7 @@ export default function MyPageProfile() {
         {query.isError
           ? <MyPageProfileView status="error" onRetry={() => void refetch({ cancelRefetch: false })} />
           : query.data
-            ? <MyPageProfileView status="success" user={query.data} />
+            ? <MyPageProfileView status="success" user={query.data} onSaveProfile={saveProfile} />
             : <MyPageProfileView status="signed-out" />}
       </div>
     </>

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { useState } from "react";
-
 import { NAV_ITEMS } from "./constants";
+
 import { useLogout } from "@/features/auth/logout/hooks/useLogout";
 import type { User } from "@/features/auth/type";
 

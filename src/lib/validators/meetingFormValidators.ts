@@ -1,4 +1,4 @@
-import { MeetingFormState } from "@/features/meetingDetail/types/meetingForm";
+import type { MeetingFormState } from "@/features/meetingDetail/types/meetingDetail";
 
 export type ValidationResult = string | null;
 
@@ -66,10 +66,14 @@ export const validateRegistrationEndTime = (time: string): ValidationResult => {
   return null;
 };
 
+export const CAPACITY_MIN = 1;
+export const CAPACITY_MAX = 1000;
+
 export const validateMeetingCapacity = (capacity: number): ValidationResult => {
-  if (!Number.isFinite(capacity) || capacity <= 0)
-    return "정원을 입력해주세요.";
-  if (!Number.isInteger(capacity)) return "정원은 숫자만 입력할 수 있습니다.";
+  if (!Number.isFinite(capacity)) return "정원을 숫자로 입력해주세요.";
+  if (!Number.isInteger(capacity)) return "정원은 정수로 입력해주세요.";
+  if (capacity < CAPACITY_MIN || capacity > CAPACITY_MAX)
+    return `정원은 ${CAPACITY_MIN}~${CAPACITY_MAX}명 사이여야 합니다.`;
   return null;
 };
 

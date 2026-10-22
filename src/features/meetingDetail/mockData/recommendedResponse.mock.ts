@@ -1,5 +1,5 @@
 // MSW용 mock 데이터
-import { MeetingDetailResponse } from "@/features/meetingDetail/types/meetingDetail";
+import { MeetingAPIResponse } from "@/features/meetingDetail/types/meetingDetail";
 
 const MEETING_TITLES = [
   "퇴근 후 달리기 모임",
@@ -11,10 +11,18 @@ const MEETING_TITLES = [
   "클라이밍 입문반",
   "배드민턴 정기모임",
 ];
+const MEETING_CATEGIRIES = [
+  "취미/여가",
+  "스터디",
+  "비즈니스",
+  "운동/건강",
+  "가족/육아",
+  "기타",
+];
 const MEETING_REGIONS = ["건대입구", "성수", "홍대입구", "강남", "잠실"];
 const MEETING_IMAGES = ["/sample.jpg", "/sample2.jpg", "/sample3.jpg"];
 
-const buildRecommendedResponse = (index: number): MeetingDetailResponse => {
+const buildRecommendedResponse = (index: number): MeetingAPIResponse => {
   const capacity = 8 + (index % 5) * 2;
   const participantCount = index % capacity;
   const day = String((index % 28) + 1).padStart(2, "0");
@@ -23,7 +31,7 @@ const buildRecommendedResponse = (index: number): MeetingDetailResponse => {
     id: 100 + index,
     teamId: "dallaem",
     name: MEETING_TITLES[index % MEETING_TITLES.length],
-    type: "달램핏",
+    type: MEETING_CATEGIRIES[index % MEETING_CATEGIRIES.length],
     region: MEETING_REGIONS[index % MEETING_REGIONS.length],
     address: "서울시 어딘가 123-45",
     latitude: 37.5407,
@@ -47,7 +55,7 @@ const buildRecommendedResponse = (index: number): MeetingDetailResponse => {
   };
 };
 
-export const mockRecommendedResponseAll: MeetingDetailResponse[] = Array.from(
+export const mockRecommendedResponseAll: MeetingAPIResponse[] = Array.from(
   { length: 8 },
   (_, i) => buildRecommendedResponse(i),
 );
