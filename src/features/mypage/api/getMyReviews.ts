@@ -10,8 +10,10 @@ export interface MyReviewMeeting {
   dateTime: string;
 }
 
-export interface MyReview extends Omit<ReviewApiItem, "meeting"> {
+export interface MyReview
+  extends Omit<ReviewApiItem, "meeting" | "user"> {
   meeting: MyReviewMeeting;
+  user?: ReviewApiItem["user"];
 }
 
 export interface MyReviewsResponse {

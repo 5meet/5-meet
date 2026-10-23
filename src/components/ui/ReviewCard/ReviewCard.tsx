@@ -7,16 +7,18 @@ import { CircleUserRound } from "lucide-react";
 import Button from "@/components/ui/Button/Button";
 import ReviewWriteModal from "@/features/mypage/components/ReviewWriteModal";
 import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
-
 import type { ReviewApiItem } from "@/features/reviews/types";
+import type { MyReview } from "@/features/mypage/api/getMyReviews";
+
+type ReviewCardItem = ReviewApiItem | MyReview;
 
 interface ReviewCardProps {
-  review: ReviewApiItem;
+  review: ReviewCardItem;
   showEditButton?: boolean;
   showDeleteAction?: boolean;
   isProcessing?: boolean;
-  onEdit?: (review: ReviewApiItem) => Promise<void> | void;
-  onDelete?: (review: ReviewApiItem) => Promise<void> | void;
+  onEdit?: (review: ReviewCardItem) => Promise<void> | void;
+  onDelete?: (review: ReviewCardItem) => Promise<void> | void;
 }
 
 export function ReviewCard({
@@ -42,10 +44,7 @@ export function ReviewCard({
       })
     : "";
 
-  const handleSubmitEdit = async (
-    rating: number,
-    content: string,
-  ) => {
+  const handleSubmitEdit = async (rating: number, content: string) => {
     if (!onEdit || isProcessing) return;
 
     setEditError("");
@@ -60,9 +59,7 @@ export function ReviewCard({
       setIsEditModalOpen(false);
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "리뷰 수정에 실패했습니다.";
+        error instanceof Error ? error.message : "리뷰 수정에 실패했습니다.";
 
       setEditError(message);
       throw error;
@@ -128,9 +125,7 @@ export function ReviewCard({
                   className="shrink-0 text-[#c8c8c8]"
                 />
                 <span>{review.user?.name ?? "익명"}</span>
-                <time dateTime={review.createdAt}>
-                  {createdAt}
-                </time>
+                <time dateTime={review.createdAt}>{createdAt}</time>
               </div>
             </div>
 

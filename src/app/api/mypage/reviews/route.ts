@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import type { User } from "@/features/auth/type";
 import {
   getMyReviews,
@@ -51,6 +50,7 @@ export async function GET(request: NextRequest) {
       cursor,
     });
 
+    // 작성자 이름이 없는 리뷰에 한해 현재 로그인한 사용자 정보를 보완한다.
     const needsCurrentUser = data.data.some(
       (review) => !review.user?.name?.trim(),
     );

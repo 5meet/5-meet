@@ -65,11 +65,7 @@ async function fetchMyReviews(
 
     console.error(errorMessage);
 
-    throw new Error(
-      `나의 리뷰 조회 실패 (${response.status}): ${
-        responseText || response.statusText
-      }`,
-    );
+    throw new Error(`나의 리뷰 조회 실패 (${response.status})`);
   }
 
   let result: MyReviewsResponse;

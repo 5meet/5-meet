@@ -1,4 +1,4 @@
-  export interface CreateReviewRequest {
+export interface CreateReviewRequest {
   score: number;
   comment: string;
 }
@@ -67,7 +67,7 @@ export async function createReview(
       "message" in result &&
       typeof result.message === "string"
         ? result.message
-        : `리뷰 작성 실패 (${response.status})`;
+        : `리뷰 작성에 실패했습니다. (${response.status})`;
 
     throw new Error(message);
   }

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+  import { NextRequest, NextResponse } from "next/server";
 
-import { serverFetch } from "@/lib/api/serverFetch";
+import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
 interface RouteContext {
   params: Promise<{
@@ -36,39 +36,30 @@ export async function DELETE(
       parsedMeetingId <= 0
     ) {
       return NextResponse.json(
-        {
-          message: "meetingId는 양의 정수여야 합니다.",
-        },
-        {
-          status: 400,
-        },
+        { message: "meetingId는 양의 정수여야 합니다." },
+        { status: 400 },
       );
     }
 
-    await serverFetch(
+    await serverFetchWithTokenRefresh(
       `/meetings/${parsedMeetingId}/favorites`,
-      {
-        method: "DELETE",
-        auth: true,
-      },
+      { method: "DELETE" },
     );
 
     return NextResponse.json({
-      message: "찜 해제 성공",
+      message: "즐겨찾기 해제 성공",
     });
   } catch (error) {
-    console.error("찜 해제 실패:", error);
+    console.error("즐겨찾기 해제 실패:", error);
 
     return NextResponse.json(
       {
         message:
           error instanceof Error
             ? error.message
-            : "찜 해제에 실패했습니다.",
+            : "즐겨찾기 해제에 실패했습니다.",
       },
-      {
-        status: getErrorStatus(error),
-      },
+      { status: getErrorStatus(error) },
     );
   }
 }

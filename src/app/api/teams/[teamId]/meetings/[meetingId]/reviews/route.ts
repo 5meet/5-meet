@@ -1,30 +1,53 @@
-
 import { NextRequest, NextResponse } from "next/server";
 
 import { ApiError } from "@/lib/api/ApiError";
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
-const BASE_URL = process.env.NEXT_PUBLIC_CODEIT_API_URL;
+type RouteContext = {
+  params: Promise<{
+    teamId: string;
+    meetingId: string;
+  }>;
+};
 
-export async function POST(
-  request: NextRequest,
-  context: {
-    params: Promise<{
-      teamId: string;
-      meetingId: string;
-    }>;
-  },
-) {
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
-    if (!BASE_URL) {
+    const { meetingId } = await context.params;
+
+    if (!/^\d+$/.test(meetingId)) {
       return NextResponse.json(
-        { message: "API 기본 URL이 설정되지 않았습니다." },
-        { status: 500 },
+        { message: "올바르지 않은 모임 ID입니다." },
+        { status: 400 },
       );
     }
 
-    const { meetingId } = await context.params;
-    const body = await request.json();
+    let body: unknown;
+
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { message: "요청 본문이 올바른 JSON 형식이 아닙니다." },
+        { status: 400 },
+      );
+    }
+
+    if (
+      typeof body !== "object" ||
+      body === null ||
+      !("score" in body) ||
+      typeof body.score !== "number" ||
+      !Number.isInteger(body.score) ||
+      body.score < 1 ||
+      body.score > 5 ||
+      !("comment" in body) ||
+      typeof body.comment !== "string"
+    ) {
+      return NextResponse.json(
+        { message: "리뷰 점수 또는 내용이 올바르지 않습니다." },
+        { status: 400 },
+      );
+    }
 
     const result = await serverFetchWithTokenRefresh<unknown>(
       `/meetings/${encodeURIComponent(meetingId)}/reviews`,

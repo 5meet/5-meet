@@ -3,10 +3,17 @@
 import Image from "next/image";
 import { Users } from "lucide-react";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import type { InfiniteData } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/Button/Button";
 import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
+import { showToast } from "@/components/ui/Sonner";
+
+import { useAddFavoriteMutation } from "@/features/favorites/hook/useAddFavoriteMutation";
+import { useDeleteFavoriteMutation } from "@/features/favorites/hook/useDeleteFavoriteMutation";
+import type { AvailableReviewsResponse } from "@/features/mypage/api/getAvailableReviews";
 
 import ReviewWriteModal from "./ReviewWriteModal";
 
@@ -39,18 +46,92 @@ export default function ReviewMeetingCard({
   rating,
   onReviewSuccess,
 }: ReviewMeetingCardProps) {
-  const [isLiked, setIsLiked] = useState(isFavorite);
+  const queryClient = useQueryClient();
+
+  const addFavoriteMutation = useAddFavoriteMutation();
+  const deleteFavoriteMutation = useDeleteFavoriteMutation();
+
+  const [favoriteOverride, setFavoriteOverride] =
+    useState<boolean | null>(null);
+  const [isFavoritePending, setIsFavoritePending] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
+
+  const isLiked = favoriteOverride ?? isFavorite;
 
   const hasImage =
-    typeof imageUrl === "string" && imageUrl.trim() !== "";
+    Boolean(imageUrl?.trim()) && failedImageUrl !== imageUrl;
 
-  const handleFavoriteClick = () => {
-    setIsLiked((prev) => !prev);
-  };
+  const handleFavoriteClick = async () => {
+    if (isFavoritePending) return;
 
-  const handleReviewClick = () => {
-    setIsReviewModalOpen(true);
+    const previousLiked = isLiked;
+    const nextLiked = !previousLiked;
+
+    setIsFavoritePending(true);
+    setFavoriteOverride(nextLiked);
+
+    try {
+      if (nextLiked) {
+        await addFavoriteMutation.mutateAsync(meetingId);
+      } else {
+        await deleteFavoriteMutation.mutateAsync(meetingId);
+      }
+    } catch (error) {
+      setFavoriteOverride(previousLiked);
+
+      showToast({
+        kind: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "즐겨찾기 상태를 변경하지 못했습니다.",
+      });
+
+      setIsFavoritePending(false);
+      return;
+    }
+
+    queryClient.setQueriesData<InfiniteData<AvailableReviewsResponse>>(
+      { queryKey: ["mypage", "reviews", "available"] },
+      (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((meeting) =>
+              meeting.id === meetingId
+                ? { ...meeting, isFavorited: nextLiked }
+                : meeting,
+            ),
+          })),
+        };
+      },
+    );
+
+    setFavoriteOverride(nextLiked);
+
+    showToast({
+      kind: "success",
+      message: nextLiked
+        ? "즐겨찾기에 추가했습니다."
+        : "즐겨찾기를 해제했습니다.",
+    });
+
+    try {
+      await Promise.allSettled([
+        queryClient.invalidateQueries({
+          queryKey: ["mypage", "reviews", "available"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["favorites"],
+        }),
+      ]);
+    } finally {
+      setIsFavoritePending(false);
+    }
   };
 
   const handleReviewSuccess = async () => {
@@ -69,8 +150,8 @@ export default function ReviewMeetingCard({
       >
         <div
           className="
-            relative flex h-[220px] w-full shrink-0 items-center
-            justify-center overflow-hidden rounded-[18px] bg-[#eeeae8]
+            relative h-[200px] w-full shrink-0 overflow-hidden
+            rounded-[18px] bg-[#eeeae8]
             sm:h-[250px]
             md:h-[178px] md:w-[178px]
           "
@@ -81,12 +162,15 @@ export default function ReviewMeetingCard({
               alt={title}
               fill
               sizes="(max-width: 767px) 100vw, 178px"
+              loading="eager"
               className="object-cover"
+              onError={() => setFailedImageUrl(imageUrl)}
             />
           ) : (
             <div
               className="flex h-full w-full items-center justify-center text-sm text-[#999999]"
-              aria-label="이미지가 없습니다"
+              role="img"
+              aria-label={`${title} 이미지 없음`}
             >
               이미지 없음
             </div>
@@ -120,7 +204,9 @@ export default function ReviewMeetingCard({
 
             <LikeButton
               isLiked={isLiked}
-              onToggle={handleFavoriteClick}
+              onToggle={() => void handleFavoriteClick()}
+              disabled={isFavoritePending}
+              isLoading={isFavoritePending}
             />
           </div>
 
@@ -145,9 +231,8 @@ export default function ReviewMeetingCard({
                   strokeWidth={0}
                   className="text-[#999999]"
                 />
-
                 <span>
-                  {participantCount}/{capacity}
+                  {participantCount}/{capacity}명 참여
                 </span>
               </div>
 
@@ -170,7 +255,7 @@ export default function ReviewMeetingCard({
               type="button"
               size="md"
               variant="primary"
-              onClick={handleReviewClick}
+              onClick={() => setIsReviewModalOpen(true)}
               className="
                 h-12 w-full shrink-0 rounded-[9px] px-7
                 text-[15px] font-semibold
@@ -178,7 +263,7 @@ export default function ReviewMeetingCard({
                 md:h-[44px] md:px-8 md:text-[14px]
               "
             >
-              리뷰 작성하기
+              리뷰 작성
             </Button>
           </div>
         </div>

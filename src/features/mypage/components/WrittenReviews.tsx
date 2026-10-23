@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   useCallback,
@@ -161,7 +161,7 @@ export default function WrittenReviews() {
     return (
       <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
-          작성한 리뷰를 불러오는 중이에요.
+          작성한 리뷰를 불러오는 중입니다.
         </p>
       </div>
     );
@@ -209,7 +209,7 @@ export default function WrittenReviews() {
           className="mb-4 flex flex-col items-center gap-3 rounded-xl bg-gray-50 p-4"
         >
           <p className="text-center text-sm text-gray-500">
-            리뷰를 새로 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
+            리뷰를 새로 불러오지 못했습니다. 기존 리뷰는 그대로 표시됩니다.
           </p>
           <button
             type="button"

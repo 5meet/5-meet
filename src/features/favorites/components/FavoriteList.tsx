@@ -1,3 +1,4 @@
+
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { MeetingCard } from "@/components/ui/MeetingCard/MeetingCard";
 import type { FavoriteMeeting } from "@/features/favorites/types";

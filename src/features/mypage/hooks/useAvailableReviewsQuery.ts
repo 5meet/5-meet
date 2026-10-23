@@ -2,9 +2,7 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import type {
-  AvailableReviewsResponse,
-} from "@/features/mypage/api/getAvailableReviews";
+import type { AvailableReviewsResponse } from "@/features/mypage/api/getAvailableReviews";
 
 interface UseAvailableReviewsQueryParams {
   size?: number;
@@ -19,19 +17,10 @@ async function fetchAvailableReviews(
   });
 
   if (cursor) {
-    searchParams.set(
-      "cursor",
-      cursor,
-    );
+    searchParams.set("cursor", cursor);
   }
 
-  const url =
-    `/api/mypage/available-reviews?${searchParams.toString()}`;
-
-  console.log(
-    "FETCH AVAILABLE REVIEWS",
-  );
-  console.log("url:", url);
+  const url = `/api/mypage/available-reviews?${searchParams.toString()}`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -39,18 +28,11 @@ async function fetchAvailableReviews(
   });
 
   if (!response.ok) {
-    const errorText =
-      await response.text();
+    const errorText = await response.text();
 
     console.error(
       "작성 가능한 리뷰 조회 실패",
-    );
-    console.error(
-      "status:",
       response.status,
-    );
-    console.error(
-      "response:",
       errorText,
     );
 
@@ -59,20 +41,7 @@ async function fetchAvailableReviews(
     );
   }
 
-  const data =
-    (await response.json()) as AvailableReviewsResponse;
-
-  console.log(
-    "FETCH AVAILABLE REVIEWS RESPONSE",
-  );
-  console.log(
-    "data count:",
-    data.data.length,
-  );
-  console.log(
-    "hasMore:",
-    data.hasMore,
-  );
+  const data = (await response.json()) as AvailableReviewsResponse;
 
   return data;
 }
@@ -81,35 +50,18 @@ export function useAvailableReviewsQuery({
   size = 10,
 }: UseAvailableReviewsQueryParams = {}) {
   return useInfiniteQuery({
-    queryKey: [
-      "mypage",
-      "reviews",
-      "available",
-      size,
-    ],
+    queryKey: ["mypage", "reviews", "available", size],
 
-    queryFn: ({
-      pageParam,
-    }) =>
-      fetchAvailableReviews(
-        size,
-        pageParam,
-      ),
+    queryFn: ({ pageParam }) => fetchAvailableReviews(size, pageParam),
 
-    initialPageParam:
-      undefined as string | undefined,
+    initialPageParam: undefined as string | undefined,
 
-    getNextPageParam: (
-      lastPage,
-    ) => {
+    getNextPageParam: (lastPage) => {
       if (!lastPage.hasMore) {
         return undefined;
       }
 
-      return (
-        lastPage.nextCursor ??
-        undefined
-      );
+      return lastPage.nextCursor ?? undefined;
     },
   });
 }
