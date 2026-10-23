@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Filter } from "@/components/ui/Filter/Filter";
 
@@ -13,37 +13,11 @@ import { useReviewStatisticsQuery } from "../hooks/useReviewStatisticsQuery";
 import { useReviewsQuery } from "../hooks/useReviewsQuery";
 
 export function ReviewsPage() {
-  const [
-    selectedCategory,
-    setSelectedCategory,
-  ] = useState("전체");
-
-  const [
-    dateStart,
-    setDateStart,
-  ] = useState("");
-
-  const [
-    dateEnd,
-    setDateEnd,
-  ] = useState("");
-
-  const [
-    selectedRegion,
-    setSelectedRegion,
-  ] = useState("전체");
-
-  const [
-    isUrgent,
-    setIsUrgent,
-  ] = useState(false);
-
-  const [
-    teamId,
-    setTeamId,
-  ] = useState<string | undefined>(
-    undefined,
-  );
+  const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("전체");
+  const [isUrgent, setIsUrgent] = useState(false);
 
   const handleDateChange = (
     nextDateStart: string,
@@ -59,61 +33,32 @@ export function ReviewsPage() {
     isError,
     error,
   } = useReviewsQuery({
-    type:
-      selectedCategory !== "전체"
-        ? selectedCategory
-        : undefined,
-
-    region:
-      selectedRegion !== "전체"
-        ? selectedRegion
-        : undefined,
-
-    dateStart:
-      dateStart || undefined,
-
-    dateEnd:
-      dateEnd || undefined,
-
+    type: selectedCategory !== "전체" ? selectedCategory : undefined,
+    region: selectedRegion !== "전체" ? selectedRegion : undefined,
+    dateStart: dateStart || undefined,
+    dateEnd: dateEnd || undefined,
     sortBy: "createdAt",
     sortOrder: "desc",
   });
 
-  const reviews = data?.data ?? [];
-
-  useEffect(() => {
-    const nextTeamId =
-      reviews[0]?.teamId;
-
-    if (nextTeamId) {
-      setTeamId(nextTeamId);
-    }
-  }, [reviews]);
+  const reviews = useMemo(() => data?.data ?? [], [data?.data]);
+  const teamId = reviews[0]?.teamId;
 
   const {
     data: statistics,
-    isLoading:
-      isStatisticsLoading,
-  } = useReviewStatisticsQuery(
-    teamId,
-  );
+    isLoading: isStatisticsLoading,
+  } = useReviewStatisticsQuery(teamId);
 
   const {
     data: categoryStatistics,
-    isLoading:
-      isCategoryStatisticsLoading,
-  } =
-    useReviewCategoryStatisticsQuery(
-      teamId,
-    );
+    isLoading: isCategoryStatisticsLoading,
+  } = useReviewCategoryStatisticsQuery(teamId);
 
   const selectedStatistics =
     selectedCategory === "전체"
       ? statistics
       : categoryStatistics?.find(
-          (item) =>
-            item.type ===
-            selectedCategory,
+          (item) => item.type === selectedCategory,
         );
 
   const isSummaryLoading =
@@ -130,10 +75,8 @@ export function ReviewsPage() {
           max-w-[1060px]
           px-5
           py-12
-
           sm:px-5
           sm:py-10
-
           md:px-6
           md:py-12
         "
@@ -144,10 +87,8 @@ export function ReviewsPage() {
             flex
             items-center
             gap-5
-
             sm:mb-9
             sm:gap-5
-
             md:mb-10
           "
         >
@@ -157,10 +98,8 @@ export function ReviewsPage() {
               h-[58px]
               w-[68px]
               shrink-0
-
               sm:h-[62px]
               sm:w-[74px]
-
               md:h-[66px]
               md:w-[80px]
             "
@@ -180,9 +119,7 @@ export function ReviewsPage() {
                 text-[27px]
                 font-bold
                 tracking-[-1.5px]
-
                 sm:text-[26px]
-
                 md:mb-2
                 md:text-[27px]
               "
@@ -194,41 +131,25 @@ export function ReviewsPage() {
               className="
                 text-sm
                 text-[#a0a4aa]
-
                 sm:text-[13px]
-
                 md:text-sm
               "
             >
-              같이달램 이용자들은 이렇게 느꼈어요
+              함께한 사람들의 이용 후기를 확인해 보세요.
             </p>
           </div>
         </div>
 
         <Filter
-          selectedCategory={
-            selectedCategory
-          }
-          onCategoryChange={
-            setSelectedCategory
-          }
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
           dateStart={dateStart}
           dateEnd={dateEnd}
-          onDateChange={
-            handleDateChange
-          }
-          selectedRegion={
-            selectedRegion
-          }
-          onRegionChange={
-            setSelectedRegion
-          }
+          onDateChange={handleDateChange}
+          selectedRegion={selectedRegion}
+          onRegionChange={setSelectedRegion}
           isUrgent={isUrgent}
-          onUrgentChange={() =>
-            setIsUrgent(
-              (prev) => !prev,
-            )
-          }
+          onUrgentChange={() => setIsUrgent((prev) => !prev)}
         />
 
         {isLoading && (
@@ -244,7 +165,7 @@ export function ReviewsPage() {
               text-[#999999]
             "
           >
-            리뷰를 불러오는 중이에요.
+            리뷰를 불러오는 중입니다.
           </div>
         )}
 
@@ -267,23 +188,16 @@ export function ReviewsPage() {
           </div>
         )}
 
-        {!isLoading &&
-          !isError && (
-            <>
-              <ReviewSummary
-                statistics={
-                  selectedStatistics
-                }
-                isLoading={
-                  isSummaryLoading
-                }
-              />
+        {!isLoading && !isError && (
+          <>
+            <ReviewSummary
+              statistics={selectedStatistics}
+              isLoading={isSummaryLoading}
+            />
 
-              <ReviewList
-                reviews={reviews}
-              />
-            </>
-          )}
+            <ReviewList reviews={reviews} />
+          </>
+        )}
       </section>
     </main>
   );
