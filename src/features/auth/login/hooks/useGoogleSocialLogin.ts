@@ -42,11 +42,6 @@ export function useGoogleSocialLogin(redirect: string) {
           exact: true,
         });
 
-        await queryClient.resetQueries({
-          queryKey: CURRENT_USER_QUERY_KEY,
-          exact: true,
-        });
-
         router.replace(redirect);
         router.refresh();
       } catch {
