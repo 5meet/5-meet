@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NAV_ITEMS } from "./constants";
 
 import { useLogout } from "@/features/auth/logout/hooks/useLogout";
@@ -16,8 +16,89 @@ interface MobileMenuProps {
 
 export function MobileMenu({ user }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const { logout } = useLogout();
+
+  useEffect(() => {
+    if (!isOpen || !menuRef.current) return;
+
+    const menu = menuRef.current;
+    const trigger = triggerRef.current;
+    const previousOverflow = document.body.style.overflow;
+    const previousRootOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    // 메뉴의 조상 경로를 제외한 배경 요소를 비활성화합니다.
+    const backgroundElements = new Map<HTMLElement, boolean>();
+    let current: HTMLElement = menu;
+    while (current.parentElement) {
+      for (const sibling of current.parentElement.children) {
+        if (
+          sibling instanceof HTMLElement &&
+          sibling !== current &&
+          sibling !== overlayRef.current
+        ) {
+          backgroundElements.set(sibling, sibling.inert);
+          sibling.inert = true;
+        }
+      }
+      current = current.parentElement;
+      if (current === document.body) break;
+    }
+
+    const getFocusable = () =>
+      Array.from(menu.querySelectorAll<HTMLElement>(
+        'a[href], button:not(:disabled), [tabindex]:not([tabindex="-1"])',
+      )).filter((element) => element.tabIndex >= 0 && element.getClientRects().length > 0);
+    const focusFirst = () => (getFocusable()[0] ?? menu).focus();
+    focusFirst();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsOpen(false);
+      } else if (event.key === "Tab") {
+        const elements = getFocusable();
+        const first = elements[0];
+        const last = elements.at(-1);
+        if (!first || !last) {
+          event.preventDefault();
+          menu.focus();
+        } else if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    const handleFocusIn = (event: FocusEvent) => {
+      if (event.target instanceof Node && !menu.contains(event.target)) focusFirst();
+    };
+    const media = window.matchMedia("(min-width: 744px)");
+    const handleDesktop = () => {
+      if (media.matches) setIsOpen(false);
+    };
+    handleDesktop();
+    media.addEventListener("change", handleDesktop);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
+
+    return () => {
+      media.removeEventListener("change", handleDesktop);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
+      backgroundElements.forEach((inert, element) => { element.inert = inert; });
+      document.body.style.overflow = previousOverflow;
+      document.documentElement.style.overflow = previousRootOverflow;
+      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
+    };
+  }, [isOpen]);
 
   const handleLogout = async () => {
     setIsOpen(false);
@@ -34,6 +115,7 @@ export function MobileMenu({ user }: MobileMenuProps) {
     <>
       {/* 메뉴 열기 버튼 */}
       <button
+        ref={triggerRef}
         type="button"
         aria-label="메뉴 열기"
         aria-expanded={isOpen}
@@ -46,6 +128,7 @@ export function MobileMenu({ user }: MobileMenuProps) {
 
       {/* 배경 오버레이 */}
       <div
+        ref={overlayRef}
         aria-hidden="true"
         onClick={() => setIsOpen(false)}
         className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ease-in-out min-[744px]:hidden ${
@@ -57,6 +140,8 @@ export function MobileMenu({ user }: MobileMenuProps) {
 
       {/* 사이드바 */}
       <nav
+        ref={menuRef}
+        tabIndex={-1}
         id="mobile-navigation"
         aria-label="모바일 메뉴"
         aria-hidden={!isOpen}
