@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, MapPin, Users } from "lucide-react";
 
-import type { Meeting } from "@/features/meetings/types/meeting";
+import type { Meeting } from "@/features/meetings/types/meetings";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import { useMeetingFavorite } from "@/features/meetings/hooks/useMeetingFavorite";
 

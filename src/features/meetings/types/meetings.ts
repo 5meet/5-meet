@@ -10,6 +10,7 @@ export interface MeetingHost {
 }
 
 export interface Meeting {
+  isFavorited?: boolean;
   id: number;
   teamId: string;
   name: string;
