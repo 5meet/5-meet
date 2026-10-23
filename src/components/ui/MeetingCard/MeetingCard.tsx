@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -127,15 +128,13 @@ export function MeetingCard({
             </div>
           </div>
 
-          <div className="mt-3 w-full overflow-hidden">
-            <div className="origin-left scale-[0.8] whitespace-nowrap">
-              <Tags
-                date={date}
-                time={time}
-                registrationEnd={registrationEnd}
-                order="date-first"
-              />
-            </div>
+          <div className="mt-3 w-full min-w-0 [&>div]:!flex-wrap">
+            <Tags
+              date={date}
+              time={time}
+              registrationEnd={registrationEnd}
+              order="date-first"
+            />
           </div>
 
           <div className="mt-4 flex min-w-0 flex-wrap items-center justify-between gap-3">
@@ -154,8 +153,8 @@ export function MeetingCard({
               onClick={onParticipateClick}
               className={
                 isClosed
-                  ? "h-10 shrink-0 border-transparent bg-gray-100 px-4 text-gray-400"
-                  : "h-10 shrink-0 border-primary-500 px-4 text-primary-500"
+                  ? "h-10 w-auto shrink-0 border-transparent bg-gray-100 px-4 text-gray-400"
+                  : "h-10 w-auto shrink-0 border-primary-500 px-4 text-primary-500"
               }
             >
               참여하기
@@ -217,15 +216,13 @@ export function MeetingCard({
             <div className="shrink-0">{favoriteButton}</div>
           </div>
 
-          <div className="mt-auto min-w-0 overflow-hidden">
-            <div className="origin-left scale-[0.8] whitespace-nowrap">
-              <Tags
-                date={date}
-                time={time}
-                registrationEnd={registrationEnd}
-                order="date-first"
-              />
-            </div>
+          <div className="mt-auto min-w-0 [&>div]:!flex-wrap">
+            <Tags
+              date={date}
+              time={time}
+              registrationEnd={registrationEnd}
+              order="date-first"
+            />
           </div>
 
           <div className="mt-3 flex min-w-0 items-center justify-between gap-4">
@@ -242,8 +239,8 @@ export function MeetingCard({
               onClick={onParticipateClick}
               className={
                 isClosed
-                  ? "h-10 shrink-0 border-transparent bg-gray-100 px-4 text-gray-400"
-                  : "h-10 shrink-0 border-primary-500 px-4 text-primary-500"
+                  ? "h-10 w-auto shrink-0 border-transparent bg-gray-100 px-4 text-gray-400"
+                  : "h-10 w-auto shrink-0 border-primary-500 px-4 text-primary-500"
               }
             >
               참여하기
