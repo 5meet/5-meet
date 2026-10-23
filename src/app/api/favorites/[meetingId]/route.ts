@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+  import { NextRequest, NextResponse } from "next/server";
 
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
@@ -6,6 +6,21 @@ interface RouteContext {
   params: Promise<{
     meetingId: string;
   }>;
+}
+
+function getErrorStatus(error: unknown): number {
+  if (
+    error instanceof Error &&
+    "status" in error &&
+    typeof error.status === "number" &&
+    Number.isInteger(error.status) &&
+    error.status >= 400 &&
+    error.status <= 599
+  ) {
+    return error.status;
+  }
+
+  return 500;
 }
 
 export async function DELETE(
@@ -17,11 +32,11 @@ export async function DELETE(
     const parsedMeetingId = Number(meetingId);
 
     if (
-      !Number.isInteger(parsedMeetingId) ||
+      !Number.isSafeInteger(parsedMeetingId) ||
       parsedMeetingId <= 0
     ) {
       return NextResponse.json(
-        { message: "올바른 meetingId가 아닙니다." },
+        { message: "meetingId는 양의 정수여야 합니다." },
         { status: 400 },
       );
     }
@@ -37,13 +52,6 @@ export async function DELETE(
   } catch (error) {
     console.error("즐겨찾기 해제 실패:", error);
 
-    const status =
-      error instanceof Error &&
-      "status" in error &&
-      typeof error.status === "number"
-        ? error.status
-        : 500;
-
     return NextResponse.json(
       {
         message:
@@ -51,7 +59,7 @@ export async function DELETE(
             ? error.message
             : "즐겨찾기 해제에 실패했습니다.",
       },
-      { status },
+      { status: getErrorStatus(error) },
     );
   }
 }

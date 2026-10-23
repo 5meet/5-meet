@@ -64,5 +64,8 @@ export async function getAvailableReviews({
 
   const url = `/users/me/meetings?${searchParams.toString()}`;
 
-  return serverFetchWithTokenRefresh<AvailableReviewsResponse>(url);
+  return serverFetchWithTokenRefresh<AvailableReviewsResponse>(url, {
+    method: "GET",
+    cache: "no-store",
+  });
 }

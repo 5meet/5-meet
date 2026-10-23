@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -17,6 +16,7 @@ export default function WrittenReviews() {
     isLoading,
     isError,
     isFetchNextPageError,
+    isFetching,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -29,6 +29,12 @@ export default function WrittenReviews() {
 
   const reviews = data?.pages.flatMap((page) => page.data) ?? [];
 
+  const isInitialError = isError && reviews.length === 0;
+  const isNextPageError =
+    isFetchNextPageError && reviews.length > 0;
+  const isRefetchError =
+    isError && reviews.length > 0 && !isFetchNextPageError;
+
   useEffect(() => {
     const target = loadMoreRef.current;
 
@@ -36,7 +42,7 @@ export default function WrittenReviews() {
       !target ||
       !hasNextPage ||
       isFetchingNextPage ||
-      isFetchNextPageError
+      isNextPageError
     ) {
       return;
     }
@@ -63,10 +69,10 @@ export default function WrittenReviews() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isFetchNextPageError,
+    isNextPageError,
   ]);
 
-  if (isLoading && reviews.length === 0) {
+  if (isLoading && !data) {
     return (
       <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
         <p className="text-sm text-gray-500">
@@ -76,21 +82,21 @@ export default function WrittenReviews() {
     );
   }
 
-  if (isError && reviews.length === 0) {
+  if (isInitialError) {
     return (
-      <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
-        <div className="text-center">
-          <p className="text-sm text-gray-500">
-            작성한 리뷰를 불러오지 못했습니다.
-          </p>
-          <button
-            type="button"
-            onClick={() => void refetch()}
-            className="mt-3 text-sm text-blue-600 underline"
-          >
-            다시 시도
-          </button>
-        </div>
+      <div className="flex h-[780px] w-full flex-col items-center justify-center rounded-[24px] bg-white">
+        <p className="text-sm text-gray-500">
+          작성한 리뷰를 불러오지 못했습니다.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          disabled={isFetching}
+          className="mt-4 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isFetching ? "다시 불러오는 중..." : "다시 시도"}
+        </button>
       </div>
     );
   }
@@ -118,34 +124,70 @@ export default function WrittenReviews() {
         [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
       "
     >
+      {isRefetchError && (
+        <div
+          role="alert"
+          className="mb-4 flex flex-col items-center gap-3 rounded-xl bg-gray-50 p-4"
+        >
+          <p className="text-center text-sm text-gray-500">
+            리뷰를 새로 불러오지 못했습니다. 기존 리뷰는 그대로 표시됩니다.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isFetching ? "다시 불러오는 중..." : "다시 시도"}
+          </button>
+        </div>
+      )}
+
       {reviews.map((review) => (
-        <ReviewCard key={review.id} review={review} />
+        <ReviewCard
+          key={review.id}
+          review={{
+            ...review,
+            teamId: review.teamId || "5-meet",
+            meeting: {
+              ...review.meeting,
+              region: review.meeting.region ?? "",
+            },
+          }}
+        />
       ))}
 
       <div
         ref={loadMoreRef}
-        className="flex min-h-10 flex-col items-center justify-center"
+        className="flex flex-col items-center justify-center gap-3 py-4"
       >
         {isFetchingNextPage && (
-          <p className="py-3 text-sm text-gray-400">
+          <p className="text-sm text-gray-500">
             리뷰를 더 불러오는 중입니다.
           </p>
         )}
 
-        {isFetchNextPageError && (
-          <div className="py-4 text-center">
-            <p className="text-sm text-gray-500">
-              다음 리뷰를 불러오지 못했습니다.
+        {isNextPageError && (
+          <>
+            <p
+              role="alert"
+              className="text-center text-sm text-gray-500"
+            >
+              리뷰를 더 불러오지 못했습니다. 기존 리뷰는 그대로 표시됩니다.
             </p>
+
             <button
               type="button"
               onClick={() => void fetchNextPage()}
               disabled={isFetchingNextPage}
-              className="mt-2 text-sm text-blue-600 underline disabled:opacity-50"
+              className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              다시 시도
+              {isFetchingNextPage
+                ? "다시 불러오는 중..."
+                : "다시 시도"}
             </button>
-          </div>
+          </>
         )}
       </div>
     </div>

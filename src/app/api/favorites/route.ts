@@ -2,13 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
+function getErrorStatus(error: unknown): number {
+  if (
+    error instanceof Error &&
+    "status" in error &&
+    typeof error.status === "number" &&
+    Number.isInteger(error.status) &&
+    error.status >= 400 &&
+    error.status <= 599
+  ) {
+    return error.status;
+  }
+
+  return 500;
+}
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams.toString();
-
-    const url = searchParams
-      ? `/favorites?${searchParams}`
-      : "/favorites";
+    const url = searchParams ? `/favorites?${searchParams}` : "/favorites";
 
     const data = await serverFetchWithTokenRefresh<unknown>(url);
 
@@ -16,37 +32,32 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("즐겨찾기 목록 조회 실패:", error);
 
-    const status =
-      error instanceof Error &&
-      "status" in error &&
-      typeof error.status === "number"
-        ? error.status
-        : 500;
-
     return NextResponse.json(
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "즐겨찾기 목록을 불러오지 못했습니다.",
+        message: getErrorMessage(
+          error,
+          "즐겨찾기 목록을 불러오지 못했습니다.",
+        ),
       },
-      { status },
+      { status: getErrorStatus(error) },
     );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as {
-      meetingId: number;
-    };
+    const body: unknown = await request.json();
 
     if (
-      !Number.isInteger(body.meetingId) ||
+      typeof body !== "object" ||
+      body === null ||
+      !("meetingId" in body) ||
+      typeof body.meetingId !== "number" ||
+      !Number.isSafeInteger(body.meetingId) ||
       body.meetingId <= 0
     ) {
       return NextResponse.json(
-        { message: "올바른 meetingId가 필요합니다." },
+        { message: "meetingId는 양의 정수여야 합니다." },
         { status: 400 },
       );
     }
@@ -60,21 +71,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("즐겨찾기 추가 실패:", error);
 
-    const status =
-      error instanceof Error &&
-      "status" in error &&
-      typeof error.status === "number"
-        ? error.status
-        : 500;
-
     return NextResponse.json(
       {
-        message:
-          error instanceof Error
-            ? error.message
-            : "즐겨찾기에 추가하지 못했습니다.",
+        message: getErrorMessage(error, "즐겨찾기에 추가하지 못했습니다."),
       },
-      { status },
+      { status: getErrorStatus(error) },
     );
   }
 }

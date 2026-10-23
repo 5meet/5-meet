@@ -7,12 +7,15 @@ import {
   clearAuthCookies,
   setRefreshedAuthCookies,
 } from "@/lib/auth/authCookies";
-import { getSafeRedirect } from '@/lib/utils/getSafeRedirect';
+import { getSafeRedirect } from "@/lib/utils/getSafeRedirect";
 
 export async function GET(request: NextRequest) {
   // 1. 토큰 갱신 후 돌아갈 페이지 확인
-  const redirect = request.nextUrl.searchParams.get("redirect") ?? "/";
-  const redirectPath = getSafeRedirect(redirect);
+  const redirectPath = getSafeRedirect(
+    request.nextUrl.searchParams.get("redirect"),
+    "/meetings",
+    request.nextUrl.origin,
+  );
 
   // 2. 현재 Refresh Token 가져오기
   const currentRefreshToken = request.cookies.get(

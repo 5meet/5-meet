@@ -1,18 +1,21 @@
+
 "use client";
+
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
+
 import Label from "@/components/ui/Form/label/Label";
 import Input from "@/components/ui/Form/input/Input";
 import Button from "@/components/ui/Button/Button";
 import PasswordInput from "@/components/ui/Form/input/PasswordInput";
-import SocialLoginButton from "../../components/SocialLoginButton";
-
-import { useForm } from "react-hook-form";
 import FormErrorMessage from "@/components/ui/Form/formErrorMessage/FormErrorMessage";
+
+import SocialLoginButton from "../../components/SocialLoginButton";
 import { loginAction } from "../actions/loginActions";
 import { useDebouncedTrigger } from "@/lib/hooks/useDebouncedTrigger";
 import { useModal } from "@/contexts/ModalContext";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-import { CURRENT_USER_QUERY_KEY } from "@/features/auth/hooks/useCurrentUser";
 
 interface LoginFormProps {
   redirect: string;
@@ -23,14 +26,23 @@ interface LoginFormValue {
   password: string;
 }
 
+
+
 export default function LoginForm({ redirect }: LoginFormProps) {
   const {
     register,
     handleSubmit,
     watch,
     trigger,
-    formState: { errors, isValid, touchedFields, isSubmitting, isValidating },
+    formState: {
+      errors,
+      isValid,
+      touchedFields,
+      isSubmitting,
+      isValidating,
+    },
   } = useForm<LoginFormValue>({ mode: "onBlur" });
+
   const { openAlert } = useModal();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -40,14 +52,20 @@ export default function LoginForm({ redirect }: LoginFormProps) {
 
   const onSubmit = async (data: LoginFormValue) => {
     const result = await loginAction(data);
+
     if (!result.success) {
       openAlert({
         message: result.message ?? "로그인에 실패했습니다.",
       });
       return;
     }
-    // 로그인 성공
-    await queryClient.resetQueries({ queryKey: CURRENT_USER_QUERY_KEY, exact: true });
+
+    await queryClient.resetQueries({
+      queryKey: CURRENT_USER_QUERY_KEY,
+      exact: true,
+    });
+
+    // 로그인 성공 후 원래 목적지로 이동
     router.replace(redirect);
     router.refresh();
   };
@@ -65,6 +83,7 @@ export default function LoginForm({ redirect }: LoginFormProps) {
     value: passwordValue,
     field: "password",
   });
+
   return (
     <section
       className="
@@ -83,12 +102,14 @@ export default function LoginForm({ redirect }: LoginFormProps) {
       >
         로그인
       </h1>
+
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-        {/* 아이디 영역 */}
+        {/* 이메일 영역 */}
         <div className="flex flex-col">
           <Label htmlFor="email" required className="mb-2">
             이메일
           </Label>
+
           <Input
             id="email"
             type="email"
@@ -102,6 +123,7 @@ export default function LoginForm({ redirect }: LoginFormProps) {
               },
             })}
           />
+
           <FormErrorMessage message={errors.email?.message} />
         </div>
 
@@ -110,6 +132,7 @@ export default function LoginForm({ redirect }: LoginFormProps) {
           <Label htmlFor="password" required className="mb-2">
             비밀번호
           </Label>
+
           <PasswordInput
             id="password"
             placeholder="비밀번호를 입력해주세요"
@@ -117,10 +140,14 @@ export default function LoginForm({ redirect }: LoginFormProps) {
             {...register("password", {
               required: "비밀번호를 입력해주세요.",
               validate: (value) => {
-                if (/\s/.test(value))
+                if (/\s/.test(value)) {
                   return "비밀번호에는 공백을 사용할 수 없습니다.";
-                if (value.length < 8)
+                }
+
+                if (value.length < 8) {
                   return "비밀번호는 8자 이상 입력해주세요.";
+                }
+
                 return true;
               },
             })}
@@ -140,9 +167,12 @@ export default function LoginForm({ redirect }: LoginFormProps) {
         </Button>
       </form>
 
+      {/* 소셜 로그인 구분선 */}
       <div className="my-8 flex items-center gap-3" aria-hidden="true">
         <div className="h-px flex-1 bg-gray-300" />
-        <span className="text-sm text-gray-500">SNS 계정으로 로그인</span>
+        <span className="text-sm text-gray-500">
+          SNS 계정으로 로그인
+        </span>
         <div className="h-px flex-1 bg-gray-300" />
       </div>
 
@@ -158,12 +188,14 @@ export default function LoginForm({ redirect }: LoginFormProps) {
           className="min-[744px]:min-w-0 min-[744px]:flex-1"
         />
       </div>
+
+      {/* 회원가입 이동 */}
       <p className="mt-8 text-center text-sm text-gray-700">
         같이달램이 처음이신가요?{" "}
         <button
           type="button"
           onClick={() => router.push("/signup")}
-          className=" cursor-pointer font-medium text-primary-500 underline underline-offset-2"
+          className="cursor-pointer font-medium text-primary-500 underline underline-offset-2"
         >
           회원가입
         </button>

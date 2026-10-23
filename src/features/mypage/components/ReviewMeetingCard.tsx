@@ -48,25 +48,17 @@ export default function ReviewMeetingCard({
   const addFavoriteMutation = useAddFavoriteMutation();
   const deleteFavoriteMutation = useDeleteFavoriteMutation();
 
-  // null이면 서버에서 받은 isFavorite 값을 사용합니다.
   const [favoriteOverride, setFavoriteOverride] =
     useState<boolean | null>(null);
 
-  const [isFavoritePending, setIsFavoritePending] =
-    useState(false);
-
-  const [isReviewModalOpen, setIsReviewModalOpen] =
-    useState(false);
-
-  // 이미지 URL별로 오류 상태를 관리합니다.
-  const [failedImageUrl, setFailedImageUrl] =
-    useState<string | null>(null);
+  const [isFavoritePending, setIsFavoritePending] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
 
   const isLiked = favoriteOverride ?? isFavorite;
 
   const hasImage =
-    Boolean(imageUrl?.trim()) &&
-    failedImageUrl !== imageUrl;
+    Boolean(imageUrl?.trim()) && failedImageUrl !== imageUrl;
 
   const handleFavoriteClick = async () => {
     if (isFavoritePending) return;
@@ -167,7 +159,6 @@ export default function ReviewMeetingCard({
             sm:h-[250px]
             md:h-[178px]
             md:w-[178px]
-            md:rounded-[18px]
           "
         >
           {hasImage ? (
@@ -176,6 +167,7 @@ export default function ReviewMeetingCard({
               alt={title}
               fill
               sizes="(max-width: 767px) 100vw, 178px"
+              loading="eager"
               className="object-cover"
               onError={() => setFailedImageUrl(imageUrl)}
             />
@@ -245,15 +237,44 @@ export default function ReviewMeetingCard({
               md:justify-between
             "
           >
-            <div className="flex min-w-0 flex-col gap-2">
-              <div className="flex items-center gap-2 text-[14px] font-medium text-[#20242d] sm:text-[15px] md:text-[14px]">
-                <Users size={17} />
+            <div className="min-w-0">
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-1.5
+                  text-[14px]
+                  font-medium
+                  text-[#20242d]
+                  sm:text-[15px]
+                  md:text-[14px]
+                "
+              >
+                <Users
+                  size={17}
+                  fill="currentColor"
+                  strokeWidth={0}
+                  className="text-[#999999]"
+                />
                 <span>
                   {participantCount}/{capacity}명 참여
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-[#888b90] sm:text-[14px] md:text-[13px]">
+              <div
+                className="
+                  mt-2
+                  flex
+                  flex-wrap
+                  items-center
+                  gap-x-2
+                  gap-y-1
+                  text-[13px]
+                  text-[#888b90]
+                  sm:text-[14px]
+                  md:text-[13px]
+                "
+              >
                 <span>위치 {location}</span>
                 <span className="text-[#d2d2d2]">|</span>
                 <span>날짜 {date}</span>

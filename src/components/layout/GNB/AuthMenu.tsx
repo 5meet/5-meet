@@ -8,9 +8,15 @@ type AuthMenuProps = {
   user: { name: string } | null | undefined;
   isPending: boolean;
   isError: boolean;
+  loginHref: string;
 };
 
-export function AuthMenu({ user, isPending, isError }: AuthMenuProps) {
+export function AuthMenu({
+  user,
+  isPending,
+  isError,
+  loginHref,
+}: AuthMenuProps) {
   const { logout } = useLogout();
 
   if (isPending) {
@@ -45,7 +51,7 @@ export function AuthMenu({ user, isPending, isError }: AuthMenuProps) {
 
   return (
     <Link
-      href="/login"
+      href={loginHref}
       className="inline-flex h-8 items-center justify-center rounded-lg bg-emerald-500 px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-600 md:h-9 md:px-5 md:text-sm"
     >
       로그인

@@ -1,23 +1,19 @@
 import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
+import type { ReviewApiItem } from "@/features/reviews/types";
 
 export interface MyReviewMeeting {
   id: number;
   type: string;
   name: string;
+  region: string;
   image: string;
   dateTime: string;
 }
 
-export interface MyReview {
-  id: number;
-  score: number;
-  comment: string;
-  meetingId: number;
+export interface MyReview
+  extends Omit<ReviewApiItem, "meeting" | "user"> {
   meeting: MyReviewMeeting;
-  createdAt: string;
-  user?: {
-    name?: string;
-  };
+  user?: ReviewApiItem["user"];
 }
 
 export interface MyReviewsResponse {
@@ -55,5 +51,8 @@ export async function getMyReviews({
 
   const url = `/users/me/reviews?${searchParams.toString()}`;
 
-  return serverFetchWithTokenRefresh<MyReviewsResponse>(url);
+  return serverFetchWithTokenRefresh<MyReviewsResponse>(url, {
+    method: "GET",
+    cache: "no-store",
+  });
 }
