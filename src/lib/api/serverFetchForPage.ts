@@ -6,6 +6,7 @@
  */
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 import { ApiError } from "./ApiError";
 import { serverFetch } from "./serverFetch";
@@ -15,6 +16,7 @@ export async function serverFetchForPage<T>(
   url: string,
   returnTo: string,
   options: BaseFetchOptions = {},
+  publicFallback = false,
 ) {
   try {
     return await serverFetch<T>(url, { ...options, auth: true });
@@ -27,9 +29,17 @@ export async function serverFetchForPage<T>(
       throw error;
     }
 
+    if (publicFallback) {
+      const store = await cookies();
+      if (!store.get("refreshToken")?.value) {
+        return serverFetch<T>(url, { ...options, auth: false });
+      }
+    }
+
     const params = new URLSearchParams({
       redirect: returnTo,
     });
+    if (publicFallback) params.set("publicFallback", "1");
     redirect(`/api/auth/refresh?${params.toString()}`);
   }
 }

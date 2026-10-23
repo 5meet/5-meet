@@ -17,6 +17,18 @@ export async function GET(request: NextRequest) {
     request.nextUrl.origin,
   );
 
+  // 공개 모임 페이지에서 시작한 갱신만 비인증 복귀 허용
+  const publicFallback =
+    request.nextUrl.searchParams.get("publicFallback") === "1" &&
+    new URL(redirectPath, request.url).pathname === "/meetings";
+
+  const returnAsGuest = () => {
+    const response = NextResponse.redirect(new URL(redirectPath, request.url));
+
+    clearAuthCookies(response.cookies);
+    return response;
+  };
+
   // 2. 현재 Refresh Token 가져오기
   const currentRefreshToken = request.cookies.get(
     AUTH_COOKIE.REFRESH_TOKEN,
@@ -24,6 +36,7 @@ export async function GET(request: NextRequest) {
 
   // 3. Refresh Token이 없으면 로그인 페이지로 이동
   if (!currentRefreshToken) {
+    if (publicFallback) return returnAsGuest();
     const loginUrl = new URL("/login", request.url);
 
     loginUrl.searchParams.set("redirect", redirectPath);
@@ -37,6 +50,7 @@ export async function GET(request: NextRequest) {
 
     // 5. Refresh Token도 만료되었거나 유효하지 않은 경우
     if (refreshResponse.status === 401) {
+      if (publicFallback) return returnAsGuest();
       const loginUrl = new URL("/login", request.url);
 
       loginUrl.searchParams.set("redirect", redirectPath);
@@ -50,6 +64,7 @@ export async function GET(request: NextRequest) {
 
     // 6. 백엔드 Refresh API 자체에서 오류가 발생한 경우
     if (!refreshResponse.ok) {
+      if (publicFallback) return returnAsGuest();
       return new NextResponse("토큰 갱신 중 오류가 발생했습니다.", {
         status: 503,
       });
@@ -67,6 +82,7 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch {
+    if (publicFallback) return returnAsGuest();
     return new NextResponse("네트워크 연결이 불안정합니다.", { status: 503 });
   }
 }
