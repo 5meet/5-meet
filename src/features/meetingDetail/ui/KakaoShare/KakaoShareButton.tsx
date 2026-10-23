@@ -15,7 +15,7 @@ const KakaoShareButton = ({ onClick, isLoading }: KakaoShareButtonProps) => (
     isLoading={isLoading}
     className="bg-[#FEE500] border-[#FEE500] hover:border-[#FEE500] cursor-pointer disabled:cursor-not-allowed"
   >
-    <Image src="/icons/social/kakao.svg" alt="" width={20} height={20} />
+    <Image src="/social/kakao.svg" alt="" width={20} height={20} />
   </IconButton>
 );
 
