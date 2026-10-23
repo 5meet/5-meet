@@ -4,7 +4,8 @@ import { SearchSection } from "./search/SearchSection";
 import { Flame, Sparkles } from "lucide-react";
 
 import { MeetingSection } from "./meeting/MeetingSection";
-import { serverFetch } from "@/lib/api/serverFetch";
+import { serverFetchForPage } from "@/lib/api/serverFetchForPage";
+import { unstable_rethrow } from "next/navigation";
 import { ApiError } from "@/lib/api/ApiError";
 
 import type { GetFavoritesResponse } from "@/features/favorites/types";
@@ -16,11 +17,12 @@ import { RecommendationError } from "./RecommendationError";
 export async function MeetingsContent() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
   let mostFavoriteType: string | null = null;
   let hasRecommendationError = false;
 
-  if (accessToken) {
+  if (accessToken || refreshToken) {
     try {
       const favorites: GetFavoritesResponse["data"] = [];
       const visitedCursors = new Set<string>();
@@ -30,9 +32,11 @@ export async function MeetingsContent() {
         const params = new URLSearchParams();
         if (cursor !== null) params.set("cursor", cursor);
         const query = params.toString();
-        const page = await serverFetch<GetFavoritesResponse>(
+        const page = await serverFetchForPage<GetFavoritesResponse>(
           query ? `/favorites?${query}` : "/favorites",
-          { auth: true, cache: "no-store" },
+          "/meetings",
+          { cache: "no-store" },
+          true,
         );
         favorites.push(...page.data);
 
@@ -47,6 +51,7 @@ export async function MeetingsContent() {
 
       mostFavoriteType = getMostFavoriteType(favorites);
     } catch (error) {
+      unstable_rethrow(error);
       if (!(error instanceof ApiError && error.status === 401)) {
         hasRecommendationError = true;
       }
