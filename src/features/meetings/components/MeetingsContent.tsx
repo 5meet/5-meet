@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { HeroBanner } from "./HeroBanner";
 import { SearchSection } from "./search/SearchSection";
 import { Flame, Sparkles } from "lucide-react";
@@ -12,30 +11,47 @@ import type { GetFavoritesResponse } from "@/features/favorites/types";
 import { getMostFavoriteType } from "@/lib/utils/getMostFavoriteType";
 import { EmptyState } from "./EmptyState";
 import { SectionHeader } from "./SectionHeader";
+import { RecommendationError } from "./RecommendationError";
 
 export async function MeetingsContent() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
   let mostFavoriteType: string | null = null;
+  let hasRecommendationError = false;
 
   if (accessToken) {
     try {
-      const favoriteList = await serverFetch<GetFavoritesResponse>(
-        "/favorites",
-        {
-          auth: true,
-        },
-      );
-      mostFavoriteType = getMostFavoriteType(favoriteList.data);
+      const favorites: GetFavoritesResponse["data"] = [];
+      const visitedCursors = new Set<string>();
+      let cursor: string | null = null;
+
+      while (true) {
+        const params = new URLSearchParams();
+        if (cursor !== null) params.set("cursor", cursor);
+        const query = params.toString();
+        const page = await serverFetch<GetFavoritesResponse>(
+          query ? `/favorites?${query}` : "/favorites",
+          { auth: true, cache: "no-store" },
+        );
+        favorites.push(...page.data);
+
+        if (!page.hasMore) break;
+        if (!page.nextCursor || visitedCursors.has(page.nextCursor)) {
+          // 일부 페이지만 집계하거나 같은 페이지를 무한 조회하지 않도록 합니다.
+          throw new Error("찜 목록의 다음 페이지 커서가 올바르지 않습니다.");
+        }
+        visitedCursors.add(page.nextCursor);
+        cursor = page.nextCursor;
+      }
+
+      mostFavoriteType = getMostFavoriteType(favorites);
     } catch (error) {
       if (!(error instanceof ApiError && error.status === 401)) {
-        throw error;
+        hasRecommendationError = true;
       }
     }
   }
-
-  console.log("찜 목록:", mostFavoriteType);
 
   return (
     <main className="bg-[#f5f7f8] md:py-4">
@@ -49,7 +65,7 @@ export async function MeetingsContent() {
         <MeetingSection
           title="지금 인기 있는 모임"
           moreHref="/meetings/list"
-          endpoint="/meetings?sortBy=participantCount&sortOrder=desc"
+          endpoint="/meetings?sortBy=participantCount&sortOrder=desc&size=4"
           icon={<Flame className="h-5 w-5 text-orange-500" />}
         />
 
@@ -70,12 +86,16 @@ export async function MeetingsContent() {
             </div>
 
             <div className="px-8 md:px-6">
-              <EmptyState
-                title="추천 모임이 없습니다"
-                description="관심 있는 모임을 찜하면 취향에 맞는 모임을 추천해 드려요!"
-                href="/meetings/list"
-                linkText="모임 찾으러 가기"
-              />
+              {hasRecommendationError ? (
+                <RecommendationError />
+              ) : (
+                <EmptyState
+                  title="추천 모임이 없습니다"
+                  description="관심 있는 모임을 찜하면 취향에 맞는 모임을 추천해 드려요!"
+                  href="/meetings/list"
+                  linkText="모임 찾으러 가기"
+                />
+              )}
             </div>
           </section>
         )}

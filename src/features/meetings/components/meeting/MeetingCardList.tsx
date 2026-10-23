@@ -16,6 +16,7 @@ export async function MeetingCardList({
   // 인증이 없어도 정상적으로 처리되는 요청
   const response = await serverFetch<MeetingsResponse>(endpoint, {
     auth: true,
+    cache: "no-store",
   });
   const meetings = response.data;
   

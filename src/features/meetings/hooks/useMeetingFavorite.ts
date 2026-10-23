@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useAddFavoriteMutation } from "@/features/favorites/hook/useAddFavoriteMutation";
 import { useDeleteFavoriteMutation } from "@/features/favorites/hook/useDeleteFavoriteMutation";
 import { showToast } from "@/components/ui/Sonner";
@@ -12,6 +13,7 @@ interface FavoriteState {
 
 export function useMeetingFavorite(meetingId: number, initialIsFavorited = false) {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const queryKey = ["meeting-favorite-state", meetingId] as const;
   const addFavoriteMutation = useAddFavoriteMutation();
   const deleteFavoriteMutation = useDeleteFavoriteMutation();
@@ -44,6 +46,8 @@ export function useMeetingFavorite(meetingId: number, initialIsFavorited = false
         isLiked: !current.isLiked,
         isPending: false,
       });
+      // 서버에서 계산하는 추천 유형과 목록도 다시 조회합니다.
+      router.refresh();
     } catch (error) {
       queryClient.setQueryData<FavoriteState>(queryKey, current);
       showToast({
