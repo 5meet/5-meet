@@ -5,41 +5,33 @@ import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import Button from "@/components/ui/Button/Button";
 import { Modal } from "@/components/ui/Modal/Modal";
 import { useModal } from "@/contexts/ModalContext";
+import { convertDateType1 } from "@/lib/convertDate/formatMeetingDate";
 
 import MyMeetingsView, { type MyMeetingSummary } from "./MyMeetingsView";
 import {
   useJoinedMeetingsQuery,
 } from "../hooks/useJoinedMeetingsQuery";
 import type { JoinedMeeting } from "../types";
-import { useJoinedMeetingsInfiniteScroll } from "../hooks/useJoinedMeetingsInfiniteScroll";
+import { useInfiniteScrollTrigger } from "../../hooks/useInfiniteScrollTrigger";
 import MeetingListContinuation from "./MeetingListContinuation";
 import { useMyMeetingActionLock } from "../hooks/useMyMeetingActionLock";
 import { useCancelJoinedMeeting } from "../hooks/useCancelJoinedMeeting";
 import { useToggleJoinedMeetingFavorite } from "../hooks/useToggleJoinedMeetingFavorite";
 
-const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
-  timeZone: "Asia/Seoul",
-  month: "long",
-  day: "numeric",
-});
-const timeFormatter = new Intl.DateTimeFormat("ko-KR", {
-  timeZone: "Asia/Seoul",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
-
 function toSummary(meeting: JoinedMeeting, userId?: number): MyMeetingSummary {
   const date = meeting.dateTime ? new Date(meeting.dateTime) : null;
   const isValid = date && !Number.isNaN(date.getTime());
+  const formattedDate = isValid && meeting.dateTime
+    ? convertDateType1(meeting.dateTime)
+    : { date: "일정 미정", time: "" };
   return {
     id: meeting.id,
     name: meeting.name,
     region: meeting.region,
     category: meeting.type,
     imageUrl: meeting.image,
-    dateLabel: isValid ? dateFormatter.format(date) : "일정 미정",
-    timeLabel: isValid ? timeFormatter.format(date) : "",
+    dateLabel: formattedDate.date,
+    timeLabel: formattedDate.time,
     participantCount: meeting.participantCount,
     capacity: meeting.capacity,
     isCompleted: meeting.isCompleted,
@@ -125,16 +117,15 @@ export default function MyMeetingsContent() {
     onError: reportError,
     onStarted: () => setCancelSelection(null),
   });
-  const { toggleFavorite, favoritePendingId } = useToggleJoinedMeetingFavorite({
+  const { toggleFavorite, favoritePendingIds } = useToggleJoinedMeetingFavorite({
     actionLockRef,
-    refetch: query.refetch,
     onError: reportError,
   });
 
-  const continuationRef = useJoinedMeetingsInfiniteScroll({
+  const continuationRef = useInfiniteScrollTrigger({
     enabled: Boolean(query.hasNextPage) && !query.isFetching &&
       !query.isFetchNextPageError && !query.isRefetchError &&
-      cancelPendingId === null && favoritePendingId === null &&
+      cancelPendingId === null && favoritePendingIds.size === 0 &&
       cancelSelection === null,
     fetchNextPage: query.fetchNextPage,
   });
@@ -167,13 +158,16 @@ export default function MyMeetingsContent() {
         status="success"
         meetings={meetings}
         onCancel={(meeting) => {
-          if (meeting.canCancel && actionLockRef.current === null) {
+          if (
+            meeting.canCancel && !actionLockRef.current.cancelPending &&
+            actionLockRef.current.favoriteIds.size === 0
+          ) {
             setCancelSelection(meeting);
           }
         }}
         cancelPendingId={cancelPendingId}
         onFavorite={(meeting) => void toggleFavorite(meeting)}
-        favoritePendingId={favoritePendingId}
+        favoritePendingIds={favoritePendingIds}
       />
       {query.isRefetchError && !query.isFetchNextPageError && (
         <Button

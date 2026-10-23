@@ -1,10 +1,10 @@
 import { useRef } from "react";
 
 export type MyMeetingActionLock = {
-  current: "cancel" | "favorite" | null;
+  current: { cancelPending: boolean; favoriteIds: Set<number> };
 };
 
-// Both hooks share one synchronous lock, including before React rerenders.
+// Reserve synchronously, before React can render the disabled controls.
 export function useMyMeetingActionLock() {
-  return useRef<MyMeetingActionLock["current"]>(null);
+  return useRef<MyMeetingActionLock["current"]>({ cancelPending: false, favoriteIds: new Set() });
 }

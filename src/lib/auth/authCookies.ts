@@ -5,7 +5,7 @@ export const AUTH_COOKIE = {
   REFRESH_TOKEN: "refreshToken",
 };
 
-const BASE_COOKIE_OPTIONS = {
+export const BASE_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
@@ -81,3 +81,12 @@ export function clearAuthCookies(store: CookieWriter) {
   store.delete(AUTH_COOKIE.ACCESS_TOKEN);
   store.delete(AUTH_COOKIE.REFRESH_TOKEN);
 }
+
+// 카카오 OAtuh 요청을 검증하기 위한 임시 쿠기
+export const KAKAO_STATE_COOKIE = "kakao_oauth_state"; //쿠키 이름
+export const KAKAO_REDIRECT_COOKIE = "kakao_redirect" //리다이랙트 쿠키 이름
+
+export const KAKAO_STATE_COOKIE_OPTIONS = {
+  ...BASE_COOKIE_OPTIONS,
+  maxAge: 60 * 5,
+} as const;

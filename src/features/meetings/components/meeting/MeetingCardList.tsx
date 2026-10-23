@@ -1,6 +1,6 @@
 import { serverFetchForPage } from "@/lib/api/serverFetchForPage";
 import { EmptyState } from "../EmptyState";
-import type { MeetingsResponse } from "../../types/meeting";
+import type { MeetingsResponse } from "../../types/meetings";
 
 import { MeetingCard } from "./MeetingCard";
 

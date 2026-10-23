@@ -44,7 +44,7 @@ const Kebab = ({ onEdit, onDelete }: KebabProps) => {
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex h-6 w-6 items-center justify-center rounded-full text-gray-600 hover:bg-gray-50 lg:h-8 lg:w-8"
+        className="flex h-6 w-6 items-center justify-center rounded-full text-gray-600 cursor-pointer hover:bg-gray-50 disabled:cursor-not-allowed lg:h-8 lg:w-8"
       >
         <Image src="/ic_kebab.svg" alt="" width={40} height={40} />
       </button>
@@ -58,7 +58,7 @@ const Kebab = ({ onEdit, onDelete }: KebabProps) => {
             type="button"
             role="menuitem"
             onClick={handleEdit}
-            className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-800 hover:bg-gray-50"
+            className="w-full px-4 py-2.5 text-left text-sm font-medium text-gray-800 cursor-pointer hover:bg-gray-50 disabled:cursor-not-allowed"
           >
             수정하기
           </button>
@@ -67,7 +67,7 @@ const Kebab = ({ onEdit, onDelete }: KebabProps) => {
             type="button"
             role="menuitem"
             onClick={handleDelete}
-            className="w-full px-4 py-2.5 text-left text-sm font-medium text-error-100 hover:bg-gray-50"
+            className="w-full px-4 py-2.5 text-left text-sm font-medium text-error-100 cursor-pointer hover:bg-gray-50 disabled:cursor-not-allowed"
           >
             삭제하기
           </button>

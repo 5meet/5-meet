@@ -64,7 +64,7 @@ export default function ProfileImageCropper({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto px-4 py-4">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto px-4 py-4">
       <button
         type="button"
         aria-label="이미지 편집 닫기"

@@ -7,19 +7,24 @@ import {
   clearAuthCookies,
   setRefreshedAuthCookies,
 } from "@/lib/auth/authCookies";
-import { getSafeRedirect } from '@/lib/utils/getSafeRedirect';
+import { getSafeRedirect } from "@/lib/utils/getSafeRedirect";
 
 export async function GET(request: NextRequest) {
   // 1. 토큰 갱신 후 돌아갈 페이지 확인
-  const redirect = request.nextUrl.searchParams.get("redirect") ?? "/";
-  const redirectPath = getSafeRedirect(redirect);
-  // 공개 모임 페이지에서 시작한 갱신만 비인증 복귀를 허용합니다.
+  const redirectPath = getSafeRedirect(
+    request.nextUrl.searchParams.get("redirect"),
+    "/meetings",
+    request.nextUrl.origin,
+  );
+
+  // 공개 모임 페이지에서 시작한 갱신만 비인증 복귀 허용
   const publicFallback =
     request.nextUrl.searchParams.get("publicFallback") === "1" &&
     new URL(redirectPath, request.url).pathname === "/meetings";
+
   const returnAsGuest = () => {
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
-    // 실패한 세션으로 갱신을 반복하지 않도록 정리합니다.
+
     clearAuthCookies(response.cookies);
     return response;
   };

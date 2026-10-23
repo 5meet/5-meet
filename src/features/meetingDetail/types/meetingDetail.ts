@@ -2,7 +2,9 @@
 export interface MeetingDetailInfoCardProps {
   id: number;
   title: string;
+  image: string;
   location: string;
+  address: string;
   category: string;
   date: string;
   time: string;
@@ -18,7 +20,7 @@ export interface MeetingDetailInfoCardProps {
 }
 
 // API 원본 응답
-export interface MeetingDetailResponse {
+export interface MeetingAPIResponse {
   id: number;
   teamId: string;
   name: string;
@@ -50,7 +52,7 @@ export interface MeetingDetailResponse {
 }
 
 // 가공 후 도메인 타입
-export interface MeetingDetail {
+export interface MeetingFront {
   id: number;
   title: string;
   location: string;
@@ -148,6 +150,24 @@ export interface MeetingUpdateRequest {
   description: string;
 }
 
+// 폼 내부에서 사용
+export interface MeetingFormState {
+  name: string;
+  type: string;
+  region: string;
+  address: string;
+  detailAddress: string;
+  latitude: number;
+  longitude: number;
+  date: string; // "2027-02-10"
+  time: string; // "17:30"
+  registrationEndDate: string;
+  registrationEndTime: string;
+  capacity: number;
+  image: string;
+  description: string;
+}
+
 //-----------------------------------------------------------------
 
 // 모임 상태
@@ -228,7 +248,7 @@ export interface GetReviewsParams extends PaginationParmas {
 
 // 추천 모임 목록
 export interface MeetingListResponse {
-  data: MeetingDetailResponse[];
+  data: MeetingAPIResponse[];
   nextCursor: string | null;
   hasMore: boolean;
   totalCount: number;

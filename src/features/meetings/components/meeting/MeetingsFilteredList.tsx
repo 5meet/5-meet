@@ -91,6 +91,8 @@ const filters: MeetingFilters = {
       </div>
 
       <InfiniteMeetingList
+        // 검색 조건마다 인스턴스를 분리해 이전 요청의 잠금이 유지되지 않도록 합니다.
+        key={JSON.stringify([keyword ?? "", filters])}
         keyword={keyword}
         filters={filters}
       />

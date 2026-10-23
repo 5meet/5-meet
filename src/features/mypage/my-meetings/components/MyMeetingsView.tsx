@@ -30,7 +30,7 @@ type MyMeetingsViewProps =
       onCancel?: (meeting: MyMeetingSummary) => void;
       cancelPendingId?: number | null;
       onFavorite?: (meeting: MyMeetingSummary) => void;
-      favoritePendingId?: number | null;
+      favoritePendingIds?: ReadonlySet<number>;
     };
 
 export default function MyMeetingsView(props: MyMeetingsViewProps) {
@@ -115,10 +115,8 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                 }
                 actionHref={meeting.canReview ? "/mypage/reviews" : undefined}
                 isFavorited={meeting.isFavorited}
-                favoritePending={
-                  props.favoritePendingId != null ||
-                  props.cancelPendingId != null
-                }
+                favoritePending={props.favoritePendingIds?.has(meeting.id)}
+                favoriteDisabled={props.cancelPendingId != null}
                 onFavorite={
                   props.onFavorite
                     ? () => props.onFavorite?.(meeting)
@@ -127,7 +125,7 @@ export default function MyMeetingsView(props: MyMeetingsViewProps) {
                 actionPending={props.cancelPendingId === meeting.id}
                 actionDisabled={
                   props.cancelPendingId != null ||
-                  props.favoritePendingId != null
+                  (props.favoritePendingIds?.size ?? 0) > 0
                 }
                 onAction={
                   meeting.canCancel && props.onCancel
