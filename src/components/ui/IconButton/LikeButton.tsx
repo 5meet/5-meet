@@ -31,6 +31,7 @@ export const LikeButton = ({
         aria-label={isLiked ? "좋아요 취소" : "좋아요"}
         aria-pressed={isLiked}
         onClick={onToggle}
+        className="cursor-pointer disabled:cursor-not-allowed"
       >
         <Heart
           fill={isLiked ? `url(#${gradientId})` : "none"}

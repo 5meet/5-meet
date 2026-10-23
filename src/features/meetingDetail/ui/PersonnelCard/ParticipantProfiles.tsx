@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ParticipantProfilesProps } from "@/features/meetingDetail/types/meetingDetail";
+import type { ParticipantProfilesProps } from "@/features/meetingDetail/types/meetingDetail";
 
 const MAX_VISIBLE_PROFILES = 4;
 

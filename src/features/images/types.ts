@@ -10,3 +10,8 @@ export interface ImageUploadResponse {
   presignedUrl: string;
   publicUrl: string;
 }
+
+export interface UploadImageVariables {
+  file: File;
+  folder?: ImageUploadFolder; // 생략하면 meetings
+}

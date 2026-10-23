@@ -6,11 +6,9 @@ import type { SocialProvider } from "../type";
 import { cn } from "@/lib/utils";
 import { useGoogleSocialLogin } from "../login/hooks/useGoogleSocialLogin";
 
-
-
 interface SocialLoginButtonProps {
   provider: SocialProvider;
-  redirect:string;
+  redirect: string;
   className?: string;
 }
 
@@ -36,19 +34,28 @@ export default function SocialLoginButton({
   redirect,
   className,
 }: SocialLoginButtonProps) {
-  const{login: googleLogin, isLoading} = useGoogleSocialLogin(redirect)
+  const { login: googleLogin, isLoading: isGoogleLoading } =
+    useGoogleSocialLogin(redirect);
+
+  const handleLogin = () => {
+    if (provider === "google") {
+      googleLogin();
+      return;
+    }
+
+    // [변경] 서버의 카카오 OAuth 시작 Route Handler로 이동
+    const params = new URLSearchParams({ redirect });
+
+    window.location.assign(`/api/auth/kakao?${params.toString()}`);
+  };
 
   return (
     <Button
       type="button"
       variant="secondary"
       fullWidth
-      isLoading={isLoading}
-      onClick={() => {
-        if (provider === "google") {
-          googleLogin();
-        }
-      }}
+      isLoading={provider === "google" ? isGoogleLoading : false}
+      onClick={handleLogin}
       className={cn(socialStyles[provider], className)}
     >
       <span className="flex items-center justify-center gap-2">

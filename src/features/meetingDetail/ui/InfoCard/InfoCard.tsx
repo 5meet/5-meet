@@ -1,0 +1,351 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/Button/Button";
+import { LikeButton } from "@/components/ui/IconButton/LikeButton";
+import { IconButton } from "@/components/ui/IconButton/IconButton";
+import KakaoShareButton from "@/features/meetingDetail/ui/KakaoShare";
+import { Share2 } from "lucide-react";
+import Tags from "@/components/ui/Tags/Tags";
+import Kebab from "@/components/ui/Kebab/Kebab";
+import {
+  LoginRequiredModal,
+  EditMeetingModal,
+  DeleteMeetingModal,
+} from "@/features/meetingDetail/ui/Modal";
+import { showToast } from "@/components/ui/Sonner";
+
+import {
+  useJoinMeetingMutation,
+  useCancelMeetingMutation,
+  useChangeMeetingStatusMutation,
+} from "@/features/meetingDetail/hooks/useMeetingMutations";
+import { useFavoriteMeetingMutation } from "@/features/meetingDetail/hooks";
+import { useIsPastDeadline } from "@/lib/hooks/useIsPastDeadline";
+
+import type { MeetingDetailInfoCardProps } from "@/features/meetingDetail/types/meetingDetail";
+
+const DEFAULT_SHARE_IMAGE = "/images/meeting-default.png";
+const IMAGE_CHECK_TIMEOUT = 5000;
+
+const InfoCard = ({
+  id,
+  title,
+  image,
+  location,
+  address,
+  category,
+  date,
+  time,
+  registrationEnd,
+  isOwner,
+  initialIsParticipating,
+  participantCount,
+  capacity,
+  initialIsFavorited,
+  isLoggedIn,
+  confirmedAt,
+  canceledAt,
+}: MeetingDetailInfoCardProps) => {
+  // const { isLoggedIn } = useAuth(); <- 로그인 정보를 전역 상태로 관리하는 경우 useAuth hook 사용
+
+  const favoriteMutation = useFavoriteMeetingMutation(id);
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const [isKakaoSharing, setIsKakaoSharing] = useState(false);
+
+  const isParticipating = initialIsParticipating;
+
+  const isFull = participantCount >= capacity;
+  const isClosed = useIsPastDeadline(registrationEnd);
+  const isConfirmed = confirmedAt !== null;
+  const isCanceled = canceledAt !== null;
+
+  const joinMutation = useJoinMeetingMutation(id);
+  const cancelMutation = useCancelMeetingMutation(id);
+  const changeStatusMutation = useChangeMeetingStatusMutation(id);
+  const isParticipationLoading =
+    joinMutation.isPending || cancelMutation.isPending;
+
+  // 찜하기
+  const handleLikeToggle = () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    if (favoriteMutation.isPending) return;
+
+    favoriteMutation.mutate(initialIsFavorited);
+  };
+
+  // 참여하기 <-> 참여 취소하기
+  const handleParticipation = async () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    if (isParticipationLoading) return;
+
+    if (isParticipating) {
+      cancelMutation.mutate();
+    } else {
+      joinMutation.mutate();
+    }
+  };
+
+  // 모임 공유하기 (링크 복사)
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+
+      showToast({
+        kind: "success",
+        message: "모임 링크가 복사되었습니다.",
+      });
+    } catch {
+      showToast({
+        kind: "error",
+        message: "모임 링크 복사에 실패했습니다.",
+      });
+    }
+  };
+
+  // 이미지가 정상적으로 로드되는지 확인(최대 5초 - IMAGE_CHECK_TIMEOUT)
+  const checkImage = (src: string): Promise<boolean> =>
+    new Promise((resolve) => {
+      const img = new window.Image();
+      let settled = false;
+
+      const finish = (isValid: boolean) => {
+        if (settled) return;
+        settled = true;
+
+        window.clearTimeout(timeoutId);
+        img.onload = null;
+        img.onerror = null;
+
+        resolve(isValid);
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        finish(false);
+      }, IMAGE_CHECK_TIMEOUT);
+
+      img.onload = () => finish(true);
+      img.onerror = () => finish(false);
+      img.src = src;
+    });
+
+  // 카카오로 공유할 이미지 URL 결정
+  const getShareImageUrl = async (): Promise<string> => {
+    const fallbackUrl = new URL(DEFAULT_SHARE_IMAGE, window.location.origin)
+      .href;
+
+    if (!image) return fallbackUrl;
+
+    try {
+      const imageUrl = new URL(image, window.location.origin).href;
+      const isImageValid = await checkImage(imageUrl);
+
+      return isImageValid ? imageUrl : fallbackUrl;
+    } catch {
+      return fallbackUrl;
+    }
+  };
+
+  // 카카오 공유
+  const handleKakaoShare = async () => {
+    if (isKakaoSharing) return;
+
+    const kakao = window.Kakao;
+
+    if (!kakao?.isInitialized?.()) {
+      showToast({
+        kind: "error",
+        message: "카카오 공유 기능을 사용할 수 없습니다.",
+      });
+      return;
+    }
+
+    setIsKakaoSharing(true);
+
+    try {
+      const url = window.location.href;
+      const imageUrl = await getShareImageUrl();
+
+      kakao.Share.sendDefault({
+        objectType: "location",
+        address: address,
+        addressTitle: title,
+        content: {
+          title,
+          description: `${date} ${time} · ${location}`,
+          imageUrl,
+          imageWidth: 800,
+          imageHeight: 800,
+          link: {
+            mobileWebUrl: url,
+            webUrl: url,
+          },
+        },
+        buttons: [
+          {
+            title: "모임 보러가기",
+            link: {
+              mobileWebUrl: url,
+              webUrl: url,
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("카카오 공유 실패:", error);
+
+      showToast({
+        kind: "error",
+        message: "카카오톡 공유에 실패했습니다.",
+      });
+    } finally {
+      setIsKakaoSharing(false);
+    }
+  };
+
+  // 모임 확정하기
+  const handleConfirmMeeting = () => {
+    changeStatusMutation.mutate("CONFIRMED");
+  };
+
+  // // 모임 취소하기
+  // const handleCancelMeeting = () => {
+  //   changeStatusMutation.mutate("CANCELED");
+  // };
+
+  return (
+    <>
+      <section className="flex w-85.75 min-h-50 px-6 py-6 bg-white rounded-3xl shadow-sm lg:w-157.5 lg:min-h-70.5 lg:px-10 lg:py-8">
+        <div className="flex flex-col w-full gap-5 lg:gap-8">
+          <section className="flex flex-col w-full gap-4 lg:gap-5">
+            <div className="flex justify-between">
+              <Tags date={date} time={time} registrationEnd={registrationEnd} />
+
+              {isOwner && (
+                <Kebab
+                  onEdit={() => {
+                    setIsEditModalOpen(true);
+                  }}
+                  onDelete={() => {
+                    setIsDeleteModalOpen(true);
+                  }}
+                />
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 text-lg font-semibold text-[#1F2937] lg:text-[28px]">
+                <span className="min-w-0 text-wrap">{title}</span>
+
+                {isOwner && (
+                  <Image
+                    src="/ic_crown.svg"
+                    alt="주최자"
+                    width={32}
+                    height={32}
+                  />
+                )}
+              </div>
+
+              <div className="flex gap-0.5 text-sm font-medium text-gray-600 lg:text-base">
+                <Image src="/ic_location.svg" alt="" width={16} height={16} />
+                <span>{location}</span>
+                <span>·</span>
+                <span>{category}</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex items-center w-full shrink-0 gap-2">
+            <div>
+              <LikeButton
+                isLiked={initialIsFavorited}
+                onToggle={handleLikeToggle}
+                size="md"
+              />
+            </div>
+
+            <div>
+              <IconButton
+                aria-label="링크 복사하기"
+                onClick={handleShare}
+                className="cursor-pointer disabled:cursor-not-allowed"
+              >
+                <Share2 className="w-12 h-12 text-neutral-600" />
+              </IconButton>
+            </div>
+
+            <div>
+              <KakaoShareButton
+                onClick={handleKakaoShare}
+                isLoading={isKakaoSharing}
+              />
+            </div>
+
+            {isOwner ? (
+              <Button
+                size="lg"
+                variant="primary"
+                aria-label={isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
+                fullWidth
+                disabled={isConfirmed || isCanceled}
+                // 정원 미달이어도 주최자가 수동으로 확정가능하지 않다면 아래 코드
+                // disabled={isConfirmed || isCanceled || !isFull}
+                isLoading={changeStatusMutation.isPending}
+                onClick={handleConfirmMeeting}
+                className="cursor-pointer disabled:cursor-not-allowed"
+              >
+                {isConfirmed ? "확정된 모임입니다" : "모임 확정하기"}
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                variant="primary"
+                aria-label={isParticipating ? "참여 취소하기" : "참여하기"}
+                fullWidth
+                disabled={!isParticipating && (isFull || isClosed)}
+                isLoading={isParticipationLoading}
+                onClick={handleParticipation}
+                className="cursor-pointer disabled:cursor-not-allowed"
+              >
+                {isParticipating ? "참여 취소하기" : "참여하기"}
+              </Button>
+            )}
+          </section>
+        </div>
+      </section>
+
+      <LoginRequiredModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      <DeleteMeetingModal
+        meetingId={id}
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      />
+
+      <EditMeetingModal
+        meetingId={id}
+        isLoggedIn={isLoggedIn}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
+    </>
+  );
+};
+
+export default InfoCard;
