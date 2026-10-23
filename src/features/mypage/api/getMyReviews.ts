@@ -10,8 +10,7 @@ export interface MyReviewMeeting {
   dateTime: string;
 }
 
-export interface MyReview
-  extends Omit<ReviewApiItem, "meeting"> {
+export interface MyReview extends Omit<ReviewApiItem, "meeting"> {
   meeting: MyReviewMeeting;
 }
 
@@ -22,11 +21,9 @@ export interface MyReviewsResponse {
 }
 
 export type MyReviewsSortBy = "createdAt" | "score";
-
 export type MyReviewsSortOrder = "asc" | "desc";
 
 interface GetMyReviewsParams {
-  teamId: string;
   sortBy?: MyReviewsSortBy;
   sortOrder?: MyReviewsSortOrder;
   size?: number;
