@@ -1,141 +1,110 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { ReviewCard } from "@/components/ui/ReviewCard/ReviewCard";
+import { useMyReviewsQuery } from "@/features/mypage/hooks/useMyReviewsQuery";
 
-import type { ReviewApiItem } from "@/features/reviews/types";
-
-const writtenReviews: ReviewApiItem[] = [
-  {
-    id: 1,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 2,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 3,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 4,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 5,
-    comment:
-      "따뜻하게 느껴지는 공간이에요. 평소에 달램 이용해보고 싶었는데 같이달램 생기니까 너무 좋아요!",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-  {
-    id: 5,
-    teamId: "5-meet",
-    meetingId: 1,
-    userId: 1,
-    score: 4,
-    comment:
-      "편안하고 따뜻한 분위기라서 즐겁게 참여할 수 있었습니다.",
-    createdAt: "2024-01-25T00:00:00.000Z",
-    updatedAt: "2024-01-25T00:00:00.000Z",
-    user: {
-      id: 1,
-      email: "",
-      name: "럽인조을",
-      image: null,
-    },
-    meeting: {
-      id: 1,
-      name: "힐링 오피스 스트레칭",
-      type: "취미/여가",
-      region: "강남구",
-      image: "",
-      dateTime: "2024-01-25T17:30:00.000Z",
-    },
-  },
-];
+const REVIEW_SIZE = 10;
 
 export default function WrittenReviews() {
-  if (writtenReviews.length === 0) {
-    return (
-      <EmptyState message="작성한 리뷰가 없어요." />
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    isFetchNextPageError,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+  } = useMyReviewsQuery({
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    size: REVIEW_SIZE,
+  });
+
+  const reviews = data?.pages.flatMap((page) => page.data) ?? [];
+
+  const isInitialError = isError && reviews.length === 0;
+  const isNextPageError =
+    isFetchNextPageError && reviews.length > 0;
+  const isRefetchError =
+    isError && reviews.length > 0 && !isFetchNextPageError;
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+
+    if (
+      !target ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      isNextPageError
+    ) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+
+        if (
+          firstEntry?.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage
+        ) {
+          void fetchNextPage();
+        }
+      },
+      {
+        rootMargin: "200px",
+      },
     );
+
+    observer.observe(target);
+
+    return () => observer.disconnect();
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isNextPageError,
+  ]);
+
+  if (isLoading && !data) {
+    return (
+      <div className="flex h-[780px] w-full items-center justify-center rounded-[24px] bg-white">
+        <p className="text-sm text-gray-500">
+          작성한 리뷰를 불러오는 중이에요.
+        </p>
+      </div>
+    );
+  }
+
+  if (isInitialError) {
+    return (
+      <div className="flex h-[780px] w-full flex-col items-center justify-center rounded-[24px] bg-white">
+        <p className="text-sm text-gray-500">
+          작성한 리뷰를 불러오지 못했어요.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          disabled={isFetching}
+          className="mt-4 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isFetching ? "다시 불러오는 중..." : "다시 시도"}
+        </button>
+      </div>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return <EmptyState message="작성한 리뷰가 없어요." />;
   }
 
   return (
@@ -148,11 +117,8 @@ export default function WrittenReviews() {
         bg-white
         px-5
         py-2
-
         sm:px-6
-
         md:px-8
-
         [&::-webkit-scrollbar]:w-2
         [&::-webkit-scrollbar-track]:bg-transparent
         [&::-webkit-scrollbar-thumb]:rounded-full
@@ -160,12 +126,72 @@ export default function WrittenReviews() {
         [&::-webkit-scrollbar-thumb:hover]:bg-gray-400
       "
     >
-      {writtenReviews.map((review) => (
+      {isRefetchError && (
+        <div
+          role="alert"
+          className="mb-4 flex flex-col items-center gap-3 rounded-xl bg-gray-50 p-4"
+        >
+          <p className="text-center text-sm text-gray-500">
+            리뷰를 새로 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isFetching ? "다시 불러오는 중..." : "다시 시도"}
+          </button>
+        </div>
+      )}
+
+      {reviews.map((review) => (
         <ReviewCard
           key={review.id}
-          review={review}
+          review={{
+            ...review,
+            teamId: review.teamId || "5-meet",
+            meeting: {
+              ...review.meeting,
+              region: review.meeting.region ?? "",
+            },
+          }}
         />
       ))}
+
+      <div
+        ref={loadMoreRef}
+        className="flex flex-col items-center justify-center gap-3 py-4"
+      >
+        {isFetchingNextPage && (
+          <p className="text-sm text-gray-500">
+            리뷰를 더 불러오는 중이에요.
+          </p>
+        )}
+
+        {isNextPageError && (
+          <>
+            <p
+              role="alert"
+              className="text-center text-sm text-gray-500"
+            >
+              리뷰를 더 불러오지 못했어요. 기존 리뷰는 그대로 표시돼요.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => void fetchNextPage()}
+              disabled={isFetchingNextPage}
+              className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isFetchingNextPage
+                ? "다시 불러오는 중..."
+                : "다시 시도"}
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
