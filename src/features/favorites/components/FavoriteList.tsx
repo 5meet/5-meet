@@ -1,35 +1,41 @@
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { MeetingCard } from "@/components/ui/MeetingCard/MeetingCard";
-
-import type { FavoriteMeeting } from "../types";
+import type { FavoriteMeeting } from "@/features/favorites/types";
 
 interface FavoriteListProps {
   meetings: FavoriteMeeting[];
   onFavoriteClick: (meetingId: number) => void;
 }
 
-function formatDate(dateTime: string) {
+function formatDate(dateTime: string): string {
   const date = new Date(dateTime);
 
   if (Number.isNaN(date.getTime())) {
-    return "";
+    return dateTime;
   }
 
-  return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
+    .format(date)
+    .replace(/\. /g, ".")
+    .replace(/\.$/, "");
 }
 
-function formatTime(dateTime: string) {
+function formatTime(dateTime: string): string {
   const date = new Date(dateTime);
 
   if (Number.isNaN(date.getTime())) {
     return "";
   }
 
-  return date.toLocaleTimeString("ko-KR", {
+  return new Intl.DateTimeFormat("ko-KR", {
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
-  });
+    hour12: true,
+  }).format(date);
 }
 
 export function FavoriteList({
@@ -43,7 +49,7 @@ export function FavoriteList({
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {meetings.map((favorite) => {
-        const { meeting } = favorite;
+        const meeting = favorite.meeting;
 
         return (
           <MeetingCard
