@@ -1,6 +1,7 @@
-
 import { NextRequest, NextResponse } from "next/server";
-import { bffFetch } from "@/lib/api/bffFetch";
+
+import { ApiError } from "@/lib/api/ApiError";
+import { serverFetchWithTokenRefresh } from "@/lib/api/serverFetchWithTokenRefresh";
 
 type RouteContext = {
   params: Promise<{
@@ -9,10 +10,7 @@ type RouteContext = {
   }>;
 };
 
-export async function POST(
-  request: NextRequest,
-  context: RouteContext,
-) {
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const { meetingId } = await context.params;
 
@@ -51,29 +49,28 @@ export async function POST(
       );
     }
 
-    const response = await bffFetch(
-      `meetings/${encodeURIComponent(meetingId)}/reviews`,
+    const result = await serverFetchWithTokenRefresh<unknown>(
+      `/meetings/${encodeURIComponent(meetingId)}/reviews`,
       {
         method: "POST",
-        body: JSON.stringify(body),
-      },
-    );
-
-    const responseBody = await response.arrayBuffer();
-
-    return new NextResponse(
-      responseBody.byteLength > 0 ? responseBody : null,
-      {
-        status: response.status,
         headers: {
-          "Content-Type":
-            response.headers.get("Content-Type") ??
-            "application/json",
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify(body),
+        cache: "no-store",
       },
     );
+
+    return NextResponse.json(result ?? null, { status: 200 });
   } catch (error) {
-    console.error("[리뷰 작성 API 오류]", error);
+    console.error("[리뷰 작성 서버 오류]", error);
+
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        { message: error.message, code: error.code },
+        { status: error.status ?? 500 },
+      );
+    }
 
     return NextResponse.json(
       { message: "리뷰 작성 요청 중 서버 오류가 발생했습니다." },

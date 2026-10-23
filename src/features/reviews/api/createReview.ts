@@ -1,4 +1,3 @@
-
 export interface CreateReviewRequest {
   score: number;
   comment: string;
@@ -13,6 +12,20 @@ export interface CreateReviewResponse {
   comment: string;
   createdAt: string;
   updatedAt: string;
+  user: {
+    id: number;
+    email: string;
+    name: string;
+    image: string | null;
+  };
+  meeting: {
+    id: number;
+    name: string;
+    type: string;
+    region: string;
+    image: string;
+    dateTime: string;
+  };
 }
 
 export async function createReview(
@@ -43,6 +56,11 @@ export async function createReview(
   }
 
   if (!response.ok) {
+    console.error("[리뷰 작성 요청 실패]", {
+      status: response.status,
+      response: result,
+    });
+
     const message =
       typeof result === "object" &&
       result !== null &&

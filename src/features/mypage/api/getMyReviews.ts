@@ -26,7 +26,6 @@ export type MyReviewsSortBy = "createdAt" | "score";
 export type MyReviewsSortOrder = "asc" | "desc";
 
 interface GetMyReviewsParams {
-  teamId: string;
   sortBy?: MyReviewsSortBy;
   sortOrder?: MyReviewsSortOrder;
   size?: number;
