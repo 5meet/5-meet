@@ -77,7 +77,7 @@ export function MeetingCard({
       variant="secondary"
       disabled={isClosed}
       onClick={onParticipateClick}
-      className={`!h-8 shrink-0 whitespace-nowrap !px-2.5 !text-xs font-semibold ${
+      className={`!h-10 !w-auto shrink-0 whitespace-nowrap !px-4 !text-sm font-semibold ${
         isClosed
           ? "border-transparent bg-gray-100 text-gray-400"
           : "border-primary-500 text-primary-500"
@@ -88,15 +88,13 @@ export function MeetingCard({
   );
 
   const tags = (
-    <div className="w-full min-w-0">
-      <div className="flex w-[125%] origin-left scale-[0.8] flex-wrap gap-y-1 whitespace-nowrap">
-        <Tags
-          date={date}
-          time={time}
-          registrationEnd={registrationEnd}
-          order="date-first"
-        />
-      </div>
+    <div className="w-full min-w-0 [&>*]:!flex-wrap [&>*]:!gap-y-1">
+      <Tags
+        date={date}
+        time={time}
+        registrationEnd={registrationEnd}
+        order="date-first"
+      />
     </div>
   );
 
@@ -159,12 +157,12 @@ export function MeetingCard({
 
         <div className="mt-4 min-w-0">
           {titleBlock(
-            "min-w-0 break-keep text-base font-bold leading-5 text-gray-900",
+            "min-w-0 break-keep text-lg font-bold leading-6 text-gray-900",
           )}
 
           <div className="mt-3">{tags}</div>
 
-          <div className="mt-4 flex min-w-0 items-center gap-3">
+          <div className="mt-4 flex min-w-0 items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <MeetingProgressBar
                 participantCount={participantCount}
@@ -202,7 +200,7 @@ export function MeetingCard({
           </div>
         </div>
 
-        <div className="flex w-[72px] shrink-0 flex-col items-end justify-between">
+        <div className="flex shrink-0 flex-col items-end justify-between">
           {favoriteButton}
           {participateButton}
         </div>

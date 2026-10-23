@@ -66,8 +66,7 @@ export const Button = forwardRef<
     ref,
   ) => {
     const baseStyle =
-      "relative w-full inline-flex items-center justify-center transition-all duration-150 select-none text-nowrap focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none";
-
+  "relative inline-flex items-center justify-center transition-all duration-150 select-none text-nowrap focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none";
     const isDisabled =
       disabled || isLoading;
 
