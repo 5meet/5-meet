@@ -23,7 +23,7 @@ export function GlobalCreateFAB() {
 
   return (
     <>
-      <div className="fixed right-4 bottom-25 z-50 md:right-8 md:bottom-8">
+      <div className="fixed right-4 bottom-25 z-30 md:right-8 md:bottom-8">
         <FloatingActionButton
           icon={UserPlus}
           label="모임 만들기"
