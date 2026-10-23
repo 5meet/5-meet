@@ -60,10 +60,11 @@ export default function ReviewMeetingCard({
   const hasImage =
     Boolean(imageUrl?.trim()) && failedImageUrl !== imageUrl;
 
-  const handleFavoriteClick = async () => {
+    const handleFavoriteClick = async () => {
     if (isFavoritePending) return;
 
-    const nextLiked = !isLiked;
+    const previousLiked = isLiked;
+    const nextLiked = !previousLiked;
 
     setIsFavoritePending(true);
     setFavoriteOverride(nextLiked);
@@ -75,7 +76,18 @@ export default function ReviewMeetingCard({
         await deleteFavoriteMutation.mutateAsync(meetingId);
       }
 
-      await Promise.all([
+      // 찜 저장 성공 후에는 화면 상태를 유지한다.
+      setFavoriteOverride(nextLiked);
+
+      showToast({
+        kind: "success",
+        message: nextLiked
+          ? "즐겨찾기에 추가했습니다."
+          : "즐겨찾기를 해제했습니다.",
+      });
+
+      // 목록 갱신 실패가 찜 저장 결과에 영향을 주지 않도록 한다.
+      const results = await Promise.allSettled([
         queryClient.invalidateQueries({
           queryKey: ["mypage", "reviews", "available"],
         }),
@@ -84,13 +96,13 @@ export default function ReviewMeetingCard({
         }),
       ]);
 
-      showToast({
-        kind: "success",
-        message: nextLiked
-          ? "즐겨찾기에 추가했습니다."
-          : "즐겨찾기를 해제했습니다.",
-      });
+      if (results.some((result) => result.status === "rejected")) {
+        console.error("찜 저장 후 목록 갱신에 실패했습니다.");
+      }
     } catch (error) {
+      // 찜 저장 자체가 실패한 경우에만 이전 상태로 복원한다.
+      setFavoriteOverride(previousLiked);
+
       showToast({
         kind: "error",
         message:
@@ -99,7 +111,6 @@ export default function ReviewMeetingCard({
             : "즐겨찾기 상태를 변경하지 못했습니다.",
       });
     } finally {
-      setFavoriteOverride(null);
       setIsFavoritePending(false);
     }
   };
