@@ -25,7 +25,7 @@ const socialLabels: Record<SocialProvider, string> = {
 };
 
 const socialIcons: Record<SocialProvider, string> = {
-  kakao: "/icons/social/kakao.svg",
+  kakao: "/icons/social/kakao.png",
   google: "/icons/social/google.svg",
 };
 
