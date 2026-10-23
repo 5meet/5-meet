@@ -10,7 +10,6 @@ import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
 import { LikeButton } from "@/components/ui/IconButton/LikeButton";
 import { showToast } from "@/components/ui/Sonner";
 
-import { createReview } from "@/features/reviews/api/createReview";
 import { useAddFavoriteMutation } from "@/features/favorites/hook/useAddFavoriteMutation";
 import { useDeleteFavoriteMutation } from "@/features/favorites/hook/useDeleteFavoriteMutation";
 
@@ -28,6 +27,7 @@ export interface ReviewMeetingCardProps {
   capacity: number;
   isFavorite?: boolean;
   rating?: number;
+  onReviewSuccess?: (meetingId: number) => void | Promise<void>;
 }
 
 export default function ReviewMeetingCard({
@@ -42,6 +42,7 @@ export default function ReviewMeetingCard({
   capacity,
   isFavorite = false,
   rating,
+  onReviewSuccess,
 }: ReviewMeetingCardProps) {
   const queryClient = useQueryClient();
 
@@ -115,47 +116,18 @@ export default function ReviewMeetingCard({
     }
   };
 
-  const handleReviewSubmit = async (
-    reviewRating: number,
-    content: string,
-  ) => {
-    await createReview(teamId, meetingId, {
-      score: reviewRating,
-      comment: content,
-    });
-
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: ["mypage", "reviews", "available"],
-      }),
-      queryClient.invalidateQueries({
-        queryKey: ["mypage", "reviews", "written"],
-      }),
-      queryClient.invalidateQueries({
-        queryKey: ["favorites"],
-      }),
-    ]);
-
-    showToast({
-      kind: "success",
-      message: "리뷰가 등록되었습니다.",
-    });
+  const handleReviewSuccess = async () => {
+    await onReviewSuccess?.(meetingId);
+    setIsReviewModalOpen(false);
   };
 
   return (
     <>
       <article
         className="
-          flex
-          flex-col
-          rounded-[20px]
-          border
-          border-[#eeeeee]
-          bg-white
-          p-5
-          md:h-[210px]
-          md:flex-row
-          md:gap-6
+          flex w-full min-w-0 flex-col overflow-hidden
+          rounded-[24px] border border-[#eeeeee] bg-white p-5
+          md:h-[210px] md:flex-row md:gap-6 md:p-4
         "
       >
         <div
@@ -168,8 +140,7 @@ export default function ReviewMeetingCard({
             rounded-[18px]
             bg-[#eeeae8]
             sm:h-[250px]
-            md:h-[178px]
-            md:w-[178px]
+            md:h-[178px] md:w-[178px]
           "
         >
           {hasImage ? (
@@ -184,39 +155,28 @@ export default function ReviewMeetingCard({
             />
           ) : (
             <div
-              className="flex h-full w-full items-center justify-center"
+              className="flex h-full w-full items-center justify-center text-sm text-[#999999]"
               role="img"
               aria-label={`${title} 이미지 없음`}
             >
-              <span className="text-sm text-[#999999]">
-                이미지 없음
-              </span>
+              이미지 없음
             </div>
           )}
         </div>
 
         <div
           className="
-            flex
-            min-w-0
-            flex-1
-            flex-col
-            pt-5
-            md:h-full
-            md:pt-0
+            flex min-w-0 flex-1 flex-col pt-5
+            md:h-full md:pt-0
           "
         >
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex min-w-0 items-start justify-between gap-4">
             <div className="min-w-0">
               <h3
                 className="
-                  break-words
-                  text-[17px]
-                  font-bold
-                  tracking-[-0.2px]
+                  truncate text-[18px] font-bold tracking-[-0.2px]
                   text-[#20242d]
-                  sm:text-[19px]
-                  md:text-[18px]
+                  sm:text-[19px] md:text-[18px]
                 "
               >
                 {title}
@@ -239,26 +199,17 @@ export default function ReviewMeetingCard({
 
           <div
             className="
-              flex
-              flex-col
-              gap-5
-              md:mt-auto
-              md:flex-row
-              md:items-end
-              md:justify-between
+              mt-7 flex flex-col gap-5
+              md:mt-auto md:flex-row md:items-end
+              md:justify-between md:gap-5
             "
           >
             <div className="min-w-0">
               <div
                 className="
-                  flex
-                  items-center
-                  gap-1.5
-                  text-[14px]
-                  font-medium
-                  text-[#20242d]
-                  sm:text-[15px]
-                  md:text-[14px]
+                  flex items-center gap-1.5 text-[14px]
+                  font-medium text-[#20242d]
+                  sm:text-[15px] md:text-[14px]
                 "
               >
                 <Users
@@ -274,16 +225,9 @@ export default function ReviewMeetingCard({
 
               <div
                 className="
-                  mt-2
-                  flex
-                  flex-wrap
-                  items-center
-                  gap-x-2
-                  gap-y-1
-                  text-[13px]
-                  text-[#888b90]
-                  sm:text-[14px]
-                  md:text-[13px]
+                  mt-2 flex flex-wrap items-center gap-x-2 gap-y-1
+                  text-[13px] text-[#888b90]
+                  sm:text-[14px] md:text-[13px]
                 "
               >
                 <span>위치 {location}</span>
@@ -300,17 +244,10 @@ export default function ReviewMeetingCard({
               variant="primary"
               onClick={() => setIsReviewModalOpen(true)}
               className="
-                h-12
-                w-full
-                shrink-0
-                px-7
-                text-[15px]
-                font-semibold
-                sm:w-auto
-                sm:px-9
-                md:h-[44px]
-                md:px-8
-                md:text-[14px]
+                h-12 w-full shrink-0 rounded-[9px] px-7
+                text-[15px] font-semibold
+                sm:w-auto sm:px-9
+                md:h-[44px] md:px-8 md:text-[14px]
               "
             >
               리뷰 작성
@@ -322,7 +259,9 @@ export default function ReviewMeetingCard({
       <ReviewWriteModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
-        onSubmit={handleReviewSubmit}
+        teamId={teamId}
+        meetingId={meetingId}
+        onSuccess={handleReviewSuccess}
       />
     </>
   );

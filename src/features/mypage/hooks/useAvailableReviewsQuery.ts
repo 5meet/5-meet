@@ -2,9 +2,7 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-import type {
-  AvailableReviewsResponse,
-} from "@/features/mypage/api/getAvailableReviews";
+import type { AvailableReviewsResponse } from "@/features/mypage/api/getAvailableReviews";
 
 interface UseAvailableReviewsQueryParams {
   size?: number;
@@ -43,8 +41,7 @@ async function fetchAvailableReviews(
     );
   }
 
-  const data =
-    (await response.json()) as AvailableReviewsResponse;
+  const data = (await response.json()) as AvailableReviewsResponse;
 
   return data;
 }
@@ -53,15 +50,9 @@ export function useAvailableReviewsQuery({
   size = 10,
 }: UseAvailableReviewsQueryParams = {}) {
   return useInfiniteQuery({
-    queryKey: [
-      "mypage",
-      "reviews",
-      "available",
-      size,
-    ],
+    queryKey: ["mypage", "reviews", "available", size],
 
-    queryFn: ({ pageParam }) =>
-      fetchAvailableReviews(size, pageParam),
+    queryFn: ({ pageParam }) => fetchAvailableReviews(size, pageParam),
 
     initialPageParam: undefined as string | undefined,
 
