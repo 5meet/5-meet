@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/api";
-import type { MeetingsResponse } from "../types/meeting";
+import type { MeetingsResponse } from "@/features/meetings/types/meetings"
 
 interface GetMeetingsParams {
   keyword?: string;
