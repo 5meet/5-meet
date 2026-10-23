@@ -1,10 +1,10 @@
-
 "use client";
 
 import Image from "next/image";
 import { Users } from "lucide-react";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import type { InfiniteData } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/Button/Button";
 import { HeartRating } from "@/components/ui/HeartRating/HeartRating";
@@ -13,6 +13,7 @@ import { showToast } from "@/components/ui/Sonner";
 
 import { useAddFavoriteMutation } from "@/features/favorites/hook/useAddFavoriteMutation";
 import { useDeleteFavoriteMutation } from "@/features/favorites/hook/useDeleteFavoriteMutation";
+import type { AvailableReviewsResponse } from "@/features/mypage/api/getAvailableReviews";
 
 import ReviewWriteModal from "./ReviewWriteModal";
 
@@ -91,82 +92,21 @@ export default function ReviewMeetingCard({
       return;
     }
 
-    queryClient.setQueriesData(
+    queryClient.setQueriesData<InfiniteData<AvailableReviewsResponse>>(
       { queryKey: ["mypage", "reviews", "available"] },
-      (oldData: unknown) => {
-        if (!oldData || typeof oldData !== "object") {
-          return oldData;
-        }
-
-        const data = oldData as {
-          pages?: Array<{
-            data?: {
-              content?: Array<Record<string, unknown>>;
-              items?: Array<Record<string, unknown>>;
-            };
-            content?: Array<Record<string, unknown>>;
-            items?: Array<Record<string, unknown>>;
-          }>;
-          pageParams?: unknown[];
-        };
-
-        if (!Array.isArray(data.pages)) {
-          return oldData;
-        }
+      (oldData) => {
+        if (!oldData) return oldData;
 
         return {
-          ...data,
-          pages: data.pages.map((page) => {
-            const updateItems = (
-              items: Array<Record<string, unknown>> | undefined,
-            ) =>
-              items?.map((item) => {
-                const itemId =
-                  item.meetingId ?? item.id ?? item.meeting_id;
-
-                if (Number(itemId) !== meetingId) {
-                  return item;
-                }
-
-                const favoriteKey =
-                  "isFavorite" in item
-                    ? "isFavorite"
-                    : "isLiked" in item
-                      ? "isLiked"
-                      : "is_favorite" in item
-                        ? "is_favorite"
-                        : null;
-
-                return favoriteKey
-                  ? { ...item, [favoriteKey]: nextLiked }
-                  : item;
-              });
-
-            if (page.data) {
-              return {
-                ...page,
-                data: {
-                  ...page.data,
-                  ...(page.data.content
-                    ? { content: updateItems(page.data.content) }
-                    : {}),
-                  ...(page.data.items
-                    ? { items: updateItems(page.data.items) }
-                    : {}),
-                },
-              };
-            }
-
-            return {
-              ...page,
-              ...(page.content
-                ? { content: updateItems(page.content) }
-                : {}),
-              ...(page.items
-                ? { items: updateItems(page.items) }
-                : {}),
-            };
-          }),
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.map((meeting) =>
+              meeting.id === meetingId
+                ? { ...meeting, isFavorited: nextLiked }
+                : meeting,
+            ),
+          })),
         };
       },
     );
