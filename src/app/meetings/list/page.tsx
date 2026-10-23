@@ -1,5 +1,5 @@
-import MeetingsFindContent from '@/features/meetings/components/meeting/MeetingsFindContent';
 
+import MeetingsFindContent from "@/features/meetings/components/meeting/MeetingsFindContent";
 
 interface MeetingsListPageProps {
   searchParams: Promise<{

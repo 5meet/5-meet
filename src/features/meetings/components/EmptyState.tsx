@@ -1,16 +1,26 @@
+import Link from "next/link";
+
 type EmptyStateProps = {
   title: string;
   description?: string;
+  href?: string;
+  linkText?: string;
 };
 
-export function EmptyState({ title, description }: EmptyStateProps) {
+export function EmptyState({
+  title,
+  description,
+  href,
+  linkText = "모임 찾으러 가기",
+}: EmptyStateProps) {
   return (
-    <div className="relative col-span-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div className="relative col-span-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm sm:max-[745px]:w-[calc((100%-2rem)/2)]">
       {/* MeetingCard의 이미지 비율과 정보 영역 높이에 맞춰 공간을 확보합니다. */}
       <div aria-hidden="true">
-        <div className="aspect-16/10 w-full sm:w-[calc((100%-2rem)/2)] lg:w-[calc((100%-6rem)/4)]" />
+        <div className="aspect-16/10 w-full min-[744px]:w-[calc((100%-2rem)/2)] lg:w-[calc((100%-6rem)/4)]" />
         <div className="h-44" />
       </div>
+
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-100">
           <svg
@@ -19,7 +29,13 @@ export function EmptyState({ title, description }: EmptyStateProps) {
             fill="none"
             aria-hidden
           >
-            <circle cx="20" cy="20" r="11" stroke="currentColor" strokeWidth="3" />
+            <circle
+              cx="20"
+              cy="20"
+              r="11"
+              stroke="currentColor"
+              strokeWidth="3"
+            />
             <path
               d="M28 28 L38 38"
               stroke="currentColor"
@@ -28,12 +44,23 @@ export function EmptyState({ title, description }: EmptyStateProps) {
             />
           </svg>
         </div>
+
         <p className="text-sm font-semibold text-gray-800">{title}</p>
-        {description ? (
+
+        {description && (
           <p className="mt-2 max-w-xs text-sm leading-relaxed text-gray-500">
             {description}
           </p>
-        ) : null}
+        )}
+
+        {href && (
+          <Link
+            href={href}
+            className="mt-4 inline-flex items-center justify-center rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-500"
+          >
+            {linkText}
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 // MSW용 mock 데이터
-import { MeetingDetailResponse } from "@/features/meetingDetail/types/meetingDetail";
+import { MeetingAPIResponse } from "@/features/meetingDetail/types/meetingDetail";
 
 // meetingId: 1 — 로그인한 사용자가 "주최자"인 경우
-export const mockMeetingResponseAsHost: MeetingDetailResponse = {
+export const mockMeetingResponseAsHost: MeetingAPIResponse = {
   id: 1,
   teamId: "dallaem",
   name: "작은 독서 습관 만들기",
-  type: "달램핏",
+  type: "취미/여가",
   region: "건대입구",
   address: "서울시 광진구 자양동 123-45",
   latitude: 37.5407,
@@ -15,7 +15,7 @@ export const mockMeetingResponseAsHost: MeetingDetailResponse = {
   registrationEnd: "2027-02-09T23:59:59.000Z",
   capacity: 30,
   participantCount: 15,
-  image: "/meetings-hero.jpg",
+  image: "https://example.com/meeting.jpg",
   description:
     "작은 독서 습관을 만들기위해서 같이 열심히 해보실 사람을 구합니다~ 궁금한 점 있으시면 https://open.kakao.com/o/abcdefg12345 참여해서 질문주세요~",
   canceledAt: null,
@@ -31,11 +31,11 @@ export const mockMeetingResponseAsHost: MeetingDetailResponse = {
 };
 
 // meetingId: 2 — 로그인한 사용자가 "참여자"(예비 참여자 포함)인 경우
-export const mockMeetingResponseAsParticipant: MeetingDetailResponse = {
+export const mockMeetingResponseAsParticipant: MeetingAPIResponse = {
   id: 2,
   teamId: "dallaem",
   name: "퇴근 후 러닝 크루",
-  type: "달램핏",
+  type: "운동/건강",
   region: "성수",
   address: "서울시 성동구 성수동 45-6",
   latitude: 37.5446,
@@ -44,7 +44,7 @@ export const mockMeetingResponseAsParticipant: MeetingDetailResponse = {
   registrationEnd: "2027-03-04T23:59:59.000Z",
   capacity: 20,
   participantCount: 8,
-  image: "/meetings-hero.jpg",
+  image: "https://example.com/meeting.jpg",
   description:
     "퇴근 후 가볍게 뛰는 러닝 모임입니다. 누구나 환영해요! 페이스 걱정 없이 천천히 함께 달려요~",
   canceledAt: null,

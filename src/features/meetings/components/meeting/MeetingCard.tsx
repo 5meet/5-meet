@@ -1,14 +1,22 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, Heart, MapPin, Users } from "lucide-react";
+import { CalendarDays, MapPin, Users } from "lucide-react";
 
-import type { Meeting } from "@/features/meetings/types/meeting";
+import type { Meeting } from "@/features/meetings/types/meetings";
+import { LikeButton } from "@/components/ui/IconButton/LikeButton";
+import { useMeetingFavorite } from "@/features/meetings/hooks/useMeetingFavorite";
 
 interface MeetingCardProps {
   meeting: Meeting;
 }
 
 export function MeetingCard({ meeting }: MeetingCardProps) {
+  const { isLiked, isFavoritePending, onToggle } = useMeetingFavorite(
+    meeting.id,
+    meeting.isFavorited,
+  );
   const {
     id,
     name,
@@ -19,9 +27,8 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
     capacity,
     participantCount,
   } = meeting;
-
+  console.log("meeting", meeting);
   const date = new Date(dateTime);
-  console.log("MeetingCard:", meeting); // Debugging line to check the date value
   const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
   const formattedTime = date.toLocaleTimeString("ko-KR", {
@@ -31,7 +38,6 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   });
 
   const isFull = participantCount >= capacity;
-
   return (
     <article className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       {/* 이미지 */}
@@ -46,22 +52,24 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         {/* 상태 배지 */}
         <span
-          className={`absolute bottom-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${isFull
+          className={`absolute bottom-3 left-3 rounded-full px-2.5 py-1 text-xs font-semibold ${
+            isFull
               ? "bg-blue-50 text-blue-500"
               : "bg-emerald-50 text-emerald-600"
-            }`}
+          }`}
         >
           {isFull ? "모집 마감" : "참여 가능"}
         </span>
 
         {/* 이미지 위 찜 */}
-        <button
-          type="button"
-          aria-label={`${name} 찜하기`}
-          className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-black/20 text-white transition hover:bg-black/30"
-        >
-          <Heart className="size-5" />
-        </button>
+        <div className="absolute top-3 right-3">
+          <LikeButton
+            isLiked={isLiked}
+            onToggle={onToggle}
+            size="sm"
+            disabled={isFavoritePending}
+          />
+        </div>
       </div>
 
       {/* 정보 */}
@@ -99,14 +107,6 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         {/* 버튼 영역 */}
         <div className="mt-4 flex gap-2">
-          <button
-            type="button"
-            aria-label={`${name} 찜하기`}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition hover:bg-gray-50"
-          >
-            <Heart className="size-5" />
-          </button>
-
           {isFull ? (
             <button
               type="button"

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import EmptyReview from "./EmptyReview";
 
 const meta = {
-  title: "Components/MeetingDetail/ReviewCard/EmptyReview",
+  title: "Features/MeetingDetail/ReviewCard/EmptyReview",
   component: EmptyReview,
   parameters: {
     layout: "centered",

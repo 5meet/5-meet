@@ -21,7 +21,7 @@ export function useDebouncedTrigger<T extends FieldValues>({
   field,
   additionalFieldName,
   shouldTriggerAdditional = false,
-  delay = 1000,
+  delay = 500,
 }: UseDebouncedTriggerProps<T>) {
   const isTouched = !!(touchedFields as Record<string, unknown>)[field];
 

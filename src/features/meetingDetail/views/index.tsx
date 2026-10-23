@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import Image from "next/image";
 import InfoCard from "@/features/meetingDetail/ui/InfoCard";
 import { PersonnelCard } from "@/features/meetingDetail/ui/PersonnelCard";
@@ -7,8 +8,9 @@ import KakaoMap from "@/features/meetingDetail/ui/KakaoMap";
 import { ReviewCardList } from "@/features/meetingDetail/ui/ReviewCard";
 import Pagination from "@/components/ui/Pagination/Pagination";
 import CompactCard from "@/components/ui/CompactCard/CompactCard";
+import FallbackImage from "@/components/ui/FallbackImage/FallbackImage";
 import { showToast } from "@/components/ui/Sonner";
-import { Spinner } from "@/components/ui/Spinner/Spinner";
+
 import {
   useMeetingDetailQuery,
   useParticipantsQuery,
@@ -16,23 +18,18 @@ import {
   useReviewsPagination,
 } from "@/features/meetingDetail/hooks";
 
-interface MeetingDetailPageClientProps {
+export interface MeetingDetailPageClientProps {
   meetingId: number;
   isLoggedIn: boolean;
   currentUserId: number | null;
 }
 
-const MeetingDetailPageClient = ({
+const MeetingDetailContent = ({
   meetingId,
   isLoggedIn,
   currentUserId,
 }: MeetingDetailPageClientProps) => {
-  const {
-    data: meeting,
-    isLoading,
-    isError,
-    error,
-  } = useMeetingDetailQuery(meetingId);
+  const { data: meeting } = useMeetingDetailQuery(meetingId, isLoggedIn);
   const { data: participantsData } = useParticipantsQuery(meetingId);
   const { reviews, currentPage, totalPages, onPageChange } =
     useReviewsPagination(meetingId);
@@ -66,28 +63,13 @@ const MeetingDetailPageClient = ({
   //   });
   // };
 
-  if (isError) {
-    console.error("모임 상세 조회 실패:", error);
-
-    return (
-      <div className="flex items-center justify-center p-20 text-gray-500">
-        <span className="text-sm">모임 정보를 불러오지 못했습니다.</span>
-      </div>
-    );
-  }
-
-  if (isLoading || !meeting) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 p-20 text-gray-500">
-        <Spinner size="lg" className="text-primary-500" />
-        <span className="text-sm">불러오는 중...</span>
-      </div>
-    );
-  }
-
-  // if (!meeting) {
-  //   return <MeetingNotFound />;
-  // }
+  // 대체 이미지 콜백
+  const handleMeetingImageFallback = useCallback(() => {
+    showToast({
+      kind: "error",
+      message: "모임 이미지를 불러오지 못했습니다.",
+    });
+  }, []);
 
   // isOwner는 API 응답이 아니라, 로그인한 사용자와 hostId를 비교해 클라이언트가 계산
   const isOwner =
@@ -100,21 +82,24 @@ const MeetingDetailPageClient = ({
         <section className="w-full">
           <div className="flex gap-4 justify-center flex-wrap md:flex-nowrap">
             <div className="relative w-[343px] h-[241px] bg-[#EDEDED] rounded-4xl shadow-sm overflow-hidden md:w-[333px] md:h-[362px] lg:w-[630px] lg:h-[443px]">
-              {meeting.image && (
-                <Image
-                  src={meeting.image || "/meetings-hero.jpg"}
-                  alt={meeting.title}
-                  fill
-                  className="object-cover"
-                />
-              )}
+              <FallbackImage
+                key={meeting.image || "/banner.svg"}
+                src={meeting.image}
+                alt={meeting.title}
+                fill
+                className="object-cover"
+                fallbackClassName="object-cover object-right"
+                onFallback={handleMeetingImageFallback}
+              />
             </div>
 
             <div className="flex flex-col gap-4">
               <InfoCard
                 id={meeting.id}
                 title={meeting.title}
+                image={meeting.image}
                 location={meeting.location}
+                address={meeting.address}
                 category={meeting.category}
                 date={meeting.date}
                 time={meeting.time}
@@ -239,4 +224,4 @@ const MeetingDetailPageClient = ({
   );
 };
 
-export default MeetingDetailPageClient;
+export default MeetingDetailContent;

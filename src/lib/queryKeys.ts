@@ -1,0 +1,29 @@
+import {
+  GetMeetingsParams,
+  PaginationParmas,
+} from "@/features/meetingDetail/types/meetingDetail";
+
+export const meetingKeys = {
+  all: ["meetings"] as const,
+
+  detail: (meetingId: number) =>
+    [...meetingKeys.all, "detail", meetingId] as const,
+
+  participants: (meetingId: number, params?: PaginationParmas) =>
+    [...meetingKeys.detail(meetingId), "participants", params] as const,
+
+  recommended: (meetingId: number) =>
+    [...meetingKeys.detail(meetingId), "recommended"] as const,
+
+  list: (params: GetMeetingsParams) =>
+    [...meetingKeys.all, "list", params] as const,
+
+  popular: (size?: number) => [...meetingKeys.all, "popular", size] as const,
+};
+
+export const reviewKeys = {
+  all: ["reviews"] as const,
+
+  list: (meetingId: number) =>
+    [...reviewKeys.all, "meeting", meetingId] as const,
+};

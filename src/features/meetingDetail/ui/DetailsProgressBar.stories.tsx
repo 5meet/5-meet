@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import DetailsProgressBar from "./DetailsProgressBar";
 
 const meta = {
-  title: "Components/ProgressBar/DetailsProgressBar",
+  title: "Features/MeetingDetail/DetailsProgressBar",
   component: DetailsProgressBar,
   parameters: {
     layout: "centered",

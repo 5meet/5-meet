@@ -4,6 +4,8 @@ interface DaumPostcodeData {
   roadAddress: string;
   jibunAddress: string;
   zonecode: string;
+  sido: string;
+  sigungu: string;
 }
 
 interface DaumPostcodeInstance {

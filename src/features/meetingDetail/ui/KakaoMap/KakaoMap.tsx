@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { KakaoMapScript } from "./KakaoMapScript";
+import { showToast } from "@/components/ui/Sonner";
 
 interface KakaoMapProps {
   latitude: number;
@@ -119,7 +120,14 @@ const KakaoMap = ({
     <div className="relative h-full w-full overflow-hidden">
       <KakaoMapScript
         onReady={() => setIsReady(true)}
-        onError={() => setHasError(true)}
+        onError={() => {
+          setHasError(true);
+
+          showToast({
+            kind: "error",
+            message: "Kakao SDK 로드 실패",
+          });
+        }}
       />
 
       <div
