@@ -6,18 +6,17 @@ export const useAddFavoriteMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (meetingId: number) =>
-      addFavorite(meetingId),
+    mutationFn: (meetingId: number) => addFavorite(meetingId),
 
     onSuccess: async () => {
-  await Promise.all([
-    queryClient.invalidateQueries({
-      queryKey: ["favorites"],
-    }),
-    queryClient.invalidateQueries({
-      queryKey: ["mypage", "reviews", "available"],
-    }),
-  ]);
-},
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["favorites"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["mypage", "reviews", "available"],
+        }),
+      ]);
+    },
   });
 };

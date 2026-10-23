@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 
 import {
@@ -70,7 +69,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.error("GET /api/mypage/reviews failed");
+    console.error("GET /api/mypage/reviews failed", error);
 
     return NextResponse.json(
       {

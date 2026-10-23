@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/Button/Button";
@@ -48,29 +48,33 @@ export default function ReviewMeetingCard({
   const addFavoriteMutation = useAddFavoriteMutation();
   const deleteFavoriteMutation = useDeleteFavoriteMutation();
 
-  const [isLiked, setIsLiked] = useState(isFavorite);
-  const [isFavoritePending, setIsFavoritePending] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [hasImageError, setHasImageError] = useState(false);
+  // null이면 서버에서 받은 isFavorite 값을 사용합니다.
+  const [favoriteOverride, setFavoriteOverride] =
+    useState<boolean | null>(null);
 
-  useEffect(() => {
-    setIsLiked(isFavorite);
-  }, [isFavorite]);
+  const [isFavoritePending, setIsFavoritePending] =
+    useState(false);
 
-  useEffect(() => {
-    setHasImageError(false);
-  }, [imageUrl]);
+  const [isReviewModalOpen, setIsReviewModalOpen] =
+    useState(false);
 
-  const hasImage = Boolean(imageUrl?.trim()) && !hasImageError;
+  // 이미지 URL별로 오류 상태를 관리합니다.
+  const [failedImageUrl, setFailedImageUrl] =
+    useState<string | null>(null);
+
+  const isLiked = favoriteOverride ?? isFavorite;
+
+  const hasImage =
+    Boolean(imageUrl?.trim()) &&
+    failedImageUrl !== imageUrl;
 
   const handleFavoriteClick = async () => {
     if (isFavoritePending) return;
 
-    const previousLiked = isLiked;
-    const nextLiked = !previousLiked;
+    const nextLiked = !isLiked;
 
     setIsFavoritePending(true);
-    setIsLiked(nextLiked);
+    setFavoriteOverride(nextLiked);
 
     try {
       if (nextLiked) {
@@ -91,20 +95,19 @@ export default function ReviewMeetingCard({
       showToast({
         kind: "success",
         message: nextLiked
-          ? "찜 목록에 등록했습니다."
-          : "찜을 취소했습니다.",
+          ? "즐겨찾기에 추가했습니다."
+          : "즐겨찾기를 해제했습니다.",
       });
     } catch (error) {
-      setIsLiked(previousLiked);
-
       showToast({
         kind: "error",
         message:
           error instanceof Error
             ? error.message
-            : "찜 상태를 변경하지 못했습니다.",
+            : "즐겨찾기 상태를 변경하지 못했습니다.",
       });
     } finally {
+      setFavoriteOverride(null);
       setIsFavoritePending(false);
     }
   };
@@ -174,7 +177,7 @@ export default function ReviewMeetingCard({
               fill
               sizes="(max-width: 767px) 100vw, 178px"
               className="object-cover"
-              onError={() => setHasImageError(true)}
+              onError={() => setFailedImageUrl(imageUrl)}
             />
           ) : (
             <div

@@ -30,10 +30,10 @@ export const LikeButton = ({
             x1="0%"
             y1="0%"
             x2="100%"
-            y2="100%"
+            y2="0%"
           >
-            <stop offset="0%" stopColor="#FF5A8A" />
-            <stop offset="100%" stopColor="#FF2D55" />
+            <stop offset="0%" stopColor="#17DA71" />
+            <stop offset="100%" stopColor="#08DDF0" />
           </linearGradient>
         </defs>
       </svg>
@@ -48,12 +48,11 @@ export const LikeButton = ({
         className="cursor-pointer disabled:cursor-not-allowed"
       >
         <Heart
-          className={
-            isLiked
-              ? "fill-current text-[#FF477E]"
-              : "text-gray-500"
-          }
+          fill={isLiked ? `url(#${gradientId})` : "none"}
           stroke={isLiked ? `url(#${gradientId})` : "currentColor"}
+          className={`w-5 h-5 transition-transform duration-200 ${
+            isLiked ? "scale-110" : "scale-100"
+          }`}
         />
       </IconButton>
     </>
