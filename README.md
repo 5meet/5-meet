@@ -85,66 +85,6 @@
 | UI 개발·테스트 | Storybook, MSW, Vitest, Testing Library, Playwright |
 | 배포·패키지 관리 | Vercel, npm |
 
-## 로컬 실행
-
-### 1. 설치
-
-Next.js 16을 지원하는 Node.js 20.9 이상과 npm이 필요합니다.
-
-```bash
-git clone https://github.com/5meet/5-meet.git
-cd 5-meet
-npm ci
-```
-
-### 2. 환경 변수 설정
-
-프로젝트 루트에 `.env.local` 파일을 만들고 프로젝트용 API 주소와 발급받은 키를 설정합니다. 실제 키와 토큰은 저장소에 커밋하지 않습니다.
-
-```dotenv
-# 팀 경로를 포함한 백엔드 API 기본 주소. 끝의 /는 제외합니다.
-NEXT_PUBLIC_CODEIT_API_URL=https://your-api-host/your-team-id
-
-# enabled로 설정하면 개발용 MSW 핸들러를 활성화합니다.
-NEXT_PUBLIC_API_MOCKING=disabled
-
-# Google 로그인
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-client-id
-
-# Kakao 지도·공유에 사용하는 JavaScript 키
-NEXT_PUBLIC_KAKAO_MAP_KEY=your-kakao-javascript-key
-NEXT_PUBLIC_KAKAO_JS_KEY=your-kakao-javascript-key
-
-# Kakao 로그인 서버 설정
-KAKAO_REST_API_KEY=your-kakao-rest-api-key
-KAKAO_REDIRECT_URI=http://localhost:3000/api/auth/kakao/callback
-# Kakao 앱에서 Client Secret을 사용하는 경우 설정
-KAKAO_CLIENT_SECRET=
-```
-
-API 기본 주소는 팀에서 사용하는 백엔드 환경에 맞게 설정해야 합니다. 소셜 로그인·지도·공유는 각 제공자의 개발자 콘솔에 로컬 도메인과 Redirect URI를 등록해야 정상 동작합니다. MSW는 등록한 요청만 모킹하므로 전체 백엔드를 대체하지 않습니다.
-
-### 3. 개발 서버 시작
-
-```bash
-npm run dev
-```
-
-브라우저에서 [localhost:3000](http://localhost:3000)을 엽니다.
-
-## 개발 명령어
-
-| 명령어 | 용도 |
-| --- | --- |
-| `npm run dev` | Next.js 개발 서버 |
-| `npm run build` | 프로덕션 빌드 |
-| `npm run start` | 빌드 결과 실행 |
-| `npm run lint` | ESLint 검사 |
-| `npm run storybook` | Storybook 실행 · 포트 6006 |
-| `npm run build-storybook` | Storybook 정적 빌드 |
-
-별도 단위 테스트 설정은 `vitest.unit.config.ts`, Storybook 브라우저 테스트 설정은 `vitest.config.ts`에서 관리합니다. 마이페이지의 화면·상태 검증 절차는 [나의 모임 검증 문서](tests/my-meetings/README.md)를 참고하세요.
-
 ## 폴더 구조
 
 ```text
